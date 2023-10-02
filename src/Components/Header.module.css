@@ -1,0 +1,44 @@
+.containerHeader {
+  width: 100%;
+  z-index: 100;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  background-color: #121212;
+}
+
+.containerNav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-items: space-between;
+  align-content: center;
+  height: 80px;
+}
+
+.titleLogo {
+  display: inline-block;
+  font-size: 1.5rem;
+  color: #f1f1f1;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+.titleLogo4 {
+  color: #ffa500;
+}
+
+.Img {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 48px !important;
+}
+
+.containerNav div:nth-child(2) {
+  margin: auto auto;
+}
+
+.containerNav div:nth-child(2) input {
+  color: #f9f9f9;
+  background-color: #1e1e1e;
+}

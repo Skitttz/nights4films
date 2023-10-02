@@ -1,0 +1,19 @@
+.input {
+  border: 0.5px solid #333;
+  display: block;
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.8rem;
+  border-radius: 0.4rem;
+  background: #f9f9f9;
+  transition: 0.6s all;
+}
+
+.input:focus,
+.input:hover {
+  outline: none;
+  border-color: #333;
+  background: #f9f9f9;
+  box-shadow: 0 0 0 1px #f9f9f9;
+}
+
