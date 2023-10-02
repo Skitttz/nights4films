@@ -21,6 +21,26 @@ export const theme = {
           transform: 'translateX(0px)',
         },
       },
+      scaleItem: {
+        '0%': {
+          opacity: 0,
+          transform: 'scale(0)',
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'scale(1)',
+        },
+      },
+      scaleOut: {
+        '0%': {
+          opacity: 1,
+          transform: 'scale(1)',
+        },
+        '100%': {
+          opacity: 0,
+          transform: 'scale(0)',
+        },
+      },
       wiggle: {
         '0%, 100%': { transform: 'rotate(-3deg)' },
         '50%': { transform: 'rotate(3deg)' },
@@ -29,9 +49,12 @@ export const theme = {
     animation: {
       animeLeft: 'animeLeft 1s ease-in-out forwards',
       wiggle: 'wiggle 1s ease-in-out forwards',
+      scaleItem: 'scaleItem .7s ease-in-out forwards',
+      scaleOut: 'scaleOut .7s ease-in-out forwards',
     },
     content: {
       play: "url('/src/Assets/i-play.svg')",
+      exit: "url('/src/Assets/i-exit.svg')",
     },
 
     screens: {

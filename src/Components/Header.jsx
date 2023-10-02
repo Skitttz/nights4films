@@ -11,7 +11,7 @@ const Header = ({ onSearchValueChange }) => {
     onSearchValueChange(event.target.value);
   };
   return (
-    <header className="w-full fixed top-0 bg-gray-950 shadow-md z-50">
+    <header className="w-full mb-8 top-0 bg-gray-950 shadow-md z-50">
       <nav className=" h-20 max-w-5xl mx-auto flex flex-wrap items-center justify-between lg:justify-around lg:max-w-5xl ">
         <div>
           <NavLink className="flex items-center ml-4 " to="/">

@@ -76,6 +76,7 @@ const ContentFilms = ({ id }) => {
       <div>
         {activeModal ? (
           <ModalTrailer
+            key={activeModal}
             setModal={setActiveModal}
             EmbedId={films.data.attributes.trailer}
           />

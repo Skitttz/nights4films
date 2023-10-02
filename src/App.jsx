@@ -7,7 +7,7 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <div className="font-roboto h-[calc(100vh+10rem)] box-border bg-gray-900 pt-16 m-0">
+      <div className="font-roboto h-[calc(100vh+10rem)] box-border bg-gray-900 m-0">
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />}></Route>
