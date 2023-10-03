@@ -8,6 +8,10 @@ export const theme = {
       gabarito: ['Gabarito', 'cursive'],
     },
     keyframes: {
+      fadeIn: {
+        '0%': { opacity: 0 },
+        '100%': { opacity: 1 },
+      },
       animeDown: {
         '100%': { opacity: 1, transform: 'initial' },
       },
@@ -47,6 +51,7 @@ export const theme = {
       },
     },
     animation: {
+      fadeIn: 'fadeIn 1s ease-in-out forwards',
       animeLeft: 'animeLeft 1s ease-in-out forwards',
       wiggle: 'wiggle 1s ease-in-out forwards',
       scaleItem: 'scaleItem .7s ease-in-out forwards',

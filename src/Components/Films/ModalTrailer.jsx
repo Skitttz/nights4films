@@ -3,6 +3,8 @@ import EmbedVideo from './EmbedVideo';
 
 const ModalTrailer = ({ setModal, EmbedId }) => {
   const [isActive, setIsActive] = React.useState(false);
+  const borderModal = `relative border-solid border-slate-900 border-t-[42px] rounded-md`;
+  const timerTransition = 700;
   React.useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
 
@@ -16,20 +18,23 @@ const ModalTrailer = ({ setModal, EmbedId }) => {
       setIsActive(true);
       setTimeout(() => {
         setModal(false);
-      }, 700);
+      }, timerTransition);
     }
   }
 
   function handleKeyDown(event) {
     if (event.key === 'Escape') {
-      setModal(false);
+      setIsActive(true);
+      setTimeout(() => {
+        setModal(false);
+      }, timerTransition);
     }
   }
   return (
     <div>
       {setModal && (
         <div
-          className="fixed inset-0 flex items-center justify-center z-9999 bg-black bg-opacity-40 left-0 top-0 w-screen h-screen"
+          className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40 left-0 top-0 w-screen h-screen"
           onClick={handleOutSideClick}
           onKeyDown={handleKeyDown}
           tabIndex={0}
@@ -37,8 +42,8 @@ const ModalTrailer = ({ setModal, EmbedId }) => {
           <div
             className={
               isActive
-                ? 'relative border-solid border-slate-900 border-t-[42px] rounded-md animate-scaleOut'
-                : 'relative border-solid border-slate-900 border-t-[42px] rounded-md animate-scaleItem'
+                ? `${borderModal} animate-scaleOut`
+                : `${borderModal} animate-scaleItem`
             }
           >
             <div className="absolute block -top-9 left-3">
@@ -51,7 +56,7 @@ const ModalTrailer = ({ setModal, EmbedId }) => {
               </p>
             </div>
             <div
-              className="absolute block -top-8 right-5 content-exit"
+              className="absolute block -top-8 right-5 content-exit opacity-50 hover:opacity-100"
               onClick={handleOutSideClick}
               style={{ cursor: 'Pointer' }}
             ></div>

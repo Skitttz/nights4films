@@ -11,13 +11,20 @@ const Header = ({ onSearchValueChange }) => {
     onSearchValueChange(event.target.value);
   };
   return (
-    <header className="w-full mb-8 top-0 bg-gray-950 shadow-md z-50">
+    <header className="fixed z-1 w-full top-0 bg-gray-950 shadow-md z-50 ">
       <nav className=" h-20 max-w-5xl mx-auto flex flex-wrap items-center justify-between lg:justify-around lg:max-w-5xl ">
         <div>
-          <NavLink className="flex items-center ml-4 " to="/">
+          <NavLink
+            className="flex items-center ml-7"
+            to="/"
+            onClick={() => {
+              setSearchValue('');
+              handleSearchChange();
+            }}
+          >
             <p className="font-gabarito font-thin text-2xl text-gray-200 ">
               Nights
-              <span className="text-[rgba(107,66,178)] p-0.5 px-2 bg-transparent rounded-lg mx-1 font-limelight font-bold shadow-[0px_3px_0px_0px_rgba(107,66,178)]">
+              <span className="text-[rgba(107,66,178)] p-0.5 px-2 bg-transparent rounded-lg mx-1 font-limelight font-bold shadow-[0px_3px_0px_0px_rgba(107,66,178)] hover:animate-wiggle">
                 4
               </span>
               <span className="font-gabarito">Films</span>

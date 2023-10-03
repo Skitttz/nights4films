@@ -5,6 +5,17 @@ import ModalTrailer from './modalTrailer';
 const ContentFilms = ({ id }) => {
   const [films, setFilms] = React.useState(null);
   const [activeModal, setActiveModal] = React.useState(false);
+  let hours, minutes;
+
+  function transformMinHours(min) {
+    hours = Math.floor(min / 60);
+    return hours;
+  }
+  //Incomplete time from hours transformed into minutes
+  function transformHoursIntoMinutes(min) {
+    minutes = min % 60;
+    return minutes;
+  }
 
   React.useEffect(() => {
     Filmes_GET(`/filmes/${id}?populate=*`)
@@ -53,9 +64,11 @@ const ContentFilms = ({ id }) => {
                   </span>
                 </h2>
                 <span className="font-gabarito text-base text-slate-500 font-normal">
-                  {` ${Math.floor(films.data.attributes.duration / 60)}h ${
-                    films.data.attributes.duration % 60
-                  }min`}
+                  {` ${transformMinHours(
+                    films.data.attributes.duration,
+                  )}h ${transformHoursIntoMinutes(
+                    films.data.attributes.duration,
+                  )}min`}
                 </span>
                 <div className="flex flex-row flex-wrap justify-items-start	justify-start text-lg text-slate-600 font-light gap-1 transition-opacity">
                   {films.data.attributes.genres.data.map((genre) => (

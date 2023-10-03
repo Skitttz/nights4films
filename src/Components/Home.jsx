@@ -10,7 +10,7 @@ const Home = () => {
   };
 
   return (
-    <div className="box-border bg-gray-900 m-0  ">
+    <div className="box-border bg-gray-900 m-0 ">
       <Header onSearchValueChange={handleSearchValueChange} />
       <Main searchValue={searchValue} />
     </div>
