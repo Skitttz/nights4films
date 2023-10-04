@@ -34,17 +34,17 @@ const ContentFilms = ({ id }) => {
   return (
     <>
       <div
-        className={`pt-4 w-auto  duration-700 lg:px-32 lg:pb-32 md:px-32 md:pb-32 sm:px-32 sm:pb-32 ${
+        className={`pt-4 w-auto h-auto lg:w-[30rem] md:w-[20rem] sm:w-[22rem] tm:w-[20rem] cardMD:row-start-1 duration-700 cardMD:pb-16 md:px-8 sm:px-8 tm:px-4  ${
           films
             ? 'translate-x-0 duration-800 opacity-100'
             : '-translate-x-40 duration-800 opacity-0'
         }`}
       >
-        <div className="bg-gray-950 h-auto w-auto rounded-md ">
+        <div className="bg-gray-950 h-auto w-auto rounded-md">
           {films && (
-            <div className="lg:rounded-md md:rounded-md sm:rounded-md">
+            <div className="cardMD:rounded-md md:rounded-md sm:rounded-md">
               <div
-                className="relative cursor-pointer after:content-play after:opacity-40 after:hover:opacity-90 after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 rounded-t-md bg-slate-800 lg:rounded-t-md md:rounded-md sm:rounded-md"
+                className="relative cursor-pointer after:content-play after:opacity-40 after:hover:opacity-90 after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 rounded-t-md bg-slate-800 lg:rounded-t-md  sm:rounded-md"
                 onClick={() => {
                   setActiveModal(true);
                 }}
@@ -57,7 +57,7 @@ const ContentFilms = ({ id }) => {
               </div>
 
               <div className="flex flex-col p-7 gap-3 ">
-                <h2 className="text-3xl font-gabarito text-slate-200 font-bold relative">
+                <h2 className="text-3xl  font-gabarito text-slate-200 font-bold relative">
                   {films.data.attributes.title}{' '}
                   <span className="font-gabarito text-base text-slate-300 bg-slate-900 rounded-md font-normal p-1 px-2 absolute right-0 bottom-1  mx-auto">
                     {films.data.attributes.year}
