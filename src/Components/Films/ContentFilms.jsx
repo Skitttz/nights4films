@@ -1,5 +1,6 @@
 import React from 'react';
 import { Filmes_GET, hostURL_GET } from '../Api/Api';
+import { Link } from 'react-router-dom';
 import ModalTrailer from './modalTrailer';
 
 const ContentFilms = ({ id }) => {
@@ -57,9 +58,11 @@ const ContentFilms = ({ id }) => {
               </div>
 
               <div className="flex flex-col p-7 gap-3 ">
-                <h2 className="text-3xl  font-gabarito text-slate-200 font-bold relative">
-                  {films.data.attributes.title}{' '}
-                  <span className="font-gabarito text-base text-slate-300 bg-slate-900 rounded-md font-normal p-1 px-2 absolute right-0 bottom-1  mx-auto">
+                <h2 className="text-3xl  font-gabarito text-slate-200 font-bold relative mr-1">
+                  <Link to={`/filmes/${films.data.attributes.slug}`}>
+                    {films.data.attributes.title}{' '}
+                  </Link>
+                  <span className="font-gabarito text-base text-slate-300 bg-slate-900 rounded-md font-normal p-1 px-2  inline-block align-middle ">
                     {films.data.attributes.year}
                   </span>
                 </h2>
