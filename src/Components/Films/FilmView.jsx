@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Filmes_GET, hostURL_GET } from '../Api/Api';
+import { Filmes_GET } from '../Api/Api';
+import Head from '../Head';
 import Loading from '../Helper/Loading';
 import Markdown from 'https://esm.sh/react-markdown@9';
 
@@ -36,7 +37,7 @@ const FilmView = () => {
     const randomColorValueTwo = randomColor();
     const randomColorHexOne = randomColorHEX();
     if (films) {
-      pRef.current.style.boxShadow = `0px 0px 4px 0px rgba(${randomColorValueOne}, 30, ${randomColorValueTwo}, 1)`;
+      pRef.current.style.boxShadow = `0px 0px 4px 2px rgba(${randomColorValueOne},30,${randomColorValueTwo}, 1)`;
       divRef.current.style.boxShadow = `2px 0px 2px 0px ${randomColorHexOne}`;
     }
   }, [films]);
@@ -48,10 +49,14 @@ const FilmView = () => {
           className="grid justify-center bg-slate-950 mt-8 animate-animeLeft"
           key={films.data[0].id}
         >
-          <div className="grid grid-cols-2 grid-rows-[.5fr,1fr] gap-y-8 content-center justify-items-center items-center animate-fadeIn max-w-5xl font-gabarito ">
+          <Head
+            title={` » ${films.data[0].attributes.title}`}
+            description="Pagina do filme"
+          />
+          <div className="grid grid-cols-2 grid-rows-[.5fr,1fr] gap-y-8 content-center justify-items-center items-center animate-fadeIn max-w-5xl font-gabarito cardMD:grid-cols-1 cardMD:p-8">
             <img
               className="w-auto h-auto bg-contain rounded-lg shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] "
-              src={`${hostURL_GET}${films.data[0].attributes.photo_description.data.attributes.url}`}
+              src={`${films.data[0].attributes.photo_description.data.attributes.url}`}
               alt=""
             />
             <div ref={divRef} className="p-3 rounded-lg ">
@@ -64,7 +69,7 @@ const FilmView = () => {
                 </p>
               </div>
               <div>
-                <p className="text-slate-500 mt-3 mx-auto text-lg pl-6 text-justify font-roboto hover:text-slate-300 animate-fadeIn transition-colors py-1 ml-2">
+                <p className="text-slate-500 mt-3 mx-auto text-lg px-2 text-justify font-roboto hover:text-slate-300 animate-fadeIn transition-colors py-1 ml-2">
                   <span className="inline-block font-gabarito text-slate-900 hover:text-slate-900 text-center p-1 bg-slate-200 rounded-s-md mr-3 ">
                     Sinopse:{' '}
                   </span>

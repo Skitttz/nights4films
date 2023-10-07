@@ -1,7 +1,7 @@
 import React from 'react';
-import { Filmes_GET, hostURL_GET } from '../Api/Api';
+import { Filmes_GET } from '../Api/Api';
 import { Link } from 'react-router-dom';
-import ModalTrailer from './modalTrailer';
+import ModalTrailer from './ModalTrailer';
 
 const ContentFilms = ({ id }) => {
   const [films, setFilms] = React.useState(null);
@@ -35,7 +35,7 @@ const ContentFilms = ({ id }) => {
   return (
     <>
       <div
-        className={`pt-4 w-auto h-auto lg:w-[30rem] md:w-[20rem] sm:w-[22rem] tm:w-[20rem] cardMD:row-start-1 duration-700 cardMD:pb-16 md:px-8 sm:px-8 tm:px-4  ${
+        className={`pt-4 w-auto h-auto lg:w-[30rem] md:w-[20rem] sm:w-[22rem] tm:w-[18rem] duration-700 cardMD:pb-16 md:px-8 sm:px-8 tm:px-0  ${
           films
             ? 'translate-x-0 duration-800 opacity-100'
             : '-translate-x-40 duration-800 opacity-0'
@@ -52,7 +52,7 @@ const ContentFilms = ({ id }) => {
               >
                 <img
                   className="rounded-t-md h-64 w-full opacity-50 object-cover"
-                  src={`${hostURL_GET}${films.data.attributes.photo_description.data.attributes.url}`}
+                  src={`${films.data.attributes.photo_description.data.attributes.url}`}
                   alt=""
                 />
               </div>

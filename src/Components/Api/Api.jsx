@@ -4,7 +4,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-export const hostURL_GET = import.meta.env.VITE_HOST_URL;
+// export const hostURL_GET = import.meta.env.VITE_HOST_URL;
 
 const auth = {
   headers: { Authorization: `Bearer ${import.meta.env.VITE_TOKEN}` },

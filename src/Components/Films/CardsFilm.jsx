@@ -1,5 +1,5 @@
 import React from 'react';
-import { Filmes_GET, hostURL_GET } from '../Api/Api';
+import { Filmes_GET } from '../Api/Api';
 import ContentFilms from './ContentFilms';
 import Loading from '../Helper/Loading';
 import PaginationFilms from './PaginationFilms';
@@ -59,7 +59,7 @@ const CardsFilm = ({ searchValue }) => {
     >
       <div
         className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-2
-      cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1
+      cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 
       cardMD:w-[20rem] animate-animeLeft "
       >
         {empty ? (
@@ -79,23 +79,25 @@ const CardsFilm = ({ searchValue }) => {
               isActive={isActive}
               index={index}
               title={film.attributes.title}
-              image={`${hostURL_GET}${film.attributes.card.data.attributes.url}`}
+              image={`${film.attributes.card.data.attributes.url}`}
               width={`${film.attributes.card.data.attributes.width}`}
               height={`${film.attributes.card.data.attributes.height}`}
               onClick={handleClick}
             />
           ))
         ) : (
-          <Loading />
+          <div className="flex items-center justify-center h-screen">
+            <Loading />
+          </div>
         )}
       </div>
       {filmId ? (
         <ContentFilms key={filmId} id={filmId} />
       ) : (
-        <div className="p-4 hidden cardMD:block  lg:w-[600px] sm:w-[300px] tm:w-[180px] cardMD:h-[700px] rounded-md opacity-10 bg-gray-900 row-start-1"></div>
+        <div className="p-4 hidden cardMD:block  lg:w-[600px] sm:w-[300px] tm:w-[180px] tm:h-[800px] cardMD:h-[700px] rounded-md opacity-10 bg-gray-900 row-start-1"></div>
       )}
 
-      <div className="col-end-2">
+      <div className="col-end-2 pb-24">
         {films.length !== 0 && (
           <PaginationFilms
             totalItems={films.meta.pagination.total}
