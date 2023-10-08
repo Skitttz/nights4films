@@ -58,7 +58,7 @@ const CardsFilm = ({ searchValue }) => {
       cardMD:max-w-5xl cardMD:justify-center"
     >
       <div
-        className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-2
+        className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1
       cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 
       cardMD:w-[20rem] animate-animeLeft "
       >
@@ -92,12 +92,14 @@ const CardsFilm = ({ searchValue }) => {
         )}
       </div>
       {filmId ? (
-        <ContentFilms key={filmId} id={filmId} />
+        <div className="cardMD:row-start-3">
+          <ContentFilms key={filmId} id={filmId} />
+        </div>
       ) : (
-        <div className="p-4 hidden cardMD:block  lg:w-[600px] sm:w-[300px] tm:w-[180px] tm:h-[800px] cardMD:h-[700px] rounded-md opacity-10 bg-gray-900 row-start-1"></div>
+        <div className="p-4 hidden cardMD:block  lg:w-[600px] sm:w-[300px] tm:w-[180px] tm:h-[800px] cardMD:h-[700px] rounded-md opacity-10 bg-gray-900 row-start-3"></div>
       )}
 
-      <div className="col-end-2 pb-24">
+      <div className="col-end-2 pb-8">
         {films.length !== 0 && (
           <PaginationFilms
             totalItems={films.meta.pagination.total}
