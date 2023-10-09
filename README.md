@@ -43,5 +43,5 @@ O projeto está hospedado na Vercel. Para acessar a demonstração do projeto, b
 
 ## Design 🎨
 
-A parte do planejamento estético da plataforma, incluindo a definição das paletas de cores, tipografia e a apresentação de duas versões da logomarca. Foi criado um guia de estilo do projeto dentro do software Figma. Para acessá-lo, clique no link:
+A parte do planejamento estético da plataforma foi utilizado o software Figma. Para acessá-lo, clique no link:
 <a href="https://www.figma.com/file/E9kvl9vODdF8JSJ9GAITIC/Nights4Films?type=design&node-id=0%3A1&mode=design&t=FUSb3wK7QVwkDcE1-1">Figma</a>
