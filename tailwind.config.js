@@ -63,8 +63,8 @@ export const theme = {
       scaleCard: 'scaleCard .3s ease-in-out forwards',
     },
     content: {
-      play: "url('/src/Assets/i-play.svg')",
-      exit: "url('/src/Assets/i-exit.svg')",
+      play: "url('../src/Assets/i-play.svg')",
+      exit: "url('../src/Assets/i-exit.svg')",
     },
 
     screens: {
