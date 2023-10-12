@@ -20,7 +20,7 @@ const FilmCard = ({
   }
 
   return (
-    <div className={`p-3 cardMD:w-[10rem] cardMD:ml-8 cardMD:flex-shrink-0`}>
+    <div className={`p-3 cardMD:w-[10.5rem] cardMD:ml-2 cardMD:flex-shrink-0`}>
       <img
         onClick={() => {
           onClick(index);
@@ -34,8 +34,8 @@ const FilmCard = ({
         src={image}
         alt={title}
         style={{
-          width: `${(width - 50) * 0.9}px`,
-          height: `${(height - 90) * 0.9}px`,
+          width: `${(width - 60) * 0.9}px`,
+          height: `${(height - 100) * 0.9}px`,
           cursor: 'pointer',
         }}
       />

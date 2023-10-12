@@ -17,7 +17,14 @@ export const theme = {
         '100%': { transform: 'scale(1.1)' },
       },
       animeDown: {
-        '100%': { opacity: 1, transform: 'initial' },
+        '0%': {
+          opacity: 0,
+          transform: 'translateY(-20px)',
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'translateY(0px)',
+        },
       },
       animeLeft: {
         '0%': {
@@ -57,6 +64,7 @@ export const theme = {
     animation: {
       fadeIn: 'fadeIn 1s ease-in-out forwards',
       animeLeft: 'animeLeft 1s ease-in-out forwards',
+      animeDown: 'animeDown 1s ease-in-out forwards',
       wiggle: 'wiggle 1s ease-in-out forwards',
       scaleItem: 'scaleItem .7s ease-in-out forwards',
       scaleOut: 'scaleOut .7s ease-in-out forwards',
@@ -65,6 +73,7 @@ export const theme = {
     content: {
       play: "url('../src/Assets/i-play.svg')",
       exit: "url('../src/Assets/i-exit.svg')",
+      login: "url('../src/Assets/photo_login_l.jpg')",
     },
 
     screens: {

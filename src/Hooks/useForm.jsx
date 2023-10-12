@@ -1,29 +1,29 @@
-import React from "react";
+import React from 'react';
 
 const types = {
   username: {
-    regex: /.{3,}/,
-    message: "Digite um pouco mais.  ",
+    regex: /^(?=.{3,12}$)(?:[a-zA-Z\d]+(?:(?:\.|-|_)[a-zA-Z\d])*)+$/,
+    message: 'Não insira caracter especial ou menos de 3 letras',
   },
   email: {
     regex:
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-    message: "Parece que você não preencheu um e-mail válido. ",
+    message: 'Parece que você não preencheu um e-mail válido. ',
   },
   password: {
     regex: /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%?=*&]).{6,20})/,
-    message: "",
+    message: '',
   },
 };
 
 const useForm = (type) => {
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState('');
   const [error, setError] = React.useState(null);
 
   function validate(value) {
     if (type === false) return true;
     if (value.length === 0) {
-      setError("Não deixe este campo em branco.");
+      setError('Não deixe este campo em branco.');
       return false;
     } else if (types[type] && !types[type].regex.test(value)) {
       setError(types[type].message);

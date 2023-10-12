@@ -46,7 +46,7 @@ const FilmView = () => {
     <div>
       {films ? (
         <div
-          className="grid justify-center bg-slate-950 mt-8 animate-animeLeft"
+          className="grid justify-center bg-slate-950 mt-6 animate-animeLeft"
           key={films.data[0].id}
         >
           <Head

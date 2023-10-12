@@ -1,9 +1,8 @@
 import React from 'react';
 import Input from './Forms/Input';
 import IconSearch from '../Assets/i-search.svg';
-import iconGitHub from '../Assets/i-github.svg';
 import useDebounce from '../Hooks/useDebounce';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Header = ({ onSearchValueChange }) => {
   const [searchValue, setSearchValue] = React.useState('');
@@ -16,11 +15,11 @@ const Header = ({ onSearchValueChange }) => {
   return (
     <>
       <header className="fixed z-1 w-full top-0 bg-gray-950 shadow-md z-50  ">
-        <nav className=" h-20 max-w-5xl mx-auto flex flex-wrap items-center justify-between lg:justify-around lg:max-w-5xl tm:justify-center tm:max-w-5xl tm:flex-nowrap tm:gap-4 ">
+        <nav className=" h-16 max-w-5xl mx-auto flex flex-wrap items-center justify-between lg:justify-around lg:max-w-5xl tm:justify-center tm:max-w-5xl tm:flex-nowrap tm:gap-4 ">
           <div>
-            <NavLink
+            <Link
               className="flex items-center ml-7 tm:ml-2"
-              to="/"
+              to={'/'}
               onClick={() => {
                 setSearchValue('');
                 handleSearchChange();
@@ -33,7 +32,7 @@ const Header = ({ onSearchValueChange }) => {
                 </span>
                 <span className="font-gabarito">Films</span>
               </p>
-            </NavLink>
+            </Link>
           </div>
           <div className="flex items-center">
             {onSearchValueChange ? (
@@ -42,7 +41,7 @@ const Header = ({ onSearchValueChange }) => {
                 name="searchFilme"
                 backgroundImage={`url(${IconSearch})`}
                 backgroundPosition={`3% 45%`}
-                // width={250}
+                customStyleInput={'indent-7'}
                 placeholder={'Digite o nome do filme...'}
                 value={searchValue} // Valor do input é controlado pelo estado
                 onChange={handleSearchChange} // Função para atualizar o estado quando o input muda
@@ -51,24 +50,20 @@ const Header = ({ onSearchValueChange }) => {
               ''
             )}
           </div>
-          <div
-            className="opacity-20 transition-opacity hover:opacity-60  
+          <Link to={'/login'}>
+            <div
+              className=" text-slate-300 hover:text-slate-100 p-2 bg-[rgba(107,46,178)] hover:bg-[rgba(107,20,178)]  rounded-md transition-colors duration-300 font-gabarito 
         sm:w-8 
         md:mr-4 
         sm:mr-4 
         tm:hidden "
-          >
-            <a
-              href="https://github.com/Skitttz"
-              target="_blank"
-              rel="noreferrer"
             >
-              <img src={iconGitHub} alt="" />
-            </a>
-          </div>
+              <p>Login / Registrar</p>
+            </div>
+          </Link>
         </nav>
       </header>
-      <div className="pb-[3rem]"></div>
+      <div className="pb-[2.5rem]"></div>
     </>
   );
 };

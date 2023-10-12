@@ -26,3 +26,26 @@ export async function Filmes_GET(endpoint) {
       throw error;
     });
 }
+
+export async function UserLogin_POST(endpoint, userData) {
+  return await api
+    .post(endpoint, userData)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
+export async function UserRegister_POST(endpoint, userData) {
+  return await api
+    .post(endpoint, userData)
+    .then((response) => {
+      console.log('User profile', response.data.user);
+      console.log('User token', response.data.jwt);
+    })
+    .catch((error) => {
+      throw error;
+    });
+}

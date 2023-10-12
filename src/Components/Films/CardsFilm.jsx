@@ -53,61 +53,68 @@ const CardsFilm = ({ searchValue }) => {
   }
 
   return (
-    <div
-      className="grid grid-cols-[600px,_1fr] justify-center justify-items-center gap-x-4 cardMD:grid-cols-1 
-      cardMD:max-w-5xl cardMD:justify-center"
-    >
-      <div
-        className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1
-      cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 
-      cardMD:w-[20rem] animate-animeLeft "
-      >
-        {empty ? (
-          <div className="flex content-center items-center text-yellow-50 text-center text-xl font-bold animate-fadeIn col-span-full row-span-full  h-[8.5rem] mx-auto">
-            <p>Ops! Não encontramos nenhum filme correspondente.</p>
-          </div>
-        ) : (
-          ''
-        )}
-        {films.length !== 0 ? (
-          films.data.map((film, index) => (
-            <FilmCard
-              key={film.id}
-              id={film.id}
-              setFilmId={setFilmId}
-              searchValue={searchValue}
-              isActive={isActive}
-              index={index}
-              title={film.attributes.title}
-              image={`${film.attributes.card.data.attributes.url}`}
-              width={`${film.attributes.card.data.attributes.width}`}
-              height={`${film.attributes.card.data.attributes.height}`}
-              onClick={handleClick}
-            />
-          ))
-        ) : (
-          <div className="flex items-center justify-center h-screen">
-            <Loading />
-          </div>
-        )}
+    <div>
+      <div className="text-slate-200 font-gabarito font-medium text-2xl ml-8 mb-3 border-b-slate-800 border-b cardMD:w-[80%] cardMD:text-lg">
+        <p>Filmes</p>
       </div>
-      {filmId ? (
-        <div className="cardMD:row-start-3">
-          <ContentFilms key={filmId} id={filmId} />
+      {films.length !== 0 ? (
+        <div
+          className="grid grid-cols-[600px,_1fr] justify-center justify-items-center gap-x-4 cardMD:grid-cols-1 
+      cardMD:max-w-5xl cardMD:justify-center "
+        >
+          <div
+            className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1
+      cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 
+      lg:w-[45rem] md:w-[35rem] sm:w-[25rem] tm:w-[18rem] animate-animeLeft "
+          >
+            {empty ? (
+              <div className="flex content-center items-center text-yellow-50 text-center text-xl font-bold animate-fadeIn col-span-full row-span-full  h-[8.5rem] mx-auto">
+                <p>Ops! Não encontramos nenhum filme correspondente.</p>
+              </div>
+            ) : (
+              ''
+            )}
+            {films
+              ? films.data.map((film, index) => (
+                  <FilmCard
+                    key={film.id}
+                    id={film.id}
+                    setFilmId={setFilmId}
+                    searchValue={searchValue}
+                    isActive={isActive}
+                    index={index}
+                    title={film.attributes.title}
+                    image={`${film.attributes.card.data.attributes.url}`}
+                    width={`${film.attributes.card.data.attributes.width}`}
+                    height={`${film.attributes.card.data.attributes.height}`}
+                    onClick={handleClick}
+                  />
+                ))
+              : ''}
+          </div>
+          {filmId ? (
+            <div className="cardMD:row-start-3">
+              <ContentFilms key={filmId} id={filmId} />
+            </div>
+          ) : (
+            <div className="p-4 hidden cardMD:block  lg:w-[600px] sm:w-[300px] tm:w-[180px] tm:h-[800px] cardMD:h-[700px] rounded-md opacity-10 bg-gray-900 row-start-3"></div>
+          )}
+
+          <div className="col-end-2 pb-8">
+            {films.length !== 0 && (
+              <PaginationFilms
+                totalItems={films.meta.pagination.total}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </div>
         </div>
       ) : (
-        <div className="p-4 hidden cardMD:block  lg:w-[600px] sm:w-[300px] tm:w-[180px] tm:h-[800px] cardMD:h-[700px] rounded-md opacity-10 bg-gray-900 row-start-3"></div>
+        <div>
+          <Loading />
+        </div>
       )}
-
-      <div className="col-end-2 pb-8">
-        {films.length !== 0 && (
-          <PaginationFilms
-            totalItems={films.meta.pagination.total}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-        )}
-      </div>
     </div>
   );
 };
