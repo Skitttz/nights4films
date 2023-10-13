@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './Components/Home';
-import NotFound404 from './Helper/Error404/NotFound404';
+import NotFound404 from './Components/Helper/NotFound404';
 import './App.css';
 import Footer from './Components/Footer';
 import FilmView from './Components/Films/FilmView';

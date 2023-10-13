@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import PasswordLostForm from './PasswordLostForm';
-import NotFound404 from '../../Helper/Error404/NotFound404';
+import NotFound404 from '../Helper/NotFound404';
 import { useUserContext } from '../../Hooks/useUser';
 
 const Login = () => {
