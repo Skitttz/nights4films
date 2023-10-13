@@ -1,8 +1,8 @@
 import React from 'react';
 import Input from './Forms/Input';
-import IconSearch from '../assets/i-search.svg';
+import IconSearch from '../Assets/i-search.svg';
 import useDebounce from '../Hooks/useDebounce';
-import imgLougout from '../assets/i-logout.png';
+import imgLougout from '../Assets/i-logout.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUserContext } from '../Hooks/useUser';
 
@@ -84,13 +84,7 @@ const Header = ({ onSearchValueChange }) => {
             </div>
           ) : (
             <Link to={'/login'}>
-              <div
-                className=" text-slate-300 hover:text-slate-100 p-2 bg-[rgba(107,46,178)] hover:bg-[rgba(107,20,178)]  rounded-md transition-colors duration-300 font-gabarito 
-        sm:w-8 
-        md:mr-4 
-        sm:mr-4 
-        tm:hidden "
-              >
+              <div className=" text-slate-300 hover:text-slate-100 p-2 bg-[rgba(107,46,178)] hover:bg-[rgba(107,20,178)]  rounded-md transition-colors duration-300 font-gabarito mr-4">
                 <p>Login / Registrar</p>
               </div>
             </Link>

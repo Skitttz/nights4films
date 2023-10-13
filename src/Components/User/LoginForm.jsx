@@ -19,8 +19,8 @@ const LoginForm = () => {
   return (
     <div className="relative">
       <Head title=" » Login" />
-      <section className="max-w-5xl animate-animeLeft mx-auto font-roboto grid grid-cols-2 mt-24 before:bg-login before:bg-cover before:bg-center before:bg-no-repeat before:h-[auto] before:w-[15rem] before:ml-auto before:rounded-s-xl z-10">
-        <div className="relative">
+      <section className="max-w-5xl animate-animeLeft mx-auto font-roboto grid grid-cols-2 mt-24 before:bg-login before:bg-cover before:bg-center before:bg-no-repeat before:h-[auto] before:w-[15rem] before:ml-auto before:rounded-s-xl z-10 sm:before:hidden sm:grid-cols-1">
+        <div className="relative sm:mx-auto">
           <div className="border-e bg-slate-900 border-orange-900 my-auto max-w-xs text-slate-200 px-10 py-6 rounded-e-lg grid grid-cols-1 gap-y-4 font-medium mr-auto">
             <h1 className="text-3xl text-slate-50">Login</h1>
             <form className="grid gap-y-6" onSubmit={handleSubmit}>

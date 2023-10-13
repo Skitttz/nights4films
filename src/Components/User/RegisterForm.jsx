@@ -5,21 +5,24 @@ import useForm from '../../Hooks/useForm';
 import Head from '../Head';
 import PasswordSecurity from './PasswordSecurity';
 import Error from '../Helper/Error';
-import { userRegister_POST } from '../Api/Api';
 import { useUserContext } from '../../Hooks/useUser';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
   const username = useForm('username');
   const password = useForm('password');
+  const [click, setClicked] = React.useState(false);
   const email = useForm('email');
-  const { userRegister, loading } = useUserContext();
+  const { userRegister, loading, error } = useUserContext();
   const navigator = useNavigate();
   async function handleSubmit(event) {
     event.preventDefault();
     if (username.validate() && password.validate() && email.validate()) {
       userRegister(email.value, username.value, password.value);
-      navigator('/login');
+      setClicked(true);
+      setTimeout(() => {
+        navigator('/login');
+      }, 6000);
     } else {
       return null;
     }
@@ -35,14 +38,15 @@ const RegisterForm = () => {
           Cadastre-se
         </h1>
         <form
-          className="bg-slate-200 px-12 py-6 rounded-xl flex flex-col gap-y-3 font-roboto"
+          className="bg-slate-200 px-12 py-6 rounded-xl flex flex-col gap-y-3 font-roboto sm:px-4"
           onSubmit={handleSubmit}
         >
           <Input
             label="Email"
             type="email"
             name="email"
-            customStyleDiv={'h-[5.2rem]'}
+            customStyleInput={'tm:w-[14rem] tm:indent-0'}
+            customStyleDiv={'h-[5.2rem] '}
             labelStyle={'font-semibold'}
             {...email}
           />
@@ -50,14 +54,16 @@ const RegisterForm = () => {
             label="Username"
             type="text"
             name="username"
-            labelStyle={'font-semibold'}
+            customStyleInput={'tm:w-[14rem] tm:indent-0'}
             customStyleDiv={'h-[5.2rem]'}
+            labelStyle={'font-semibold'}
             {...username}
           />
           <Input
             label="Senha"
             type="password"
             name="senha"
+            customStyleInput={'tm:w-[14rem] tm:indent-0'}
             labelStyle={'font-semibold'}
             customStyleDiv={'h-[5.2rem]'}
             {...password}
@@ -69,12 +75,13 @@ const RegisterForm = () => {
               ''
             )}
           </div>
-          <div className="mx-auto font-bold font-gabarito text-lg">
+          <div className="flex flex-col justify-center items-center font-bold font-gabarito text-lg">
             {loading ? (
               <Button disabled>Cadastrando...</Button>
             ) : (
               <Button>Cadastrar</Button>
             )}
+            <Error error={error} />
           </div>
         </form>
       </div>

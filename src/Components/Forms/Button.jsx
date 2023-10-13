@@ -5,7 +5,11 @@ const Button = ({ children, customStyle, ...props }) => {
   return (
     <button
       {...props}
-      className={customStyle ? `${customStyle}` : ` ${defaultStyle}`}
+      className={
+        customStyle
+          ? `${customStyle} disabled:opacity-60 disabled:cursor-wait`
+          : `${defaultStyle} disabled:opacity-60 disabled:cursor-wait`
+      }
     >
       {children}
     </button>

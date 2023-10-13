@@ -19,7 +19,7 @@ const PasswordSecurity = ({ children }) => {
   return (
     <div
       className="animate-animeDown"
-      style={{ fontWeight: '550', marginBottom: '2rem' }}
+      style={{ fontWeight: '550', marginBottom: '.8rem' }}
     >
       <p>
         {validateTL

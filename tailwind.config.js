@@ -71,10 +71,10 @@ export const theme = {
       scaleCard: 'scaleCard .3s ease-in-out forwards',
     },
     content: {
-      play: 'url(/src/assets/i-play.svg)',
-      exit: 'url(/src/assets/i-exit.svg)',
+      play: 'url(/src/Assets/i-play.svg)',
+      exit: 'url(/src/Assets/i-exit.svg)',
     },
-    backgroundImage: { login: 'url(/src/assets/photo_login_l.jpg)' },
+    backgroundImage: { login: 'url(/src/Assets/photo_login_l.jpg)' },
 
     screens: {
       '2xl': { max: '1535px' }, //Large desktop

@@ -28,13 +28,14 @@ export const UserStorage = ({ children }) => {
 
   async function userRegister(email, username, password) {
     try {
-      setError(null);
       setLoading(true);
       await userRegister_POST({
         email: email,
         username: username,
         password: password,
       });
+      alert('Cadastrado com Sucesso!');
+      setError(null);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -74,7 +75,7 @@ export const UserStorage = ({ children }) => {
     } catch (error) {
       setError(error.message);
     } finally {
-      alert('A parte de recuperar a senha ainda está em desenvolvimento');
+      alert('AVISO: Funcionalidade em Desenvolvimento');
       setLoading(false);
     }
   }
