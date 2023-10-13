@@ -2,19 +2,18 @@ import React from 'react';
 import Input from '../Forms/Input';
 import Button from '../Forms/Button';
 import { Link } from 'react-router-dom';
-import { UserLogin_POST } from '../Api/Api';
+import { userLogin_POST } from '../Api/Api';
 import useForm from '../../Hooks/useForm';
+import { useUserContext } from '../../Hooks/useUser';
 
 const LoginForm = () => {
   const username = useForm('');
   const password = useForm('');
+  const { userLogin } = useUserContext();
 
   async function handleSubmit(event) {
     event.preventDefault();
-    UserLogin_POST(`/auth/local`, {
-      identifier: username.value,
-      password: password.value,
-    });
+    userLogin(username.value, password.value);
   }
   return (
     <div className="relative">

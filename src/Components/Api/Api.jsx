@@ -27,9 +27,13 @@ export async function Filmes_GET(endpoint) {
     });
 }
 
-export async function UserLogin_POST(endpoint, userData) {
+export async function userLogin_GET(token) {
   return await api
-    .post(endpoint, userData)
+    .get('/users/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
     .then((response) => {
       return response.data;
     })
@@ -38,12 +42,22 @@ export async function UserLogin_POST(endpoint, userData) {
     });
 }
 
-export async function UserRegister_POST(endpoint, userData) {
+export async function userLogin_POST(userData) {
   return await api
-    .post(endpoint, userData)
+    .post(`/auth/local`, userData)
     .then((response) => {
-      console.log('User profile', response.data.user);
-      console.log('User token', response.data.jwt);
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
+export async function userRegister_POST(userData) {
+  return await api
+    .post(`/auth/local/register`, userData)
+    .then((response) => {
+      return response.data;
     })
     .catch((error) => {
       throw error;

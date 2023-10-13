@@ -5,7 +5,7 @@ import useForm from '../../Hooks/useForm';
 import Head from '../Head';
 import PasswordSecurity from './PasswordSecurity';
 import Error from '../Helper/Error';
-import { UserRegister_POST } from '../Api/Api';
+import { userRegister_POST } from '../Api/Api';
 
 const RegisterForm = () => {
   const username = useForm('username');
@@ -15,7 +15,7 @@ const RegisterForm = () => {
   async function handleSubmit(event) {
     event.preventDefault();
     if (username.validate() && password.validate() && email.validate()) {
-      await UserRegister_POST(`/auth/local/register`, {
+      await userRegister_POST({
         email: email.value,
         username: username.value,
         password: password.value,
