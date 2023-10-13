@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { userLogin_POST } from '../Api/Api';
 import useForm from '../../Hooks/useForm';
 import { useUserContext } from '../../Hooks/useUser';
+import Head from '../Head';
 
 const LoginForm = () => {
   const username = useForm('');
@@ -17,7 +18,8 @@ const LoginForm = () => {
   }
   return (
     <div className="relative">
-      <section className="max-w-5xl animate-animeLeft mx-auto font-roboto grid grid-cols-2 mt-24 before:bg-[url('../../src/Assets/photo_login_l.jpg')] before:bg-cover before:bg-center before:bg-no-repeat before:h-[auto] before:w-[15rem] before:ml-auto before:rounded-s-xl z-10">
+      <Head title=" » Login" />
+      <section className="max-w-5xl animate-animeLeft mx-auto font-roboto grid grid-cols-2 mt-24 before:bg-login before:bg-cover before:bg-center before:bg-no-repeat before:h-[auto] before:w-[15rem] before:ml-auto before:rounded-s-xl z-10">
         <div className="relative">
           <div className="border-e bg-slate-900 border-orange-900 my-auto max-w-xs text-slate-200 px-10 py-6 rounded-e-lg grid grid-cols-1 gap-y-4 font-medium mr-auto">
             <h1 className="text-3xl text-slate-50">Login</h1>
@@ -44,14 +46,17 @@ const LoginForm = () => {
               />
               <div>
                 <Button
-                  customStyle={`bg-orange-800 hover:bg-slate-500 transition-colors hover:text-slate-800 text-slate-300 py-2 px-8 rounded-lg`}
+                  customStyle={`bg-orange-800 hover:bg-orange-700 transition-colors hover:text-slate-100 text-slate-300 py-2 px-8 rounded-lg`}
                 >
                   Entrar
                 </Button>
               </div>
-              <a href="" className="mb-2 text-xs underline text-right">
+              <Link
+                to={'recuperar'}
+                className="mb-2 text-xs underline text-right"
+              >
                 Esqueceu a senha?
-              </a>
+              </Link>
             </form>
 
             <div>

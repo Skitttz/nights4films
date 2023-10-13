@@ -63,3 +63,14 @@ export async function userRegister_POST(userData) {
       throw error;
     });
 }
+
+export async function userPasswordLost_POST(emailUser) {
+  return await api
+    .post(`/auth/forgot-password'`, { email: emailUser })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+}

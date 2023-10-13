@@ -1,6 +1,6 @@
 import React from 'react';
 import Head from '../../Components/Head';
-import Img404 from '../../Assets/404.svg';
+import Img404 from '../../assets/404.svg';
 
 const NotFound404 = () => {
   return (

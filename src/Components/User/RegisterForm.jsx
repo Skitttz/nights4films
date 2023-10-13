@@ -6,20 +6,20 @@ import Head from '../Head';
 import PasswordSecurity from './PasswordSecurity';
 import Error from '../Helper/Error';
 import { userRegister_POST } from '../Api/Api';
+import { useUserContext } from '../../Hooks/useUser';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
   const username = useForm('username');
   const password = useForm('password');
   const email = useForm('email');
-
+  const { userRegister, loading } = useUserContext();
+  const navigator = useNavigate();
   async function handleSubmit(event) {
     event.preventDefault();
     if (username.validate() && password.validate() && email.validate()) {
-      await userRegister_POST({
-        email: email.value,
-        username: username.value,
-        password: password.value,
-      });
+      userRegister(email.value, username.value, password.value);
+      navigator('/login');
     } else {
       return null;
     }
@@ -70,7 +70,11 @@ const RegisterForm = () => {
             )}
           </div>
           <div className="mx-auto font-bold font-gabarito text-lg">
-            <Button>Cadastrar</Button>
+            {loading ? (
+              <Button disabled>Cadastrando...</Button>
+            ) : (
+              <Button>Cadastrar</Button>
+            )}
           </div>
         </form>
       </div>

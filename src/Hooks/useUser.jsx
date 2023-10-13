@@ -1,5 +1,10 @@
 import React from 'react';
-import { userLogin_GET, userLogin_POST } from '../Components/Api/Api';
+import {
+  userLogin_GET,
+  userLogin_POST,
+  userPasswordLost_POST,
+  userRegister_POST,
+} from '../Components/Api/Api';
 import { useNavigate } from 'react-router-dom';
 
 export const useUser = React.createContext();
@@ -21,6 +26,22 @@ export const UserStorage = ({ children }) => {
     }
   }
 
+  async function userRegister(email, username, password) {
+    try {
+      setError(null);
+      setLoading(true);
+      await userRegister_POST({
+        email: email,
+        username: username,
+        password: password,
+      });
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function userLogin(username, password) {
     try {
       setError(null);
@@ -39,6 +60,21 @@ export const UserStorage = ({ children }) => {
         setError(null);
       }, 20000);
     } finally {
+      setLoading(false);
+    }
+  }
+
+  async function userPasswordLost(email) {
+    try {
+      setError(null);
+      setLoading(true);
+      // await userPasswordLost_POST({
+      //   email: email,
+      // });
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      alert('A parte de recuperar a senha ainda está em desenvolvimento');
       setLoading(false);
     }
   }
@@ -74,7 +110,16 @@ export const UserStorage = ({ children }) => {
 
   return (
     <useUser.Provider
-      value={{ userLogin, userLogout, data, login, loading, error }}
+      value={{
+        userLogin,
+        userLogout,
+        userPasswordLost,
+        userRegister,
+        data,
+        login,
+        loading,
+        error,
+      }}
     >
       {children}
     </useUser.Provider>

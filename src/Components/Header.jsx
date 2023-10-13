@@ -1,8 +1,8 @@
 import React from 'react';
 import Input from './Forms/Input';
-import IconSearch from '../Assets/i-search.svg';
+import IconSearch from '../assets/i-search.svg';
 import useDebounce from '../Hooks/useDebounce';
-import imgLougout from '../Assets/i-logout.png';
+import imgLougout from '../assets/i-logout.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUserContext } from '../Hooks/useUser';
 
