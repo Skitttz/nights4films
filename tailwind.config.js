@@ -26,6 +26,16 @@ export const theme = {
           transform: 'translateY(0px)',
         },
       },
+      animeTop: {
+        '0%': {
+          opacity: 0.5,
+          transform: 'translateY(20px)',
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'translateY(0px)',
+        },
+      },
       animeLeft: {
         '0%': {
           opacity: 0,
@@ -65,6 +75,7 @@ export const theme = {
       fadeIn: 'fadeIn 1s ease-in-out forwards',
       animeLeft: 'animeLeft 1s ease-in-out forwards',
       animeDown: 'animeDown 1s ease-in-out forwards',
+      animeTop: 'animeTop 1s ease-in-out forwards',
       wiggle: 'wiggle 1s ease-in-out forwards',
       scaleItem: 'scaleItem .7s ease-in-out forwards',
       scaleOut: 'scaleOut .7s ease-in-out forwards',

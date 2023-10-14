@@ -5,12 +5,13 @@ import { Link } from 'react-router-dom';
 import { userLogin_POST } from '../Api/Api';
 import useForm from '../../Hooks/useForm';
 import { useUserContext } from '../../Hooks/useUser';
+import Error from '../Helper/Error';
 import Head from '../Head';
 
 const LoginForm = () => {
   const username = useForm('');
   const password = useForm('');
-  const { userLogin } = useUserContext();
+  const { userLogin, error } = useUserContext();
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -32,6 +33,7 @@ const LoginForm = () => {
                   'focus:bg-slate-200 indent-1 focus:text-slate-900'
                 }
                 width={250}
+                customStyleDiv={'h-[5.2rem] '}
                 {...username}
               />
               <Input
@@ -39,6 +41,7 @@ const LoginForm = () => {
                 type="password"
                 name="senha"
                 width={250}
+                customStyleDiv={'h-[5.2rem] '}
                 customStyleInput={
                   'focus:bg-slate-200 indent-1 focus:text-slate-900'
                 }
@@ -50,6 +53,13 @@ const LoginForm = () => {
                 >
                   Entrar
                 </Button>
+                {error &&
+                password.value.length > 5 &&
+                username.value.length > 5 ? (
+                  <Error error={error} />
+                ) : (
+                  <div className="h-[24px]"></div>
+                )}
               </div>
               <Link
                 to={'recuperar'}

@@ -39,8 +39,8 @@ const Input = ({
       <input
         className={`block transition-colors duration-500 border border-solid border-transparent  hover:border hover:border-slate-300 w-[20rem]  p-2 rounded-md bg-gray-800 placeholder:text-[1.125rem] placeholder:translate-y-[0.1rem] placeholder:text-gray-600 text-slate-200 opacity-70 focus:opacity-100	placeholder:italic 
         placeholder:lg:text-base lg:w-[20rem] 
-        placeholder:sm:text-base sm:w-[14rem] 
-        placeholder:tm:text-sm tm:indent-5 tm:w-[8rem] tm:text-sm ${customStyleInput}`}
+        placeholder:sm:text-base sm:w-[15rem] 
+        placeholder:tm:text-sm tm:indent-5 tm:text-sm ${customStyleInput}`}
         id={name}
         name={name}
         type={type}
