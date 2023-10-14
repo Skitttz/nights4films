@@ -18,12 +18,12 @@ const PasswordSecurity = ({ children }) => {
 
   return (
     <div
-      className="animate-animeDown"
+      className="animate-animeDown tm:text-xs"
       style={{ fontWeight: '550', marginBottom: '.8rem' }}
     >
       <p>
         {validateTL
-          ? '✔️ OK! A senha tem entre 6 a 20 caracteres.'
+          ? '✔️ OK! Temos entre 6 a 20 caracteres.'
           : `❌ Crie uma senha de 6 a 20 caracteres.`}
       </p>
       <p>

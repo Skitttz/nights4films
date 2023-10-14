@@ -87,7 +87,7 @@ const Header = ({ onSearchValueChange }) => {
                 name="searchFilme"
                 backgroundImage={`url(${IconSearch})`}
                 backgroundPosition={`3% 45%`}
-                customStyleInput={'indent-7'}
+                customStyleInput={'indent-7 tm:indent-6 '}
                 placeholder={'Digite o nome do filme...'}
                 value={searchValue} // Valor do input é controlado pelo estado
                 onChange={handleSearchChange} // Função para atualizar o estado quando o input muda
@@ -114,12 +114,12 @@ const Header = ({ onSearchValueChange }) => {
               </Link>
               <div
                 className={`rounded-sm py-2 ${
-                  openMenuMB ? 'cardMD:block' : 'cardMD:hidden'
+                  openMenuMB ? 'cardMD:block mt-4' : 'cardMD:hidden'
                 } `}
               >
                 <a className="cursor-pointer" onClick={handleLogout}>
                   <img
-                    className="w-[24px] invert-[.99] sepia-[.01] saturate-[0] hue-rotate-[268deg] brightness-[1.05] contrast-100"
+                    className="cardMD:mx-auto w-[24px] invert-[.99] sepia-[.01] saturate-[0] hue-rotate-[268deg] brightness-[1.05] contrast-100"
                     src={imgLougout}
                     alt=""
                   />

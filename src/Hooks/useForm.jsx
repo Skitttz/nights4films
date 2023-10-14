@@ -3,12 +3,12 @@ import React from 'react';
 const types = {
   username: {
     regex: /^(?=.{3,12}$)(?:[a-zA-Z\d]+(?:(?:\.|-|_)[a-zA-Z\d])*)+$/,
-    message: 'Não insira caracter especial ou menos de 3 letras',
+    message: 'Sem @#$%!?* | Mínimo 3 caracteres',
   },
   email: {
     regex:
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-    message: 'Parece que você não preencheu um e-mail válido. ',
+    message: 'Preencha um e-mail válido. ',
   },
   password: {
     regex: /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%?=*&]).{6,20})/,
