@@ -49,7 +49,7 @@ export async function userLogin_POST(userData) {
       return response.data;
     })
     .catch((error) => {
-      throw error;
+      throw error.response.data.error.message;
     });
 }
 
@@ -60,7 +60,7 @@ export async function userRegister_POST(userData) {
       return response.data;
     })
     .catch((error) => {
-      throw error;
+      throw error.response.data.error.message;
     });
 }
 

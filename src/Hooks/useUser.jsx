@@ -6,6 +6,7 @@ import {
   userRegister_POST,
 } from '../Components/Api/Api';
 import { useNavigate } from 'react-router-dom';
+import { translateErrorMessage } from '../Components/Helper/Translate';
 
 export const useUser = React.createContext();
 
@@ -36,8 +37,8 @@ export const UserStorage = ({ children }) => {
       });
       alert('Cadastrado com Sucesso!');
       setError(null);
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      setError(translateErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -56,7 +57,7 @@ export const UserStorage = ({ children }) => {
       await getUser(token);
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      setError(translateErrorMessage(err));
       setTimeout(() => {
         setError(null);
       }, 20000);

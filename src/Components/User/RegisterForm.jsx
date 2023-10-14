@@ -20,9 +20,11 @@ const RegisterForm = () => {
     if (username.validate() && password.validate() && email.validate()) {
       userRegister(email.value, username.value, password.value);
       setClicked(true);
-      setTimeout(() => {
-        navigator('/login');
-      }, 6000);
+      if (error !== true) {
+        setTimeout(() => {
+          navigator('/login');
+        }, 6000);
+      }
     } else {
       return null;
     }
