@@ -12,7 +12,7 @@
 </p>
 
 <div align="center">
-<img src="https://i.ibb.co/f9DRDvc/desktop-nights4films.png" width="90%" />
+<img src="https://i.ibb.co/9ZbmLZv/desktop-nights4films.png" width="90%" />
 </div>
 
 ## Contexto 📝
