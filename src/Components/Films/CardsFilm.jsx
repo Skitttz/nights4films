@@ -18,6 +18,7 @@ const CardsFilm = ({ searchValue }) => {
     setCurrentPage(newPage);
   }
 
+  //Este useEffect controla a rolagem para o card ativo.
   React.useEffect(() => {
     if (isActive !== null) {
       const cardWidth = 175; // Largura de cada card
@@ -25,6 +26,7 @@ const CardsFilm = ({ searchValue }) => {
         isActive * cardWidth -
         refScroll.current.offsetWidth / 2 +
         cardWidth / 2;
+
       refScroll.current.scrollLeft = scrollX;
     }
   }, [isActive]);
@@ -76,7 +78,7 @@ const CardsFilm = ({ searchValue }) => {
         >
           <div
             className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1
-      cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 
+      cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 cardMD:scroll-smooth
       lg:w-[45rem] md:w-[35rem] sm:w-[25rem] tm:w-[18rem] animate-animeLeft "
             ref={refScroll}
           >
