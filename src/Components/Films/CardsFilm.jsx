@@ -14,23 +14,17 @@ const CardsFilm = ({ searchValue }) => {
   const limitItemPerPage = 9;
   const refScroll = React.useRef(null);
 
+  // Setar o card do filme
+  function handleClick(index) {
+    setIsActive(index);
+  }
+
+  // Setar pagina atual -> nova
   function handlePageChange(newPage) {
     setCurrentPage(newPage);
   }
 
-  //Este useEffect controla a rolagem para o card ativo.
-  React.useEffect(() => {
-    if (isActive !== null) {
-      const cardWidth = 175; // Largura de cada card
-      const scrollX =
-        isActive * cardWidth -
-        refScroll.current.offsetWidth / 2 +
-        cardWidth / 2;
-
-      refScroll.current.scrollLeft = scrollX;
-    }
-  }, [isActive]);
-
+  //Trata de filtrar filmes diretamente pela API e tambem entregar os filmes relacionados a sua respectiva pagina
   React.useEffect(() => {
     const startIndex = (currentPage - 1) * limitItemPerPage;
 
@@ -62,9 +56,18 @@ const CardsFilm = ({ searchValue }) => {
     }
   }, [currentPage, searchValue]);
 
-  function handleClick(index) {
-    setIsActive(index);
-  }
+  //Controla a rolagem para o card ativo.
+  React.useEffect(() => {
+    if (isActive !== null) {
+      const cardWidth = 175; // Largura de cada card
+      const scrollX =
+        isActive * cardWidth -
+        refScroll.current.offsetWidth / 2 +
+        cardWidth / 2;
+
+      refScroll.current.scrollLeft = scrollX;
+    }
+  }, [isActive]);
 
   return (
     <div>
