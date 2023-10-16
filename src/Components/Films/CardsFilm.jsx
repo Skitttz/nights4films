@@ -12,10 +12,22 @@ const CardsFilm = ({ searchValue }) => {
   const [empty, setEmpty] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
   const limitItemPerPage = 9;
+  const refScroll = React.useRef(null);
 
   function handlePageChange(newPage) {
     setCurrentPage(newPage);
   }
+
+  React.useEffect(() => {
+    if (isActive !== null) {
+      const cardWidth = 175; // Largura de cada card
+      const scrollX =
+        isActive * cardWidth -
+        refScroll.current.offsetWidth / 2 +
+        cardWidth / 2;
+      refScroll.current.scrollLeft = scrollX;
+    }
+  }, [isActive]);
 
   React.useEffect(() => {
     const startIndex = (currentPage - 1) * limitItemPerPage;
@@ -66,6 +78,7 @@ const CardsFilm = ({ searchValue }) => {
             className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1
       cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 
       lg:w-[45rem] md:w-[35rem] sm:w-[25rem] tm:w-[18rem] animate-animeLeft "
+            ref={refScroll}
           >
             {empty ? (
               <div className="flex content-center items-center text-yellow-50 text-center text-xl font-bold animate-fadeIn col-span-full row-span-full  h-[8.5rem] mx-auto">
