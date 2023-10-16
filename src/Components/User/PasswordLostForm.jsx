@@ -1,7 +1,7 @@
 import React from 'react';
 import Input from '../Forms/Input';
 import useForm from '../../Hooks/useForm';
-import Head from '../Head';
+import Head from '../Helper/Head';
 import Button from '../Forms/Button';
 import { useUserContext } from '../../Hooks/useUser';
 import { useNavigate } from 'react-router-dom';

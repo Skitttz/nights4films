@@ -2,7 +2,7 @@ import React from 'react';
 import Input from '../Forms/Input';
 import Button from '../Forms/Button';
 import useForm from '../../Hooks/useForm';
-import Head from '../Head';
+import Head from '../Helper/Head';
 import PasswordSecurity from './PasswordSecurity';
 import Error from '../Helper/Error';
 import { useUserContext } from '../../Hooks/useUser';

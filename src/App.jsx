@@ -8,6 +8,8 @@ import FilmView from './Components/Films/FilmView';
 import Header from './Components/Header';
 import Login from './Components/User/Login';
 import { UserStorage } from './Hooks/useUser';
+import ProtectedRouter from './Components/Helper/ProtectedRouter';
+import Review from './Components/Reviews/Review';
 
 function App() {
   return (
@@ -21,6 +23,14 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="login/*" element={<Login />} />
                 <Route path="/filmes/:id" element={<FilmView />} />
+                <Route
+                  path="review/*"
+                  element={
+                    <ProtectedRouter>
+                      <Review />
+                    </ProtectedRouter>
+                  }
+                />
                 <Route path="*" element={<NotFound404 />} />
               </Routes>
             </main>

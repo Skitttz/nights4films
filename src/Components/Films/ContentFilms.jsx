@@ -2,10 +2,12 @@ import React from 'react';
 import { Filmes_GET } from '../Api/Api';
 import { Link } from 'react-router-dom';
 import ModalTrailer from './ModalTrailer';
+import useWindowDimensions from '../../Hooks/useWindowDimension';
 
 const ContentFilms = ({ id }) => {
   const [films, setFilms] = React.useState(null);
   const [activeModal, setActiveModal] = React.useState(false);
+  const { width } = useWindowDimensions();
   let hours, minutes;
 
   function transformMinHours(min) {
@@ -47,7 +49,13 @@ const ContentFilms = ({ id }) => {
               <div
                 className="relative cursor-pointer after:content-play after:opacity-40 after:hover:opacity-90 after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 rounded-t-md bg-slate-800 lg:rounded-t-md  sm:rounded-md"
                 onClick={() => {
-                  setActiveModal(true);
+                  if (width > 1000) {
+                    setActiveModal(true);
+                  } else {
+                    open(
+                      `https://www.youtube.com/watch?v=${films.data.attributes.trailer}`,
+                    );
+                  }
                 }}
               >
                 <img

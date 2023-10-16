@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Filmes_GET } from '../Api/Api';
-import Head from '../Head';
+import Head from '../Helper/Head';
 import Loading from '../Helper/Loading';
 import Markdown from 'https://esm.sh/react-markdown@9';
 

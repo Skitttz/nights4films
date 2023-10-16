@@ -1,5 +1,5 @@
 import React from 'react';
-import Head from '../Head';
+import Head from './Head';
 import Img404 from '../../Assets/404.svg';
 
 const NotFound404 = () => {
