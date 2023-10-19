@@ -36,6 +36,16 @@ export const theme = {
           transform: 'translateY(0px)',
         },
       },
+      animeRight: {
+        '0%': {
+          opacity: 0,
+          transform: 'translateX(20px)',
+        },
+        '100%': {
+          opacity: 1,
+          transform: 'translateX(0px)',
+        },
+      },
       animeLeft: {
         '0%': {
           opacity: 0,
@@ -84,6 +94,7 @@ export const theme = {
     content: {
       play: 'url(/src/Assets/i-play.svg)',
       exit: 'url(/src/Assets/i-exit.svg)',
+      close: '00d7',
     },
     backgroundImage: { login: 'url(/src/Assets/photo_login_l.jpg)' },
 
