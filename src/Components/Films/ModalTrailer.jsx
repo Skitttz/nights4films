@@ -1,49 +1,44 @@
 import React from 'react';
 import EmbedVideo from './EmbedVideo';
-
+import {
+  handleKeyDown,
+  handleOutSideClick,
+  borderModal,
+  styleExit,
+} from '../Helper/HandleModal';
 const ModalTrailer = ({ setModal, EmbedId }) => {
   const [isActive, setIsActive] = React.useState(false);
-  const borderModal = `relative border-solid border-slate-900 border-t-[42px] rounded-md`;
   const timerTransition = 700;
+
+  const handleKey = (event) => {
+    handleKeyDown(event, setModal, setIsActive, timerTransition);
+  };
+
+  const handleClick = (event) => {
+    handleOutSideClick(event, setModal, setIsActive, timerTransition);
+  };
   React.useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKey);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleKey);
     };
   }, []);
 
-  function handleOutSideClick(event) {
-    if (event.target === event.currentTarget) {
-      setIsActive(true);
-      setTimeout(() => {
-        setModal(false);
-      }, timerTransition);
-    }
-  }
-
-  function handleKeyDown(event) {
-    if (event.key === 'Escape') {
-      setIsActive(true);
-      setTimeout(() => {
-        setModal(false);
-      }, timerTransition);
-    }
-  }
   return (
     <div>
       {setModal && (
         <div
-          className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40 left-0 top-0 w-screen h-screen"
-          onClick={handleOutSideClick}
+          className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-80 left-0 top-0 w-screen h-screen"
+          onClick={handleClick}
           onKeyDown={handleKeyDown}
           tabIndex={0}
         >
           <div
             className={
               isActive
-                ? `${borderModal} animate-scaleOut`
-                : `${borderModal} animate-scaleItem`
+                ? `${borderModal} border-slate-900 animate-scaleOut`
+                : `${borderModal} border-slate-900 animate-scaleItem`
             }
           >
             <div className="absolute block -top-9 left-3">
@@ -56,8 +51,8 @@ const ModalTrailer = ({ setModal, EmbedId }) => {
               </p>
             </div>
             <div
-              className="absolute block -top-8 right-5 content-exit opacity-50 hover:opacity-100"
-              onClick={handleOutSideClick}
+              className={`${styleExit}`}
+              onClick={handleClick}
               style={{ cursor: 'Pointer' }}
             ></div>
             {EmbedId && <EmbedVideo embedId={EmbedId} />}
