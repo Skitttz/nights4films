@@ -8,8 +8,7 @@ import FilmView from './Components/Films/FilmView';
 import Header from './Components/Header';
 import Login from './Components/User/Login';
 import { UserStorage } from './Hooks/useUser';
-import ProtectedRouter from './Components/Helper/ProtectedRouter';
-import Review from './Components/Reviews/Review';
+import { ToastContainer, Slide } from 'react-toastify';
 
 function App() {
   return (
@@ -18,19 +17,24 @@ function App() {
         <UserStorage>
           <div className="font-roboto h-[calc(100vh+25rem)] cardMD:h-[calc(100vh+40rem)] box-border bg-gray-900 m-0 flex flex-col">
             <Header onSearchValueChange={0} />
+            <ToastContainer
+              position="top-center"
+              transition={Slide}
+              autoClose={5000}
+              hideProgressBar
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark"
+            />
             <main className="flex-1">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="login/*" element={<Login />} />
                 <Route path="/filmes/:id" element={<FilmView />} />
-                <Route
-                  path="review/*"
-                  element={
-                    <ProtectedRouter>
-                      <Review />
-                    </ProtectedRouter>
-                  }
-                />
                 <Route path="*" element={<NotFound404 />} />
               </Routes>
             </main>
