@@ -103,8 +103,8 @@ const Header = ({ onSearchValueChange }) => {
               }  flex gap-x-2`}
             >
               <Link to={'/'}>
-                <div className="text-purple-300 font-roboto p-2 bg-purple-800 opacity-90 hover:opacity-100 rounded-lg ">
-                  <div className="bg-purple-800">
+                <div className="text-purple-100 font-roboto font-light p-2 bg-purple-800 bg-opacity-20 hover:bg-opacity-100 transition-all opacity-90 hover:opacity-100 rounded-lg ">
+                  <div className="">
                     <p>
                       {`Olá, `}
                       <span className="text-slate-200 font-bold">{`${data.username}`}</span>
