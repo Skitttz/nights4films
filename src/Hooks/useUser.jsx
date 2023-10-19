@@ -35,7 +35,7 @@ export const UserStorage = ({ children }) => {
         username: username,
         password: password,
       });
-      alert('Cadastrado com Sucesso!');
+
       setError(null);
     } catch (err) {
       setError(translateErrorMessage(err));
