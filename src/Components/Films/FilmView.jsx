@@ -27,6 +27,7 @@ const FilmView = () => {
   const [listWatch, setListWatch] = React.useState(false);
   const refLiRate = React.useRef(null);
   const [rate, setRate] = React.useState(0);
+  const [clearRate, setClearRate] = React.useState(false);
 
   function randomColor() {
     return Math.floor(Math.random() * 256).toString(16);
@@ -166,11 +167,16 @@ const FilmView = () => {
                         </div>
                       )}
                     </li>
-                    <li className="mr-12 cardMD:mr-0 relative" ref={refLiRate}>
+                    <li className="mr-12 cardMD:mr-0 relative " ref={refLiRate}>
                       {/*ConfigProvider da lib React Rate */}
                       <div
-                        onClick={() => setRate(0)}
-                        className=" absolute cursor-pointer animate-animeLeft -top-0 -right-8 content-exit opacity-50 hover:opacity-100"
+                        onClick={() => {
+                          setClearRate(false);
+                          setRate(0);
+                        }}
+                        className={` cursor-pointer -top-0 -right-8 content-exit animate-animeLeft ${
+                          clearRate ? 'absolute' : 'hidden'
+                        }`}
                       ></div>
                       <ConfigProvider
                         theme={{
@@ -183,7 +189,10 @@ const FilmView = () => {
                           allowClear={true}
                           allowHalf
                           value={rate}
-                          onChange={setRate}
+                          onChange={(newRate) => {
+                            setRate(newRate);
+                            setClearRate(newRate > 0);
+                          }}
                           defaultValue={rate}
                           style={{
                             color: 'rgba(127,76,178)',
