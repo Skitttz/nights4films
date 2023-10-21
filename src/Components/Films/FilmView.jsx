@@ -10,16 +10,22 @@ import {
   HeartFilled,
   EyeOutlined,
   EyeFilled,
+  FieldTimeOutlined,
 } from '@ant-design/icons';
 import ReviewForms from '../Reviews/ReviewForms';
+import { toast } from 'react-toastify';
+import { useUserContext } from '../../Hooks/useUser';
 
 const FilmView = () => {
   const [films, setFilms] = React.useState(null);
   const { id } = useParams();
+  const { login } = useUserContext();
 
   const [modalReview, setModalReview] = React.useState(false);
   const [watch, setWatch] = React.useState(false);
   const [like, setLiked] = React.useState(false);
+  const [listWatch, setListWatch] = React.useState(false);
+  const refLiRate = React.useRef(null);
   const [rate, setRate] = React.useState(0);
 
   function randomColor() {
@@ -55,11 +61,27 @@ const FilmView = () => {
     }
   }, [films]);
 
+  function clipboardFilmURL() {
+    const { href } = window.location;
+    navigator.clipboard.writeText(href);
+    toast.success('Link copiado com sucesso!', {
+      position: 'top-center',
+      autoClose: 5000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'dark',
+    });
+  }
+
   const actions = [
     { title: 'Criar Review', onClick: () => setModalReview(!modalReview) },
-    { title: 'Adicionar a Lista' },
-    { title: 'Compartilhar' },
+    { title: 'Compartilhar', onClick: () => clipboardFilmURL() },
   ];
+
+  const sizeIcons = 21;
 
   return (
     <>
@@ -73,60 +95,126 @@ const FilmView = () => {
               title={` » ${films.data[0].attributes.title}`}
               description="Pagina do filme"
             />
-            <div className="font-gabarito mt-12 content-center justify-items-center  max-w-5xl h-16 bg-transparent border border-blue-950 text-slate-300 rounded-t-lg flex justify-start items-center cardMD:mx-auto">
-              <div className="ml-8 grid grid-cols-[1fr,1fr] justify-between mx-auto grid-row-1 w-full">
-                <ul className="flex gap-x-8 my-auto">
-                  <li
-                    className="cursor-pointer"
-                    onClick={() => setWatch(!watch)}
-                  >
-                    {watch ? (
-                      <EyeFilled style={{ color: '#68a512' }} />
-                    ) : (
-                      <EyeOutlined />
-                    )}
-                  </li>
-                  <li
-                    className="cursor-pointer"
-                    onClick={() => setLiked(!like)}
-                  >
-                    {like ? (
-                      <HeartFilled style={{ color: '#a51f1f' }} />
-                    ) : (
-                      <HeartOutlined />
-                    )}
-                  </li>
-                  <li className="mr-12 hover:">
-                    {/*ConfigProvider da lib React Rate */}
-                    <ConfigProvider
-                      theme={{
-                        token: {
-                          colorFillContent: 'rgba(255, 255,255, 0.4)',
-                        },
-                      }}
-                    >
-                      <Rate
-                        allowClear={true}
-                        allowHalf
-                        defaultValue={0}
-                        style={{ color: 'rgba(127,76,178)' }}
-                      />
-                    </ConfigProvider>
-                  </li>
-                </ul>
-                <ul className="flex justify-center gap-x-4  text-slate-300">
-                  {actions.map((action, index) => (
+            {login ? (
+              <div className="font-gabarito mt-12 content-center justify-items-center  max-w-5xl h-16 cardMD:h-[auto] cardMD:p-4 tm:p-2 bg-transparent border border-blue-950 text-slate-300 rounded-t-lg flex justify-start items-center cardMD:mx-auto">
+                <div className=" cardMD:mx-8 tm:mx-1 grid grid-cols-[1fr,1fr] cardMD:grid-cols-1 tm:grid-cols-2 tm:items-center tm:gap-x-4  cardMD:gap-y-4  justify-between cardMD:justify-center mx-auto grid-row-1 w-full">
+                  <ul className="flex justify-center tm:flex-col  tm:gap-y-4 gap-x-8 cardMD:mx-auto my-auto text-center">
                     <li
-                      key={index}
-                      className="p-2 rounded-md bg-[rgba(47,66,178)] hover:bg-[rgba(46,38,178)] cursor-pointer transition-colors"
-                      onClick={action.onClick}
+                      className="cursor-pointer"
+                      onClick={() => setWatch(!watch)}
                     >
-                      {action.title}
+                      {watch ? (
+                        <div>
+                          <EyeFilled
+                            style={{
+                              color: '#68a512',
+                              fontSize: `${sizeIcons}px`,
+                            }}
+                          />
+                          <p className="text-slate-400">Assistido</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <EyeOutlined style={{ fontSize: `${sizeIcons}px` }} />
+                          <p className="text-slate-400">Assistir</p>
+                        </div>
+                      )}
                     </li>
-                  ))}
-                </ul>
+                    <li
+                      className="cursor-pointer"
+                      onClick={() => setLiked(!like)}
+                    >
+                      {like ? (
+                        <div>
+                          <HeartFilled
+                            style={{
+                              color: '#a51f1f',
+                              fontSize: `${sizeIcons}px`,
+                            }}
+                          />
+                          <p className="text-slate-400">Liked</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <HeartOutlined
+                            style={{ fontSize: `${sizeIcons}px` }}
+                          />
+                          <p className="text-slate-400">Like</p>
+                        </div>
+                      )}
+                    </li>
+                    <li
+                      className="cursor-pointer"
+                      onClick={() => setListWatch(!listWatch)}
+                    >
+                      {listWatch ? (
+                        <div>
+                          <FieldTimeOutlined
+                            style={{
+                              color: '#b6ed12',
+                              fontSize: `${sizeIcons}px`,
+                            }}
+                          />
+                          <p className="text-slate-400">Adicionado</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <FieldTimeOutlined
+                            style={{ fontSize: `${sizeIcons}px` }}
+                          />
+                          <p className="text-slate-400">Adicionar</p>
+                        </div>
+                      )}
+                    </li>
+                    <li className="mr-12 cardMD:mr-0 relative" ref={refLiRate}>
+                      {/*ConfigProvider da lib React Rate */}
+                      <div
+                        onClick={() => setRate(0)}
+                        className=" absolute cursor-pointer animate-animeLeft -top-0 -right-8 content-exit opacity-50 hover:opacity-100"
+                      ></div>
+                      <ConfigProvider
+                        theme={{
+                          token: {
+                            colorFillContent: 'rgba(255, 255,255, 0.4)',
+                          },
+                        }}
+                      >
+                        <Rate
+                          allowClear={true}
+                          allowHalf
+                          value={rate}
+                          onChange={setRate}
+                          defaultValue={rate}
+                          style={{
+                            color: 'rgba(127,76,178)',
+                            fontSize: `${sizeIcons}px`,
+                          }}
+                        />
+                      </ConfigProvider>
+                      {rate === 0 ? (
+                        <p className="text-slate-400">Avaliar</p>
+                      ) : (
+                        <p className="text-slate-400">Avaliado</p>
+                      )}
+                    </li>
+                  </ul>
+                  <ul className="flex tm:flex-col justify-center gap-x-4 tm:gap-y-3 items-center text-slate-300 cardMD:mx-auto  ">
+                    {actions.map((action, index) => (
+                      <li
+                        key={index}
+                        className="p-2 tm:p-2 tm:text-center  rounded-md bg-[rgba(47,66,178)] hover:bg-[rgba(46,38,178)] cursor-pointer transition-colors"
+                        onClick={action.onClick}
+                      >
+                        {action.title}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="mt-12"></div>
+            )}
+
             <div className="grid grid-cols-2 grid-rows-[auto,1fr] gap-y-8 content-center justify-items-center items-center animate-fadeIn max-w-5xl font-gabarito cardMD:grid-cols-1 cardMD:p-8 ">
               <div>
                 <img
