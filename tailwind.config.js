@@ -94,7 +94,6 @@ export const theme = {
     content: {
       play: 'url(/src/Assets/i-play.svg)',
       exit: 'url(/src/Assets/i-exit.svg)',
-      close: '00d7',
     },
     backgroundImage: { login: 'url(/src/Assets/photo_login_l.jpg)' },
 
@@ -116,7 +115,7 @@ export const theme = {
       sm: { max: '639px' },
       // => @media (max-width: 639px) { ... }
 
-      tm: { min: '0px', max: '450px' }, // Tiny mobile
+      tm: { min: '0px', max: '480px' }, // Tiny mobile
       // => @media (max-width: 384px) { ... }
     },
   },
