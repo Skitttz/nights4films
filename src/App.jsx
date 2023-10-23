@@ -38,8 +38,8 @@ function App() {
                 <Route path="*" element={<NotFound404 />} />
               </Routes>
             </main>
+            <Footer />
           </div>
-          <Footer />
         </UserStorage>
       </BrowserRouter>
     </div>
