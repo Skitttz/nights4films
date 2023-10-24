@@ -21,9 +21,15 @@ const RegisterForm = () => {
   async function handleSubmit(event) {
     event.preventDefault();
     if (username.validate() && password.validate() && email.validate()) {
-      userRegister(email.value, username.value, password.value);
+      const response = userRegister(
+        email.value,
+        username.value,
+        password.value,
+      );
+      const { ok } = response;
       setClicked(true);
-      if (error !== true) {
+      if (response && typeof error !== 'string' && ok) {
+        console.log(error);
         toast.success('Cadastrado com Sucesso!', {
           position: 'top-center',
           autoClose: 5000,
@@ -38,6 +44,8 @@ const RegisterForm = () => {
         setTimeout(() => {
           navigator('/login');
         }, 9000);
+      } else {
+        return null;
       }
     } else {
       return null;
