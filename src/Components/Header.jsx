@@ -3,11 +3,13 @@ import Input from './Forms/Input';
 import IconSearch from '../Assets/i-search.svg';
 import useDebounce from '../Hooks/useDebounce';
 import imgLougout from '../Assets/i-logout.png';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiMenu } from 'react-icons/fi';
 import { useUserContext } from '../Hooks/useUser';
 
 const Header = ({ onSearchValueChange }) => {
+  const { pathname } = useLocation();
+
   const [searchValue, setSearchValue] = React.useState('');
   const debouncedChange = useDebounce(onSearchValueChange, 300);
   const { data, userLogout } = useUserContext();
@@ -102,8 +104,12 @@ const Header = ({ onSearchValueChange }) => {
                 openMenuMB ? 'cardMD:block' : 'cardMD:hidden'
               }  flex gap-x-2`}
             >
-              <Link to={'/'}>
-                <div className="text-purple-100 font-roboto font-light p-2 bg-purple-800 bg-opacity-20 hover:bg-opacity-100 transition-all opacity-90 hover:opacity-100 rounded-lg ">
+              <Link to={'/perfil'}>
+                <div
+                  className={`text-purple-100 font-roboto font-light p-2 bg-purple-800 hover:bg-opacity-100 ${
+                    pathname === '/perfil' ? 'bg-opacity-100' : 'bg-opacity-20'
+                  } transition-all opacity-90 hover:opacity-100 rounded-lg `}
+                >
                   <div className="">
                     <p>
                       {`Olá, `}
