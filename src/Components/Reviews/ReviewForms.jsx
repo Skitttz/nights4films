@@ -1,5 +1,5 @@
 import React from 'react';
-import { useUserContext } from '../../Hooks/useUser';
+import { useUserContext, tokenUserLocal } from '../../Hooks/useUser';
 import Button from '../Forms/Button';
 import {
   handleKeyDown,
@@ -10,8 +10,16 @@ import {
 
 import { Checkbox, ConfigProvider } from 'antd';
 
-const ReviewForms = ({ setModal, nameFilmReview, dateFilmReview }) => {
-  const { login } = useUserContext();
+const ReviewForms = ({
+  setModal,
+  idFilmReview,
+  nameFilmReview,
+  dateFilmReview,
+  photoFilmReview,
+}) => {
+  const { login, data, userCreateReview } = useUserContext();
+  const [reviewContent, setReviewContent] = React.useState('');
+  const [hasSpoiler, setHasSpoiler] = React.useState(false);
   const [isActive, setIsActive] = React.useState(false);
   const timerTransition = 700;
 
@@ -29,6 +37,26 @@ const ReviewForms = ({ setModal, nameFilmReview, dateFilmReview }) => {
       document.removeEventListener('keydown', handleKey);
     };
   }, []);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    console.log(reviewContent.length);
+    if (reviewContent !== 0 && reviewContent.length < 1000) {
+      userCreateReview(
+        tokenUserLocal,
+        reviewContent,
+        idFilmReview,
+        data.id,
+        hasSpoiler,
+      );
+      alert('Review criada com sucesso');
+      setIsActive(false);
+      setModal(false);
+      location.reload();
+    } else {
+      alert('Ops! Sua review está muito grande.');
+    }
+  }
 
   return (
     <div>
@@ -49,8 +77,19 @@ const ReviewForms = ({ setModal, nameFilmReview, dateFilmReview }) => {
               onClick={handleClick}
               style={{ cursor: 'Pointer' }}
             ></div>
-            <section className="mx-auto w-[50vh] cardMD:w-[35vh] font-gabarito">
-              <form className="flex flex-col gap-y-4 px-8 mb-6 rounded-md ">
+            <section className="mx-auto grid grid-cols-[100px,1fr] cardMD:grid-cols-1 w-[50vh] cardMD:w-[35vh] font-gabarito">
+              <div>
+                <img
+                  className="ml-9 w-[80px] h-[360px] object-cover mx-auto rounded-lg opacity-60 mb-4 
+                  cardMD:h-[auto] cardMD:overflow-hidden cardMD:opacity-90 cardMD:ml-0 cardMD:p-4 cardMD:rounded-s-full"
+                  src={photoFilmReview}
+                  alt=""
+                />
+              </div>
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-y-4 px-8 mb-6 rounded-md "
+              >
                 <div>
                   <p className="text-slate-400 text-lg block">
                     Review do filme...{' '}
@@ -61,10 +100,14 @@ const ReviewForms = ({ setModal, nameFilmReview, dateFilmReview }) => {
                   <span className="font-gabarito ml-3 text-base font-extralight text-slate-300 bg-slate-800 rounded-md px-2 inline-block align-middle">{` ${dateFilmReview}`}</span>
                 </div>
 
-                <div className=" text-slate-200 p-1 pb-6">
+                <div className=" text-slate-200 p-1">
                   <textarea
-                    name="bodyReview"
-                    id="bodyReview"
+                    autoFocus={true}
+                    required={true}
+                    name="reviewBody"
+                    value={reviewContent}
+                    onChange={(e) => setReviewContent(e.target.value)}
+                    id="reviewBody"
                     placeholder="Escreva sua review..."
                     cols="30"
                     rows="10"
@@ -83,7 +126,7 @@ const ReviewForms = ({ setModal, nameFilmReview, dateFilmReview }) => {
                   >
                     <Checkbox
                       className="font-gabarito text-slate-200"
-                      onChange={(e) => e.target.checked}
+                      onChange={(e) => setHasSpoiler(e.target.checked)}
                     >
                       Contém Spoiler
                     </Checkbox>
