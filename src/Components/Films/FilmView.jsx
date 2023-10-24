@@ -1,6 +1,10 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Filmes_GET } from '../Api/Api';
+import {
+  Filmes_GET,
+  FilmsIdFromLikeId_GET,
+  userLikeFilms_GET,
+} from '../Api/Api';
 import Head from '../Helper/Head';
 import Loading from '../Helper/Loading';
 import Markdown from 'https://esm.sh/react-markdown@9';
@@ -14,16 +18,27 @@ import {
 } from '@ant-design/icons';
 import ReviewForms from '../Reviews/ReviewForms';
 import { toast } from 'react-toastify';
-import { useUserContext } from '../../Hooks/useUser';
+import { useUserContext, tokenUserLocal } from '../../Hooks/useUser';
+import ReviewFeedByFilm from '../Reviews/ReviewFeedByFilm';
 
 const FilmView = () => {
   const [films, setFilms] = React.useState(null);
+  //ID do Filme
   const { id } = useParams();
-  const { login } = useUserContext();
+  const {
+    login,
+    data,
+    userLikeFilmCreateId,
+    userLikeFilmUpdate,
+    userLikeFilmRemove,
+  } = useUserContext();
 
   const [modalReview, setModalReview] = React.useState(false);
   const [watch, setWatch] = React.useState(false);
+
+  const [likeId, setLikedId] = React.useState('');
   const [like, setLiked] = React.useState(false);
+
   const [listWatch, setListWatch] = React.useState(false);
   const refLiRate = React.useRef(null);
   const [rate, setRate] = React.useState(0);
@@ -42,8 +57,8 @@ const FilmView = () => {
 
   React.useEffect(() => {
     const ruleSlug = `/filmes?filters[slug][$eq]`;
-    const populatePhotoDescription = `populate=photo_description`;
-    Filmes_GET(`${ruleSlug}=${id}&${populatePhotoDescription}`)
+    const populateAll = `populate=*`;
+    Filmes_GET(`${ruleSlug}=${id}&${populateAll}`)
       .then((data) => {
         setFilms(data);
       })
@@ -53,6 +68,7 @@ const FilmView = () => {
   }, [id]);
 
   React.useEffect(() => {
+    userAlreadyLiked();
     const randomColorValueOne = randomColor();
     const randomColorValueTwo = randomColor();
     const randomColorHexOne = randomColorHEX();
@@ -83,6 +99,31 @@ const FilmView = () => {
   ];
 
   const sizeIcons = 21;
+
+  async function userContainsLikeId() {
+    const likeId = await userLikeFilms_GET(tokenUserLocal);
+    if (likeId !== null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async function userAlreadyLiked() {
+    const likeId = await userLikeFilms_GET(tokenUserLocal);
+    if (likeId) {
+      setLikedId(likeId);
+      const likeIdFilms = await FilmsIdFromLikeId_GET(likeId, tokenUserLocal);
+      const isIdFound = films
+        ? likeIdFilms.some((film) => film.id === films.data[0].id)
+        : false;
+      if (likeId !== null && isIdFound) {
+        setLiked(true);
+      } else {
+        setLiked(false);
+      }
+    }
+  }
 
   return (
     <>
@@ -126,7 +167,20 @@ const FilmView = () => {
                       onClick={() => setLiked(!like)}
                     >
                       {like ? (
-                        <div>
+                        <div
+                          onClick={async () => {
+                            const likeIdFilms = await FilmsIdFromLikeId_GET(
+                              likeId,
+                              tokenUserLocal,
+                            );
+                            userLikeFilmRemove(
+                              tokenUserLocal,
+                              likeId,
+                              likeIdFilms,
+                              films.data[0],
+                            );
+                          }}
+                        >
                           <HeartFilled
                             style={{
                               color: '#a51f1f',
@@ -136,7 +190,30 @@ const FilmView = () => {
                           <p className="text-slate-400">Liked</p>
                         </div>
                       ) : (
-                        <div>
+                        <div
+                          onClick={async () => {
+                            const containsLiked = await userContainsLikeId();
+                            if (containsLiked && likeId) {
+                              const likeIdFilms = await FilmsIdFromLikeId_GET(
+                                likeId,
+                                tokenUserLocal,
+                              );
+                              userLikeFilmUpdate(
+                                tokenUserLocal,
+                                likeId,
+                                likeIdFilms,
+                                films.data[0],
+                              );
+                            } else {
+                              const { id: idUser } = data;
+                              userLikeFilmCreateId(
+                                tokenUserLocal,
+                                films.data[0].id,
+                                idUser,
+                              );
+                            }
+                          }}
+                        >
                           <HeartOutlined
                             style={{ fontSize: `${sizeIcons}px` }}
                           />
@@ -249,13 +326,17 @@ const FilmView = () => {
                 </div>
               </div>
               <div className="text-slate-400 inline-block mr-auto w-full col-span-full">
-                <div className="">
+                <div className="mb-24">
                   <p className="border-b border-b-slate-900 text-lg rounded-sm mt-8 mb-8">
                     Reviews Recentes de {` `}
                     <span className="text-slate-200 text-xl font-semibold">
                       {films.data[0].attributes.title}
                     </span>
                   </p>
+                  <ReviewFeedByFilm
+                    tokenUser={tokenUserLocal}
+                    FilmId={films.data[0].id}
+                  />
                 </div>
               </div>
               <div className="col-span-full bg-gray-950 px-6 rounded-lg shadow-[rgba(55,44,_255,_1.3)_0px_0px_2px]  mb-20 ">
@@ -290,6 +371,10 @@ const FilmView = () => {
             setModal={setModalReview}
             nameFilmReview={films.data[0].attributes.title}
             dateFilmReview={films.data[0].attributes.year}
+            photoFilmReview={
+              films.data[0].attributes.photo_description.data.attributes.url
+            }
+            idFilmReview={films.data[0].id}
           />
         ) : (
           ''
