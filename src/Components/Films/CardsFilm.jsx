@@ -4,6 +4,7 @@ import ContentFilms from './ContentFilms';
 import Loading from '../Helper/Loading';
 import PaginationFilms from './PaginationFilms';
 import FilmCard from './FilmCard';
+import { StarFilled } from '@ant-design/icons';
 
 const CardsFilm = ({ searchValue }) => {
   const [films, setFilms] = React.useState([]);
@@ -70,7 +71,7 @@ const CardsFilm = ({ searchValue }) => {
   }, [isActive]);
 
   return (
-    <div>
+    <div className="animate-animeDown duration-[3000ms]">
       <div className="text-slate-200 font-gabarito font-medium text-2xl ml-8 mb-3 border-b-slate-800 border-b cardMD:w-[80%] cardMD:text-lg">
         <p>Filmes</p>
       </div>
@@ -82,7 +83,7 @@ const CardsFilm = ({ searchValue }) => {
           <div
             className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1
       cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 cardMD:scroll-smooth
-      lg:w-[45rem] md:w-[35rem] sm:w-[25rem] tm:w-[18rem] animate-animeLeft "
+      lg:w-[45rem] md:w-[35rem] sm:w-[25rem] tm:w-[18rem]"
             ref={refScroll}
           >
             {empty ? (
@@ -115,7 +116,17 @@ const CardsFilm = ({ searchValue }) => {
               <ContentFilms key={filmId} id={filmId} />
             </div>
           ) : (
-            <div className="p-4 hidden cardMD:block  lg:w-[600px] sm:w-[300px] tm:w-[180px] tm:h-[800px] cardMD:h-[700px] rounded-md opacity-10 bg-gray-900 row-start-3"></div>
+            <div className=" animate-animeLeft p-4 flex flex-col justify-center items-center row-start-1 col-start-2 w-full cardMD:col-start-1 cardMD:row-start-3 lg:w-[40rem] md:w-[35rem] sm:w-[30rem] tm:w-[19rem] tm:h-[800px] cardMD:h-[700px] rounded-md bg-gray-900 border border-slate-800 border-opacity-30">
+              <p className="flex flex-col items-center font-gabarito border-b border-b-slate-400 text-xl text-slate-300 p-2 rounded-md ">
+                Selecione o Filme
+                <span className="text-xs text-slate-500">
+                  será exibido aqui
+                </span>
+              </p>
+              <p className="text-2xl text-slate-300 hover:text-yellow-400 transition-colors hover:animate-pulse">
+                <StarFilled />
+              </p>
+            </div>
           )}
 
           <div className="col-end-2 pb-8">
@@ -124,6 +135,7 @@ const CardsFilm = ({ searchValue }) => {
                 totalItems={films.meta.pagination.total}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
+                limitItemPage={9}
               />
             )}
           </div>
