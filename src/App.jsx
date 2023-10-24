@@ -9,6 +9,8 @@ import Header from './Components/Header';
 import Login from './Components/User/Login';
 import { UserStorage } from './Hooks/useUser';
 import { ToastContainer, Slide } from 'react-toastify';
+import UserProfile from './Components/User/UserProfile';
+import ProtectedRouter from './Components/Helper/ProtectedRouter';
 
 function App() {
   return (
@@ -36,6 +38,15 @@ function App() {
                 <Route path="login/*" element={<Login />} />
                 <Route path="/filmes/:id" element={<FilmView />} />
                 <Route path="*" element={<NotFound404 />} />
+
+                <Route
+                  path="/perfil"
+                  element={
+                    <ProtectedRouter>
+                      <UserProfile />
+                    </ProtectedRouter>
+                  }
+                />
               </Routes>
             </main>
             <Footer />
