@@ -14,6 +14,10 @@ const types = {
     regex: /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%?=*&]).{6,20})/,
     message: '',
   },
+  contentReview: {
+    regex: /^.{1,1000}$/,
+    message: '',
+  },
 };
 
 const useForm = (type) => {
