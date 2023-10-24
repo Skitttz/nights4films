@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PaginationFilms = ({
+const PaginationReview = ({
   totalItems,
   currentPage,
   onPageChange,
@@ -61,4 +61,4 @@ const PaginationFilms = ({
   );
 };
 
-export default PaginationFilms;
+export default PaginationReview;
