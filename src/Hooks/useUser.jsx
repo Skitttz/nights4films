@@ -7,6 +7,12 @@ import {
   userReview_POST,
   userPasswordLost_POST,
   userRegister_POST,
+  userListFilms_POST,
+  userListFilms_PUT,
+  userWatchedFilms_POST,
+  userWatchedFilms_PUT,
+  userRateFilms_POST,
+  userRateFilms_PUT,
 } from '../Components/Api/Api';
 import { useNavigate } from 'react-router-dom';
 import { translateErrorMessage } from '../Components/Helper/Translate';
@@ -84,7 +90,7 @@ export const UserStorage = ({ children }) => {
     }
   }
 
-  //POST
+  // ****** userLike ******
   async function userLikeFilmCreateId(token, idFilm, idUser) {
     try {
       setLoading(true);
@@ -123,7 +129,7 @@ export const UserStorage = ({ children }) => {
   async function userLikeFilmRemove(token, idLike, idFilm, idToRemove) {
     try {
       setLoading(true);
-      // Nova lista de filmes sem o idToRemove
+      // New list of movies without idToRemove
       const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
 
       await userLikeFilms_PUT(token, idLike, {
@@ -139,6 +145,180 @@ export const UserStorage = ({ children }) => {
       setLoading(false);
     }
   }
+
+  // ****** userListFilms ******
+
+  async function userListFilmCreateId(token, idFilm, idUser) {
+    try {
+      setLoading(true);
+      await userListFilms_POST(token, {
+        data: {
+          hasEntryList: true,
+          filmes: idFilm,
+          user: idUser,
+        },
+      });
+      setError(null);
+    } catch (err) {
+      setError(translateErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function userListFilmUpdate(token, idList, idFilm, idNewFilm) {
+    try {
+      setLoading(true);
+      await userListFilms_PUT(token, idList, {
+        data: {
+          filmes: [...idFilm, idNewFilm],
+        },
+      });
+
+      setError(null);
+    } catch (err) {
+      setError(translateErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function userListFilmRemove(token, idList, idFilm, idToRemove) {
+    try {
+      setLoading(true);
+      // New list of movies without idToRemove
+      const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
+
+      await userListFilms_PUT(token, idList, {
+        data: {
+          filmes: updatedFilms,
+        },
+      });
+
+      setError(null);
+    } catch (err) {
+      setError(translateErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ****** userWatched ******
+
+  async function userWatchedCreateId(token, idFilm, idUser) {
+    try {
+      setLoading(true);
+      await userWatchedFilms_POST(token, {
+        data: {
+          hasWatched: true,
+          filmes: idFilm,
+          user: idUser,
+        },
+      });
+      setError(null);
+    } catch (err) {
+      setError(translateErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function userWatchedUpdate(token, idWatched, idFilm, idNewFilm) {
+    try {
+      setLoading(true);
+      await userWatchedFilms_PUT(token, idWatched, {
+        data: {
+          filmes: [...idFilm, idNewFilm],
+        },
+      });
+
+      setError(null);
+    } catch (err) {
+      setError(translateErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function userWatchedRemove(token, idWatched, idFilm, idToRemove) {
+    try {
+      setLoading(true);
+      // New list of movies without idToRemove
+      const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
+
+      await userWatchedFilms_PUT(token, idWatched, {
+        data: {
+          filmes: updatedFilms,
+        },
+      });
+
+      setError(null);
+    } catch (err) {
+      setError(translateErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ****** userRate ******
+
+  async function userRateCreateId(token, idFilm, rateValue, idUser) {
+    try {
+      setLoading(true);
+      await userRateFilms_POST(token, {
+        data: {
+          user: idUser,
+          filme: idFilm,
+          ratingValue: rateValue,
+        },
+      });
+      setError(null);
+    } catch (err) {
+      setError(translateErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function userRateUpdate(token, idRate, idFilm, newValue) {
+    try {
+      setLoading(true);
+      await userRateFilms_PUT(token, idRate, {
+        data: {
+          filme: idFilm,
+          ratingValue: newValue,
+        },
+      });
+
+      setError(null);
+    } catch (err) {
+      setError(translateErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function userRateRemove(token, idRate, idFilm, idToRemove) {
+    try {
+      setLoading(true);
+      // New list of movies without idToRemove
+      const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
+
+      await userRateFilms_PUT(token, idRate, {
+        data: {
+          filme: updatedFilms,
+        },
+      });
+
+      setError(null);
+    } catch (err) {
+      setError(translateErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ****** Create Review ******
 
   async function userCreateReview(token, content, idFilm, idUser, hasSpoiler) {
     try {
@@ -199,7 +379,16 @@ export const UserStorage = ({ children }) => {
         userLikeFilmCreateId,
         userLikeFilmUpdate,
         userLikeFilmRemove,
+        userListFilmCreateId,
+        userListFilmUpdate,
+        userListFilmRemove,
         userCreateReview,
+        userWatchedCreateId,
+        userWatchedUpdate,
+        userWatchedRemove,
+        userRateCreateId,
+        userRateUpdate,
+        userRateRemove,
         data,
         login,
         loading,
