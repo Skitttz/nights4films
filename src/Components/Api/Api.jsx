@@ -75,6 +75,8 @@ export async function userPasswordLost_POST(emailUser) {
     });
 }
 
+// ********* Like endpoints *********
+
 // Create the user's like ID
 export async function userLikeFilms_POST(token, body) {
   return await api
@@ -202,5 +204,209 @@ export async function showAvatar_GET(token) {
     })
     .catch((error) => {
       throw error;
+    });
+}
+
+// ********* WatchList endpoints *********
+
+export async function FilmsIdFromWatchListId_GET(watchListId, token) {
+  return await api
+    .get(`/watchlist-films/${watchListId}?populate=filmes.card`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      return response.data.data.attributes.filmes.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
+// Create the user's watchlist ID because doesnt exist
+export async function userListFilms_POST(token, body) {
+  return await api
+    .post(`/watchlist-films`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error.response.data.error.message;
+    });
+}
+
+// Movies that the user has already add to list
+export async function userListFilms_GET(token) {
+  return await api
+    .get('/users/me/?populate=watchlist_films', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      if (response.data.watchlist_films !== null) {
+        return response.data.watchlist_films.id;
+      } else {
+        return null;
+      }
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
+export async function userListFilms_PUT(token, watchListId, body) {
+  return await api
+    .put(`/watchlist-films/${watchListId}?populate=*`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error.response.data.error.message;
+    });
+}
+
+// ********* Watch endpoints *********
+
+export async function FilmsIdFromWatchId_GET(watchId, token) {
+  return await api
+    .get(`/watcheds/${watchId}?populate=filmes`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      return response.data.data.attributes.filmes.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
+// Create the user's watchID because doesnt exist
+export async function userWatchedFilms_POST(token, body) {
+  return await api
+    .post(`/watcheds`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error.response.data.error.message;
+    });
+}
+
+// Movies that the user has already add to list
+export async function userWatchedFilms_GET(token) {
+  return await api
+    .get('/users/me/?populate=watched', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      if (response.data.watched !== null) {
+        return response.data.watched.id;
+      } else {
+        return null;
+      }
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
+export async function userWatchedFilms_PUT(token, watchedId, body) {
+  return await api
+    .put(`/watcheds/${watchedId}?populate=*`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error.response.data.error.message;
+    });
+}
+
+// ********* Rate endpoints *********
+
+export async function FilmsIdFromRateId_GET(rateId, token) {
+  return await api
+    .get(`/rating-films/${rateId}?populate=filme`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      return response.data.data.attributes.filmes.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
+// Create the user's rateID because doesnt exist
+export async function userRateFilms_POST(token, body) {
+  return await api
+    .post(`/rating-films`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error.response.data.error.message;
+    });
+}
+
+// Movies that the user has already add to list
+export async function userRateFilms_GET(token) {
+  return await api
+    .get('/users/me?populate=rating_films.filme', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      if (response.data.rating_films.length !== 0) {
+        return response.data.rating_films;
+      } else {
+        return null;
+      }
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
+export async function userRateFilms_PUT(token, rateId, body) {
+  return await api
+    .put(`/rating-films/${rateId}?populate=*`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error.response.data.error.message;
     });
 }
