@@ -71,14 +71,14 @@ const CardsFilm = ({ searchValue }) => {
   }, [isActive]);
 
   return (
-    <div className="animate-animeDown duration-[3000ms]">
-      <div className="text-slate-200 font-gabarito font-medium text-2xl ml-8 mb-3 border-b-slate-800 border-b cardMD:w-[80%] cardMD:text-lg">
+    <div>
+      <div className="text-slate-200 font-gabarito font-medium text-2xl ml-8 mb-3 border-b-slate-800 border-b cardMD:w-[80%] cardMD:text-lg animate-animeDown">
         <p>Filmes</p>
       </div>
       {films.length !== 0 ? (
         <div
           className="grid grid-cols-[600px,_1fr] justify-center justify-items-center gap-x-4 cardMD:grid-cols-1 
-      cardMD:max-w-5xl cardMD:justify-center "
+      cardMD:max-w-5xl cardMD:justify-center animate-fadeIn"
         >
           <div
             className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1
