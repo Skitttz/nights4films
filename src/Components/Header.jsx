@@ -6,6 +6,7 @@ import imgLougout from '../Assets/i-logout.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiMenu } from 'react-icons/fi';
 import { useUserContext } from '../Hooks/useUser';
+import ScrollToTop from './ScrollToTop';
 
 const Header = ({ onSearchValueChange }) => {
   const { pathname } = useLocation();
@@ -45,7 +46,7 @@ const Header = ({ onSearchValueChange }) => {
 
   return (
     <>
-      <header className={`fixed z-1 w-full top-0 bg-gray-950 shadow-md z-50  `}>
+      <header className={`fixed z-30 w-full top-0 bg-gray-950 shadow-md`}>
         <nav
           ref={refNav}
           className={`h-16 max-w-5xl mx-auto flex flex-wrap items-center justify-between lg:justify-between lg:max-w-5xl tm:max-w-5xl tm:flex-nowrap tm:gap-4 ${
@@ -104,7 +105,7 @@ const Header = ({ onSearchValueChange }) => {
                 openMenuMB ? 'cardMD:block' : 'cardMD:hidden'
               }  flex gap-x-2`}
             >
-              <Link to={'/perfil'}>
+              <Link onClick={ScrollToTop} to={'/perfil'}>
                 <div
                   className={`text-purple-100 font-roboto font-light p-2 bg-purple-800 hover:bg-opacity-100 ${
                     pathname === '/perfil' ? 'bg-opacity-100' : 'bg-opacity-20'

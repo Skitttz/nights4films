@@ -29,7 +29,7 @@ const ModalTrailer = ({ setModal, EmbedId }) => {
     <div>
       {setModal && (
         <div
-          className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-80 left-0 top-0 w-screen h-screen"
+          className="fixed z-50 inset-0 flex items-center justify-center bg-black bg-opacity-80 left-0 top-0 w-screen h-screen"
           onClick={handleClick}
           onKeyDown={handleKeyDown}
           tabIndex={0}
