@@ -1,57 +1,65 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import {
-  Filmes_GET,
-  FilmsIdFromLikeId_GET,
-  userLikeFilms_GET,
-} from '../Api/Api';
 import Head from '../Helper/Head';
 import Loading from '../Helper/Loading';
+import { randomColor, randomColorHEX } from '../Helper/Colors';
 import Markdown from 'https://esm.sh/react-markdown@9';
-import { Rate, ConfigProvider } from 'antd';
-import {
-  HeartOutlined,
-  HeartFilled,
-  EyeOutlined,
-  EyeFilled,
-  FieldTimeOutlined,
-} from '@ant-design/icons';
-import ReviewForms from '../Reviews/ReviewForms';
-import { toast } from 'react-toastify';
+import { useParams, Link } from 'react-router-dom';
+import { Filmes_GET } from '../Api/Api';
 import { useUserContext, tokenUserLocal } from '../../Hooks/useUser';
+import { toast } from 'react-toastify';
+import { userAlreadyLiked, userContainsLikeId } from '../User/Like/UserLike';
+import LikeButton from '../User/Like/LikeButton';
+import {
+  userAlreadyListedFilm,
+  userContainsFilmInWatchListId,
+} from '../User/WatchList/UserWatchList';
+import WatchListButton from '../User/WatchList/WatchListButton';
+import WatchButton from '../User/Watch/WatchButton';
+import { userAlreadyWatchedFilm } from '../User/Watch/UserWatch';
+import ReviewForms from '../Reviews/ReviewForms';
 import ReviewFeedByFilm from '../Reviews/ReviewFeedByFilm';
+import RateButton from '../User/Rate/RateButton';
 
 const FilmView = () => {
   const [films, setFilms] = React.useState(null);
-  //ID do Filme
-  const { id } = useParams();
   const {
     login,
     data,
     userLikeFilmCreateId,
     userLikeFilmUpdate,
     userLikeFilmRemove,
+    userListFilmCreateId,
+    userListFilmUpdate,
+    userListFilmRemove,
+    userWatchedCreateId,
+    userWatchedUpdate,
+    userWatchedRemove,
+    userRateCreateId,
+    userRateUpdate,
+    userRateRemove,
   } = useUserContext();
 
+  // All const example & const exampleId, example -> value insert for user , exampleId -> Reference Id this element
+  //ID Film
+  const { id } = useParams();
+
+  //Modal Review
   const [modalReview, setModalReview] = React.useState(false);
+
+  // Watch
+  const [watchId, setWatchId] = React.useState('');
   const [watch, setWatch] = React.useState(false);
 
+  // Like
   const [likeId, setLikedId] = React.useState('');
   const [like, setLiked] = React.useState(false);
 
-  const [listWatch, setListWatch] = React.useState(false);
+  // Watchlist
+  const [watchListId, setWatchListId] = React.useState('');
+  const [watchList, setWatchList] = React.useState(false);
+
+  // Rate
   const refLiRate = React.useRef(null);
-  const [rate, setRate] = React.useState(0);
-  const [clearRate, setClearRate] = React.useState(false);
-
-  function randomColor() {
-    return Math.floor(Math.random() * 256).toString(16);
-  }
-
-  function randomColorHEX() {
-    return `#${(Math.random() * 0xfffff * 1000000).toString(16).slice(0, 6)}`;
-  }
-
   const divDescriptionFilmRef = React.useRef(null);
   const pRef = React.useRef(null);
 
@@ -68,7 +76,15 @@ const FilmView = () => {
   }, [id]);
 
   React.useEffect(() => {
-    userAlreadyLiked();
+    userAlreadyLiked(films, login, tokenUserLocal, setLikedId, setLiked);
+    userAlreadyListedFilm(
+      films,
+      login,
+      tokenUserLocal,
+      setWatchListId,
+      setWatchList,
+    );
+    userAlreadyWatchedFilm(films, login, tokenUserLocal, setWatchId, setWatch);
     const randomColorValueOne = randomColor();
     const randomColorValueTwo = randomColor();
     const randomColorHexOne = randomColorHEX();
@@ -100,31 +116,6 @@ const FilmView = () => {
 
   const sizeIcons = 21;
 
-  async function userContainsLikeId() {
-    const likeId = await userLikeFilms_GET(tokenUserLocal);
-    if (likeId !== null) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  async function userAlreadyLiked() {
-    const likeId = await userLikeFilms_GET(tokenUserLocal);
-    if (likeId) {
-      setLikedId(likeId);
-      const likeIdFilms = await FilmsIdFromLikeId_GET(likeId, tokenUserLocal);
-      const isIdFound = films
-        ? likeIdFilms.some((film) => film.id === films.data[0].id)
-        : false;
-      if (likeId !== null && isIdFound) {
-        setLiked(true);
-      } else {
-        setLiked(false);
-      }
-    }
-  }
-
   return (
     <>
       <div>
@@ -142,146 +133,72 @@ const FilmView = () => {
                 <div className=" cardMD:mx-8 tm:mx-1 grid grid-cols-[1fr,1fr] cardMD:grid-cols-1 tm:grid-cols-2 tm:items-center tm:gap-x-4  cardMD:gap-y-4  justify-between cardMD:justify-center mx-auto grid-row-1 w-full">
                   <ul className="flex justify-center tm:flex-col  tm:gap-y-4 gap-x-8 cardMD:mx-auto my-auto text-center">
                     <li
-                      className="cursor-pointer"
+                      className="cursor-pointer "
                       onClick={() => setWatch(!watch)}
                     >
-                      {watch ? (
-                        <div>
-                          <EyeFilled
-                            style={{
-                              color: '#68a512',
-                              fontSize: `${sizeIcons}px`,
-                            }}
-                          />
-                          <p className="text-slate-400">Assistido</p>
-                        </div>
-                      ) : (
-                        <div>
-                          <EyeOutlined style={{ fontSize: `${sizeIcons}px` }} />
-                          <p className="text-slate-400">Assistir</p>
-                        </div>
-                      )}
+                      <WatchButton
+                        watch={watch}
+                        watchId={watchId}
+                        tokenUserLocal={tokenUserLocal}
+                        films={films}
+                        userContainsFilmInWatchListId={
+                          userContainsFilmInWatchListId
+                        }
+                        userWatchedUpdate={userWatchedUpdate}
+                        userWatchedRemove={userWatchedRemove}
+                        userWatchedCreateId={userWatchedCreateId}
+                        data={data}
+                        sizeIcons={sizeIcons}
+                      />
                     </li>
                     <li
-                      className="cursor-pointer"
+                      className="cursor-pointer "
                       onClick={() => setLiked(!like)}
                     >
-                      {like ? (
-                        <div
-                          onClick={async () => {
-                            const likeIdFilms = await FilmsIdFromLikeId_GET(
-                              likeId,
-                              tokenUserLocal,
-                            );
-                            userLikeFilmRemove(
-                              tokenUserLocal,
-                              likeId,
-                              likeIdFilms,
-                              films.data[0],
-                            );
-                          }}
-                        >
-                          <HeartFilled
-                            style={{
-                              color: '#a51f1f',
-                              fontSize: `${sizeIcons}px`,
-                            }}
-                          />
-                          <p className="text-slate-400">Liked</p>
-                        </div>
-                      ) : (
-                        <div
-                          onClick={async () => {
-                            const containsLiked = await userContainsLikeId();
-                            if (containsLiked && likeId) {
-                              const likeIdFilms = await FilmsIdFromLikeId_GET(
-                                likeId,
-                                tokenUserLocal,
-                              );
-                              userLikeFilmUpdate(
-                                tokenUserLocal,
-                                likeId,
-                                likeIdFilms,
-                                films.data[0],
-                              );
-                            } else {
-                              const { id: idUser } = data;
-                              userLikeFilmCreateId(
-                                tokenUserLocal,
-                                films.data[0].id,
-                                idUser,
-                              );
-                            }
-                          }}
-                        >
-                          <HeartOutlined
-                            style={{ fontSize: `${sizeIcons}px` }}
-                          />
-                          <p className="text-slate-400">Like</p>
-                        </div>
-                      )}
+                      <LikeButton
+                        like={like}
+                        likeId={likeId}
+                        tokenUserLocal={tokenUserLocal}
+                        films={films}
+                        userContainsLikeId={userContainsLikeId}
+                        userLikeFilmUpdate={userLikeFilmUpdate}
+                        userLikeFilmRemove={userLikeFilmRemove}
+                        userLikeFilmCreateId={userLikeFilmCreateId}
+                        data={data}
+                        sizeIcons={sizeIcons}
+                      />
                     </li>
                     <li
-                      className="cursor-pointer"
-                      onClick={() => setListWatch(!listWatch)}
+                      className="cursor-pointer "
+                      onClick={() => setWatchList(!watchList)}
                     >
-                      {listWatch ? (
-                        <div>
-                          <FieldTimeOutlined
-                            style={{
-                              color: '#b6ed12',
-                              fontSize: `${sizeIcons}px`,
-                            }}
-                          />
-                          <p className="text-slate-400">Adicionado</p>
-                        </div>
-                      ) : (
-                        <div>
-                          <FieldTimeOutlined
-                            style={{ fontSize: `${sizeIcons}px` }}
-                          />
-                          <p className="text-slate-400">Adicionar</p>
-                        </div>
-                      )}
+                      <WatchListButton
+                        watchList={watchList}
+                        watchListId={watchListId}
+                        tokenUserLocal={tokenUserLocal}
+                        films={films}
+                        userContainsFilmInWatchListId={
+                          userContainsFilmInWatchListId
+                        }
+                        userListFilmUpdate={userListFilmUpdate}
+                        userListFilmRemove={userListFilmRemove}
+                        userListFilmCreateId={userListFilmCreateId}
+                        data={data}
+                        sizeIcons={sizeIcons}
+                      />
                     </li>
                     <li className="mr-12 cardMD:mr-0 relative " ref={refLiRate}>
-                      {/*ConfigProvider da lib React Rate */}
-                      <div
-                        onClick={() => {
-                          setClearRate(false);
-                          setRate(0);
-                        }}
-                        className={` cursor-pointer -top-0 -right-8 content-exit animate-animeLeft ${
-                          clearRate ? 'absolute' : 'hidden'
-                        }`}
-                      ></div>
-                      <ConfigProvider
-                        theme={{
-                          token: {
-                            colorFillContent: 'rgba(255, 255,255, 0.4)',
-                          },
-                        }}
-                      >
-                        <Rate
-                          allowClear={true}
-                          allowHalf
-                          value={rate}
-                          onChange={(newRate) => {
-                            setRate(newRate);
-                            setClearRate(newRate > 0);
-                          }}
-                          defaultValue={rate}
-                          style={{
-                            color: 'rgba(127,76,178)',
-                            fontSize: `${sizeIcons}px`,
-                          }}
-                        />
-                      </ConfigProvider>
-                      {rate === 0 ? (
-                        <p className="text-slate-400">Avaliar</p>
-                      ) : (
-                        <p className="text-slate-400">Avaliado</p>
-                      )}
+                      {/*ConfigProvider lib React Rate */}
+                      <RateButton
+                        tokenUserLocal={tokenUserLocal}
+                        films={films}
+                        login={login}
+                        userRateUpdate={userRateUpdate}
+                        userRateRemove={userRateRemove}
+                        userRateCreateId={userRateCreateId}
+                        data={data}
+                        sizeIcons={sizeIcons}
+                      />
                     </li>
                   </ul>
                   <ul className="flex tm:flex-col justify-center gap-x-4 tm:gap-y-3 items-center text-slate-300 cardMD:mx-auto  ">
@@ -325,20 +242,52 @@ const FilmView = () => {
                   </p>
                 </div>
               </div>
-              <div className="text-slate-400 inline-block mr-auto w-full col-span-full">
-                <div className="mb-24">
-                  <p className="border-b border-b-slate-900 text-lg rounded-sm mt-8 mb-8">
-                    Reviews Recentes de {` `}
-                    <span className="text-slate-200 text-xl font-semibold">
-                      {films.data[0].attributes.title}
-                    </span>
-                  </p>
-                  <ReviewFeedByFilm
-                    tokenUser={tokenUserLocal}
-                    FilmId={films.data[0].id}
-                  />
+              {login ? (
+                <div className="text-slate-400 inline-block mr-auto w-full col-span-full">
+                  <div className="mb-24">
+                    <p className="border-b border-b-slate-900 text-lg rounded-sm mt-8 mb-8">
+                      Reviews Recentes de {` `}
+                      <span className="text-slate-200 text-xl font-semibold">
+                        {films.data[0].attributes.title}
+                      </span>
+                    </p>
+                    <ReviewFeedByFilm
+                      tokenUser={tokenUserLocal}
+                      FilmId={films.data[0].id}
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="text-slate-400 inline-block mr-auto w-full col-span-full">
+                  <div className="">
+                    <p className="border-b border-b-slate-900 text-lg rounded-sm mt-8 mb-8">
+                      Reviews Recentes de {` `}
+                      <span className="text-slate-200 text-xl font-semibold">
+                        {films.data[0].attributes.title}
+                      </span>
+                    </p>
+                    <div className="flex justify-center p-12 ">
+                      <h3 className="font-thin text-slate-300 border-b border-b-indigo-950 p-2 rounded-lg">
+                        <Link to={'/login'}>
+                          {' '}
+                          <span className="font-medium text-orange-200 underline">
+                            Acesse
+                          </span>
+                        </Link>{' '}
+                        ou{' '}
+                        <Link to={'/login/register'}>
+                          <span className="font-medium text-blue-200 underline">
+                            {' '}
+                            Crie
+                          </span>
+                        </Link>{' '}
+                        sua conta para conseguir ver as reviews dos usuários
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="col-span-full bg-gray-950 px-6 rounded-lg shadow-[rgba(55,44,_255,_1.3)_0px_0px_2px]  mb-20 ">
                 <p
                   className={`inline-block mr-auto text-slate-200 text-3xl p-4 border border-slate-300 border-opacity-10 rounded-xl mt-5 cardMD:text-center `}
