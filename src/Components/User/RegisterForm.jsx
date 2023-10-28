@@ -6,7 +6,7 @@ import Head from '../Helper/Head';
 import PasswordSecurity from './PasswordSecurity';
 import Error from '../Helper/Error';
 import { useUserContext } from '../../Hooks/useUser';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
 
@@ -21,19 +21,13 @@ const RegisterForm = () => {
   async function handleSubmit(event) {
     event.preventDefault();
     if (username.validate() && password.validate() && email.validate()) {
-      const response = userRegister(
-        email.value,
-        username.value,
-        password.value,
-      );
-      const { ok } = response;
+      await userRegister(email.value, username.value, password.value);
       setClicked(true);
-      if (response && typeof error !== 'string' && ok) {
-        console.log(error);
+      if (error === null) {
         toast.success('Cadastrado com Sucesso!', {
           position: 'top-center',
-          autoClose: 5000,
-          hideProgressBar: true,
+          autoClose: 8000,
+          hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
