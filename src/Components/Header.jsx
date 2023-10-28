@@ -91,8 +91,8 @@ const Header = ({ onSearchValueChange }) => {
                 backgroundPosition={`3% 45%`}
                 customStyleInput={'indent-7 tm:indent-6 '}
                 placeholder={'Digite o nome do filme...'}
-                value={searchValue} // Valor do input é controlado pelo estado
-                onChange={handleSearchChange} // Função para atualizar o estado quando o input muda
+                value={searchValue} // Input value is controlled by the state
+                onChange={handleSearchChange} // Update the state when the input changes
               />
             ) : (
               ''
