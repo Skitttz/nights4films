@@ -10,21 +10,25 @@ import Button from '../Forms/Button';
 import { toast } from 'react-toastify';
 import Head from '../Helper/Head';
 import { Link } from 'react-router-dom';
+import CustomLoading from '../Helper/CustomLoading';
 
 const UserProfile = () => {
   const { data } = useUserContext();
   const [files, setFiles] = React.useState();
   const [avatar, setAvatar] = React.useState(null);
-
+  const [loading, setLoading] = React.useState(false);
   const [watchId, setWatchId] = React.useState();
   const [list, setList] = React.useState([]);
 
   async function avatarGet() {
     try {
+      setLoading(true);
       const data = await showAvatar_GET(tokenUserLocal);
       setAvatar(data.avatar.url);
     } catch (error) {
       return null; //Error user not have avatar
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -37,7 +41,9 @@ const UserProfile = () => {
     formData.append('files', files[0]);
     formData.append('source', 'users-permissions');
     try {
+      setLoading(true);
       uploadAvatar_POST(formData, tokenUserLocal).then((response) => {
+        setLoading(false);
         setAvatar(response[0].url);
       });
       toast.success('Avatar alterado com sucesso!', {
@@ -124,7 +130,12 @@ const UserProfile = () => {
           </div>
           <div className="bg-slate-950 tm:w-[90%] py-4 px-8 rounded-md flex flex-col items-center justify-center ">
             <p className="text-lg mb-2 font-semibold">Meu avatar</p>
-            <img className="w-[30%] mb-4 rounded-full" src={avatar} alt="" />
+            {loading ? (
+              <CustomLoading />
+            ) : (
+              <img className="w-[30%] mb-4 rounded-full" src={avatar} alt="" />
+            )}
+
             <div className="flex flex-col gap-y-2">
               <input
                 className="block w-full text-normal text-slate-500 
@@ -150,23 +161,29 @@ const UserProfile = () => {
             {`Minha Lista`}
           </p>
           <div className="flex flex-wrap gap-x-8 list-none">
-            {list.map((film) => (
-              <div
-                className="flex-grow-1 basis-[160px] sm:mx-auto"
-                key={film.id}
-              >
-                <Link to={`/filmes/${film.attributes.slug}`}>
-                  <img
-                    className="w-[160px] rounded-md box-shadow: 4.0px 8.0px 8.0px rgba(0,0,0,0.38) hover:scale-110 transition-all"
-                    src={film.attributes.card.data.attributes.url}
-                    alt=""
-                  />
-                  <p className="mt-2 font-gabarito font-semibold tm:text-xs text-center">
-                    {film.attributes.title}
-                  </p>
-                </Link>
-              </div>
-            ))}
+            {loading ? (
+              <CustomLoading />
+            ) : (
+              <>
+                {list.map((film) => (
+                  <div
+                    className="flex-grow-1 basis-[160px] sm:mx-auto"
+                    key={film.id}
+                  >
+                    <Link to={`/filmes/${film.attributes.slug}`}>
+                      <img
+                        className="w-[160px] rounded-md box-shadow: 4.0px 8.0px 8.0px rgba(0,0,0,0.38) hover:scale-110 transition-all"
+                        src={film.attributes.card.data.attributes.url}
+                        alt=""
+                      />
+                      <p className="mt-2 font-gabarito font-semibold tm:text-xs text-center">
+                        {film.attributes.title}
+                      </p>
+                    </Link>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -6,14 +6,16 @@ import useForm from '../../Hooks/useForm';
 import { useUserContext } from '../../Hooks/useUser';
 import Error from '../Helper/Error';
 import Head from '../Helper/Head';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const LoginForm = () => {
   const username = useForm(false);
   const password = useForm(false);
-  const { userLogin, error } = useUserContext();
+  const { userLogin, error, loading } = useUserContext();
 
   async function handleSubmit(event) {
     event.preventDefault();
+
     userLogin(username.value, password.value);
   }
   return (
@@ -58,7 +60,13 @@ const LoginForm = () => {
                 <Button
                   customStyle={`bg-orange-800 hover:bg-orange-700 transition-colors hover:text-slate-100 text-slate-300 py-2 px-8 rounded-lg`}
                 >
-                  Entrar
+                  {loading ? (
+                    <div className="w-[42px] text-center text-[16px] mx-auto text-slate-100">
+                      <LoadingOutlined />
+                    </div>
+                  ) : (
+                    ' Entrar'
+                  )}
                 </Button>
                 {error &&
                 password.value.length > 2 &&
