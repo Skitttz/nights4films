@@ -11,6 +11,7 @@ import { UserStorage } from './Hooks/useUser';
 import { ToastContainer, Slide } from 'react-toastify';
 import UserProfile from './Components/User/UserProfile';
 import ProtectedRouter from './Components/Helper/ProtectedRouter';
+import ScrollToTop from './Components/ScrollToTop';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
               theme="dark"
             />
             <main className="flex-1">
+              <ScrollToTop />
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="login/*" element={<Login />} />

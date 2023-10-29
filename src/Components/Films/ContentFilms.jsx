@@ -11,10 +11,6 @@ const ContentFilms = ({ id }) => {
   const { width } = useWindowDimensions();
   let hours, minutes;
 
-  const scrollToTop = () => {
-    window.scrollTo(0, 0);
-  };
-
   function transformMinHours(min) {
     hours = Math.floor(min / 60);
     return hours;
@@ -72,10 +68,7 @@ const ContentFilms = ({ id }) => {
 
               <div className="flex flex-col p-7 gap-3 ">
                 <h2 className="text-3xl  font-gabarito text-slate-200 font-bold relative mr-1">
-                  <Link
-                    onClick={scrollToTop}
-                    to={`/filmes/${films.data.attributes.slug}`}
-                  >
+                  <Link to={`/filmes/${films.data.attributes.slug}`}>
                     {films.data.attributes.title}{' '}
                   </Link>
                   <span className="font-gabarito text-base text-slate-300 bg-slate-900 rounded-md font-normal p-1 px-2  inline-block align-middle ">
@@ -101,10 +94,7 @@ const ContentFilms = ({ id }) => {
                   {films.data.attributes.description}
                 </p>
                 <div className="flex align-middle items-center justify-end  text-2xl text-slate-300 font-extralight mr-2  ">
-                  <Link
-                    onClick={scrollToTop}
-                    to={`/filmes/${films.data.attributes.slug}`}
-                  >
+                  <Link to={`/filmes/${films.data.attributes.slug}`}>
                     <span className="text-slate-400 hover:text-slate-200 text-sm font-gabarito mr-2 font-medium">
                       Ir para página do filme
                     </span>
