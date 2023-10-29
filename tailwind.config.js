@@ -87,15 +87,17 @@ export const theme = {
       animeDown: 'animeDown 1s ease-in-out forwards',
       animeTop: 'animeTop 1s ease-in-out forwards',
       wiggle: 'wiggle 1s ease-in-out forwards',
-      scaleItem: 'scaleItem .7s ease-in-out forwards',
-      scaleOut: 'scaleOut .7s ease-in-out forwards',
+      scaleItem: 'scaleItem .5s ease-in-out forwards',
+      scaleOut: 'scaleOut .5s ease-in-out forwards',
       scaleCard: 'scaleCard .3s ease-in-out forwards',
     },
     content: {
       play: 'url(/src/Assets/i-play.svg)',
       exit: 'url(/src/Assets/i-exit.svg)',
     },
-    backgroundImage: { login: 'url(/src/Assets/photo_login_l.jpg)' },
+    backgroundImage: {
+      login: 'url(/src/Assets/photo_login_l.jpg)',
+    },
 
     screens: {
       '2xl': { max: '1535px' }, //Large desktop
