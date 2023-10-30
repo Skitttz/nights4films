@@ -12,12 +12,12 @@
 </p>
 
 <div align="center">
-<img src="https://i.ibb.co/9ZbmLZv/desktop-nights4films.png" width="90%" />
+<img src="https://i.ibb.co/hDGXjK9/desktop-nights4films.png" width="100%" />
 </div>
 
-## Contexto 📝
+## Contexto 🎥✨📝
 
-É um projeto de catálogos de filmes é feito para ajudar os amantes do cinema a explorar e descobrir uma ampla gama de filmes. A criação de um site desse tipo geralmente ocorre em um contexto da necessidade de informação, catálogos de filmes se tornam uma fonte valiosa de conhecimento sobre o cinema.
+Este é um projeto de catálogos de filmes voltado para os amantes do cinema, permitindo que eles explorem uma ampla variedade de filmes. O desenvolvimento de uma plataforma como essa frequentemente é motivado pela necessidade de acesso fácil a informações, se tornando valiosas fontes de conhecimento sobre o cinema, ao mesmo tempo em que cria uma comunidade onde os membros podem compartilhar suas opiniões, criar listas pessoais e avaliar filmes.
 
 ## Tecnologias 🖥️
 
@@ -32,9 +32,10 @@ As tecnologias utilizadas na plataforma foram diversas e abrangem diferentes asp
 Criar um projeto pode ser empolgante, mas também traz consigo uma série de obstáculos. A seguir, apresento um resumo de alguns dos desafios enfrentados durante a execução deste projeto:
 
 - [x] Estruturar a criação de componentes de menor escala no ambiente React;
-- [x] Adaptação às novas ferramentas que foram utilizadas no projeto, como Strapi e o TailwindCSS.
+- [x] Adaptação às novas ferramentas que foram utilizadas no projeto, como Strapi e o TailwindCSS;
 - [x] Desenvolver um filtro de busca que seja funcional independente da pagina que o usuario estiver;
 - [x] Implementar a paginação para uma experiência de usuário contínua;
+- [x] Desenvolver a autenticação de usuário, registro e gestão de contas desenvolvimento do projeto.
 
 ## Como acessar 🚪🚶
 
