@@ -35,7 +35,7 @@ Criar um projeto pode ser empolgante, mas também traz consigo uma série de obs
 - [x] Adaptação às novas ferramentas que foram utilizadas no projeto, como Strapi e o TailwindCSS;
 - [x] Desenvolver um filtro de busca que seja funcional independente da pagina que o usuario estiver;
 - [x] Implementar a paginação para uma experiência de usuário contínua;
-- [x] Desenvolver a autenticação de usuário, registro e gestão de contas desenvolvimento do projeto.
+- [x] Desenvolver o registro do usuário,autenticação e atualização dos dados.
 
 ## Como acessar 🚪🚶
 
