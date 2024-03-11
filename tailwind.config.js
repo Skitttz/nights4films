@@ -100,6 +100,7 @@ export const theme = {
     },
 
     screens: {
+      desktop: { min: '1024px' },
       '2xl': { max: '1535px' }, //Large desktop
       // => @media (max-width: 1535px) { ... }
 

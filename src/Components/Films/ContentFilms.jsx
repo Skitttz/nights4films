@@ -45,7 +45,7 @@ const ContentFilms = ({ id }) => {
     <>
       {loading ? (
         <div
-          className={`pt-4 w-auto h-[600px] flex items-center lg:w-[40rem] md:w-[35rem] sm:w-[30rem] tm:w-[19rem] duration-700 cardMD:pb-16 md:px-8 sm:px-8 tm:px-0 duration-400  
+          className={`pt-4 w-auto h-[600px] flex items-center mx-auto duration-700 cardMD:pb-16 md:px-8 sm:px-8 tm:px-0 duration-400  
         `}
         >
           <CustomLoading />
