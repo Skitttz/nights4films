@@ -40,7 +40,6 @@ const ReviewForms = ({
 
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log(reviewContent.length);
     if (reviewContent !== 0 && reviewContent.length < 1000) {
       userCreateReview(
         tokenUserLocal,
