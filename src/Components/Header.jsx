@@ -6,6 +6,7 @@ import imgLougout from '../Assets/i-logout.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiMenu } from 'react-icons/fi';
 import { useUserContext } from '../Hooks/useUser';
+import { UserOutlined } from '@ant-design/icons';
 
 const Header = ({ onSearchValueChange }) => {
   const { pathname } = useLocation();
@@ -106,16 +107,30 @@ const Header = ({ onSearchValueChange }) => {
                 openMenuMB ? 'cardMD:block' : 'cardMD:hidden'
               }  flex gap-x-2`}
             >
-              <Link to={'/perfil'}>
+              <div
+                className={`text-purple-100 font-roboto font-light p-2  ${
+                  pathname === '/perfil' ? 'bg-opacity-100' : 'bg-opacity-20'
+                } transition-all opacity-90 hover:opacity-100 rounded-lg `}
+              >
+                <div className="">
+                  <p className="text-center">
+                    {`Olá, `}
+                    <span className="text-slate-200 font-bold">{`${data.username}`}</span>
+                  </p>
+                </div>
+              </div>
+              <Link to={'/perfil'} className="mr-1 tm:mr-0">
                 <div
                   className={`text-purple-100 font-roboto font-light p-2 bg-purple-800 hover:bg-opacity-100 ${
-                    pathname === '/perfil' ? 'bg-opacity-100' : 'bg-opacity-20'
+                    pathname === '/perfil' ? 'bg-opacity-100' : 'bg-opacity-60'
                   } transition-all opacity-90 hover:opacity-100 rounded-lg `}
                 >
                   <div className="">
-                    <p>
-                      {`Olá, `}
-                      <span className="text-slate-200 font-bold">{`${data.username}`}</span>
+                    <p className="font-bold">
+                      <span className="mr-1">
+                        <UserOutlined />
+                      </span>
+                      {`Meu Perfil `}
                     </p>
                   </div>
                 </div>
