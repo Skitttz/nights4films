@@ -57,7 +57,9 @@ const Header = ({ onSearchValueChange }) => {
         >
           <div>
             <Link
-              className={`flex items-center  ${openMenuMB ? 'ml-0' : 'ml-7'}`}
+              className={`flex items-center select-none  ${
+                openMenuMB ? 'ml-0' : 'ml-7'
+              }`}
               to={'/'}
               onClick={() => {
                 setSearchValue('');
