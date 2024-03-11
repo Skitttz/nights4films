@@ -33,6 +33,7 @@ export const UserStorage = ({ children }) => {
       setLogin(true);
     } catch (error) {
       console.error(error);
+      userLogout();
     }
   }
 
