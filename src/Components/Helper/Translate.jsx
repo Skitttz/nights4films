@@ -8,6 +8,13 @@ const errorTranslations = {
 
   //Quando o usuario bota login/senha invalida
   'Invalid identifier or password': 'Usuário/ou Senha inválida',
+
+  //Campo Obrigatorio Vazio
+  'identifier is a required field': 'Preencha o Campo de Login',
+  'password is a required field': 'Preencha o Campo de Senha',
+
+  //Mais de um Campo Obrigatorio Vazio
+  '2 errors occurred': 'Preencha os Campos Obrigatórios',
 };
 
 export function translateErrorMessage(errorMessage) {
