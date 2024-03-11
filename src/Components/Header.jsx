@@ -39,6 +39,7 @@ const Header = ({ onSearchValueChange }) => {
   }
 
   const handleSearchChange = (event) => {
+    event.preventDefault();
     setSearchValue(event.target.value);
     debouncedChange(event.target.value);
   };
@@ -60,7 +61,6 @@ const Header = ({ onSearchValueChange }) => {
               to={'/'}
               onClick={() => {
                 setSearchValue('');
-                handleSearchChange();
               }}
             >
               <p className="font-gabarito font-thin text-2xl text-gray-200 ">
