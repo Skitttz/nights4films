@@ -21,7 +21,7 @@ const Intro = () => {
                 histórias<span className="text-violet-600">.</span>
               </span>
             </h1>
-            <span className="inline-block text-md w-[390px] cardMD:w-[auto] cardMD:text-md text-slate-300 font-roboto mt-4">
+            <span className="inline-block text-md w-[390px] cardMD:w-[auto] cardMD:text-md text-slate-300 font-roboto mt-2">
               Compartilhe suas experiências, mostre suas reflexões e observe as
               visões de outros amantes do cinema.
             </span>
