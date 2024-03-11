@@ -24,9 +24,12 @@ const UserProfile = () => {
     try {
       setLoading(true);
       const data = await showAvatar_GET(tokenUserLocal);
-      setAvatar(data.avatar.url);
+      const avatarUrl = data?.avatar?.url;
+      if (!avatar) {
+        setAvatar(avatarUrl);
+      }
     } catch (error) {
-      return null; //Error user not have avatar
+      return null;
     } finally {
       setLoading(false);
     }
@@ -57,7 +60,7 @@ const UserProfile = () => {
         theme: 'dark',
       });
     } catch (error) {
-      console.error('Houve um erro para subir o avatar', error);
+      console.error('Ops! Houve um problema ao carregar o avatar.', error);
     }
   };
 
@@ -89,23 +92,29 @@ const UserProfile = () => {
   }
 
   React.useEffect(() => {
-    getListFilms(tokenUserLocal);
-    if (watchId) {
-      getIdFilms(watchId, tokenUserLocal);
-    }
-    avatarGet();
+    getListFilms(tokenUserLocal).then(() => {
+      if (watchId) {
+        getIdFilms(watchId, tokenUserLocal);
+      }
+    });
   }, [watchId]);
+
+  React.useEffect(() => {
+    avatarGet();
+  }, [avatar]);
 
   return (
     <div className="max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown">
       <Head title={` » Meu Perfil`} description="Pagina do Perfil" />
-      <div className="text-slate-200 font-roboto">
-        <p className="text-3xl cardMD:text-2xl tm:text-xl font-light border-b border-b-slate-800 mb-4">
-          {`Bem-vindo ao seu perfil,`}{' '}
-          <span className="font-extrabold font-gabarito text-violet-600">{`${data.username}`}</span>
-        </p>
+      <div className="text-slate-200 font-roboto ">
+        <div className="flex items-center justify-center">
+          <p className="text-3xl cardMD:text-2xl tm:text-xl font-light border-b border-b-slate-800 mb-12">
+            <span>{`Bem-vindo ao seu perfil,`} </span>
+            <span className="font-extrabold font-gabarito text-violet-600">{`${data.username}`}</span>{' '}
+          </p>
+        </div>
         <form
-          className="grid gap-x-6 grid-cols-2 cardMD:grid-cols-1 cardMD:gap-y-4 cardMD:justify-items-center cardMD:justify-center "
+          className="grid gap-x-6 grid-cols-2 cardMD:grid-cols-1 cardMD:gap-y-4 cardMD:justify-items-center cardMD:justify-center h-[19.375rem]"
           onSubmit={uploadImage}
         >
           <div className="bg-slate-950 py-4 px-8 rounded-md flex flex-col gap-y-2 items-start">
@@ -122,10 +131,20 @@ const UserProfile = () => {
               )}`}</span>
             </p>
             <p className="font-semibold">
-              {`Ultima atualização:`}{' '}
+              {`Ultima alteracao do perfil:`}{' '}
               <span className="font-light">{`${formatDateHour(
                 data.updatedAt,
               )}`}</span>
+            </p>
+            <p className="font-semibold">
+              {`Filmes que voce gostou:`}{' '}
+              <span className="font-light">{`-`}</span>
+            </p>
+            <p className="font-semibold">
+              {`Filmes listados:`} <span className="font-light">{`-`}</span>
+            </p>
+            <p className="font-semibold">
+              {`Filmes avaliados:`} <span className="font-light">{`-`}</span>
             </p>
           </div>
           <div className="bg-slate-950 tm:w-[90%] py-4 px-8 rounded-md flex flex-col items-center justify-center ">
@@ -157,31 +176,40 @@ const UserProfile = () => {
           </div>
         </form>
         <div className="mt-12">
-          <p className="text-2xl cardMD:text-2xl font-mono border-b border-b-slate-800 mb-4">
-            {`Minha Lista`}
+          <p className="text-3xl cardMD:text-2xl font-roboto border-b border-b-slate-800 mb-4">
+            <span className="text-2xl"></span> {`Minha Lista`}
           </p>
           <div className="flex flex-wrap gap-x-8 list-none">
             {loading ? (
               <CustomLoading />
             ) : (
               <>
-                {list.map((film) => (
-                  <div
-                    className="flex-grow-1 basis-[160px] sm:mx-auto"
-                    key={film.id}
-                  >
-                    <Link to={`/filmes/${film.attributes.slug}`}>
-                      <img
-                        className="w-[160px] rounded-md box-shadow: 4.0px 8.0px 8.0px rgba(0,0,0,0.38) hover:scale-110 transition-all"
-                        src={film.attributes.card.data.attributes.url}
-                        alt=""
-                      />
-                      <p className="mt-2 font-gabarito font-semibold tm:text-xs text-center">
-                        {film.attributes.title}
-                      </p>
-                    </Link>
+                {list.length !== 0 ? (
+                  list.map((film) => (
+                    <div
+                      className="flex-grow-1 basis-[160px] sm:mx-auto"
+                      key={film.id}
+                    >
+                      <Link to={`/filmes/${film.attributes.slug}`}>
+                        <img
+                          className="w-[160px] rounded-md box-shadow: 4.0px 8.0px 8.0px rgba(0,0,0,0.38) hover:scale-110 transition-all"
+                          src={film.attributes.card.data.attributes.url}
+                          alt=""
+                        />
+                        <p className="mt-2 font-gabarito font-semibold tm:text-xs text-center">
+                          {film.attributes.title}
+                        </p>
+                      </Link>
+                    </div>
+                  ))
+                ) : (
+                  <div className="w-full">
+                    <p className="font-roboto text-center text-lg font-bold">
+                      Até o momento, você ainda não adicionou nenhum filme à sua
+                      lista
+                    </p>
                   </div>
-                ))}
+                )}
               </>
             )}
           </div>
