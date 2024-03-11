@@ -69,15 +69,9 @@ const LoginForm = () => {
                     <p className="font-bold">Entrar</p>
                   )}
                 </Button>
-                {error &&
-                password.value.length > 2 &&
-                username.value.length > 2 ? (
-                  <div className="h-[30px]">
-                    <Error error={error} />
-                  </div>
-                ) : (
-                  <Error error={error} />
-                )}
+                <div className="absolute">
+                  {error ? <Error error={error} /> : ''}
+                </div>
               </div>
             </form>
 
