@@ -44,7 +44,7 @@ const LoginForm = () => {
                 <Input
                   label="Senha"
                   type="password"
-                  name="senha"
+                  name="password"
                   customStyleDiv={'h-[5.2rem] '}
                   customStyleInput={
                     'focus:bg-slate-200 indent-1 focus:text-slate-900'
