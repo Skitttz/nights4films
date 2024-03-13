@@ -7,6 +7,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiMenu } from 'react-icons/fi';
 import { useUserContext } from '../Hooks/useUser';
 import { UserOutlined } from '@ant-design/icons';
+import CapitalizeLetter from './Helper/CapitalizeLetter';
 
 const Header = ({ onSearchValueChange }) => {
   const { pathname } = useLocation();
@@ -115,7 +116,9 @@ const Header = ({ onSearchValueChange }) => {
                 <div className="">
                   <p className="text-center">
                     {`Olá, `}
-                    <span className="text-slate-200 font-bold">{`${data.username}`}</span>
+                    <span className="text-slate-200 font-bold">{`${CapitalizeLetter(
+                      data.username,
+                    )}`}</span>
                   </p>
                 </div>
               </div>
@@ -125,13 +128,9 @@ const Header = ({ onSearchValueChange }) => {
                     pathname === '/perfil' ? 'bg-opacity-100' : 'bg-opacity-60'
                   } transition-all opacity-90 hover:opacity-100 rounded-lg `}
                 >
-                  <div className="">
-                    <p className="font-bold">
-                      <span className="mr-1">
-                        <UserOutlined />
-                      </span>
-                      {`Meu Perfil `}
-                    </p>
+                  <div className="flex items-center">
+                    <UserOutlined className="mr-1" />
+                    <p className="font-bold">{`Meu Perfil `}</p>
                   </div>
                 </div>
               </Link>

@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import Head from '../Helper/Head';
 import { Link } from 'react-router-dom';
 import CustomLoading from '../Helper/CustomLoading';
+import CapitalizeLetter from '../Helper/CapitalizeLetter';
 
 const UserProfile = () => {
   const { data } = useUserContext();
@@ -110,7 +111,9 @@ const UserProfile = () => {
         <div className="flex items-center justify-center">
           <p className="text-3xl cardMD:text-2xl tm:text-xl font-light border-b border-b-slate-800 mb-12">
             <span>{`Bem-vindo ao seu perfil,`} </span>
-            <span className="font-extrabold font-gabarito text-violet-600">{`${data.username}`}</span>{' '}
+            <span className="font-extrabold font-gabarito text-violet-600">{`${CapitalizeLetter(
+              data.username,
+            )}`}</span>{' '}
           </p>
         </div>
         <form
