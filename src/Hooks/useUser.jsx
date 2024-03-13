@@ -59,7 +59,7 @@ export const UserStorage = ({ children }) => {
       setError(null);
       setLoading(true);
       const userDataPOST = await userLogin_POST({
-        identifier: username,
+        username: username,
         password: password,
       });
       const token = userDataPOST.jwt;
