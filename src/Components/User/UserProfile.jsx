@@ -12,6 +12,7 @@ import Head from '../Helper/Head';
 import { Link } from 'react-router-dom';
 import CustomLoading from '../Helper/CustomLoading';
 import CapitalizeLetter from '../Helper/CapitalizeLetter';
+import noAvatar from '../../Assets/noAvatar.svg';
 
 const UserProfile = () => {
   const { data } = useUserContext();
@@ -154,8 +155,18 @@ const UserProfile = () => {
             <p className="text-lg mb-2 font-semibold">Meu avatar</p>
             {loading ? (
               <CustomLoading />
+            ) : avatar ? (
+              <img
+                className="w-[130px] h-[130px] mb-4 rounded-full animate-fadeIn"
+                src={avatar}
+                alt=""
+              />
             ) : (
-              <img className="w-[30%] mb-4 rounded-full" src={avatar} alt="" />
+              <img
+                className="w-[30%] mb-4 rounded-full"
+                src={noAvatar}
+                alt=""
+              />
             )}
 
             <div className="flex flex-col gap-y-2">
@@ -190,7 +201,7 @@ const UserProfile = () => {
                 {list.length !== 0 ? (
                   list.map((film) => (
                     <div
-                      className="flex-grow-1 basis-[160px] sm:mx-auto"
+                      className="flex-grow-1 basis-[160px] sm:mx-auto animate-fadeIn"
                       key={film.id}
                     >
                       <Link to={`/filmes/${film.attributes.slug}`}>
@@ -207,7 +218,7 @@ const UserProfile = () => {
                   ))
                 ) : (
                   <div className="w-full">
-                    <p className="font-roboto text-center text-lg font-bold">
+                    <p className="font-roboto text-center text-lg font-bold animate-fadeIn">
                       Até o momento, você ainda não adicionou nenhum filme à sua
                       lista
                     </p>
