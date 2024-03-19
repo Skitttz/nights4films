@@ -157,7 +157,7 @@ const FilmView = () => {
               description="Pagina do filme"
             />
 
-            <div className="mt-12 grid grid-cols-2 grid-rows-[auto,1fr] gap-y-8 content-center justify-items-center items-start animate-fadeIn max-w-7xl lg:max-w-5xl font-gabarito cardMD:grid-cols-1 cardMD:p-8 ">
+            <div className="mt-12 grid grid-cols-2 grid-rows-[auto,1fr] gap-y-8 content-center justify-items-center items-start animate-fadeIn max-w-7xl lg:max-w-5xl font-gabarito cardMD:grid-cols-1 cardMD:p-8">
               <div>
                 <img
                   className="w-auto h-auto bg-contain rounded-lg shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] "
@@ -185,11 +185,11 @@ const FilmView = () => {
                 </div>
               </div>
               {login ? (
-                <div className="col-span-full font-gabarito content-center justify-items-center max-w-7xl lg:max-w-5xl h-16 cardMD:h-[auto] cardMD:p-4 tm:p-2 bg-transparent border border-blue-950 text-slate-300 rounded-lg flex justify-start items-center cardMD:mx-auto">
-                  <div className="cardMD:mx-8 tm:mx-1 grid grid-cols-[1fr,1fr] cardMD:grid-cols-1 tm:grid-cols-2 tm:items-center tm:gap-x-4  cardMD:gap-y-4  justify-between cardMD:justify-center mx-auto grid-row-1 ">
-                    <ul className="pl-8 flex justify-center tm:flex-col tm:gap-y-4 gap-x-8 cardMD:mx-auto my-auto text-center">
+                <div className="col-span-full tm:w-full font-gabarito content-center justify-items-center max-w-7xl lg:max-w-5xl h-16 cardMD:h-[auto] cardMD:p-4 tm:p-2 bg-transparent border border-blue-950 text-slate-300 rounded-lg flex justify-start items-center cardMD:mx-auto sm:gap-x-4 md:p-1">
+                  <div className="cardMD:mx-8 md:mx-0 sm:mx-2 tm:mx-6 tm:mb-6 tm:mt-2 grid grid-cols-[1fr,1fr] cardMD:grid-cols-1 tm:grid-cols-1 tm:items-center tm:gap-x-4 cardMD:gap-y-4 justify-between cardMD:justify-center mx-auto grid-row-1 w-full">
+                    <ul className="pl-14 md:pl-0 md:mx-auto sm:pl-0 tm:pl-0 grid grid-cols-[26px,30px,120px,200px] justify-center md:grid-cols-4 sm:grid-cols-2 tm:grid-cols-[auto] sm:gap-y-4 md:gap-y-4 tm:gap-y-6 tm:gap-x-3 gap-x-8 cardMD:mx-auto my-auto text-center cardMD:grid-cols-[24px,40px,100px,140px] tm:py-4 cm:grid-cols-[auto,1fr]">
                       <li
-                        className="cursor-pointer "
+                        className="cursor-pointer"
                         onClick={() => setWatch(!watch)}
                       >
                         <WatchButton
@@ -260,7 +260,7 @@ const FilmView = () => {
                         />
                       </li>
                     </ul>
-                    <ul className="flex text-center tm:flex-col justify-center gap-x-4 tm:gap-y-3 items-center text-slate-300 cardMD:mx-auto  ">
+                    <ul className="flex text-center tm:flex-1 tm:gap-x-2 flex-wrap tm:gap-y-4 justify-center gap-x-4 items-center text-slate-300 cardMD:mx-auto cm:flex-wrap cm:flex-1 cm:gap-y-4">
                       {actions.map((action, index) => (
                         <li
                           key={index}
