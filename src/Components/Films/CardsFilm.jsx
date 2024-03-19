@@ -78,7 +78,7 @@ const CardsFilm = ({ searchValue }) => {
       {films.length !== 0 ? (
         <div
           className="grid grid-cols-[600px,_1fr] justify-center justify-items-center gap-x-4 cardMD:grid-cols-1 
-      cardMD:max-w-5xl cardMD:justify-center animate-fadeIn"
+      cardMD:max-w-5xl xl:max-w-6xl lg:max-w-5xl xm:max-w-[64rem] cardMD:justify-center animate-fadeIn"
         >
           <div
             className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1

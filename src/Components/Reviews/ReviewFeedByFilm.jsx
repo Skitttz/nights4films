@@ -40,7 +40,7 @@ const ReviewFeedByFilm = ({ tokenUser, FilmId }) => {
           <CustomLoading />
         </div>
       ) : (
-        <div className="max-w-5xl mx-auto animate-fadeIn">
+        <div className="max-w-7xl lg:max-w-5xl mx-auto animate-fadeIn">
           <div>
             {reviews.data && reviews.data.length !== 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-1 gap-y-8 gap-x-8 justify-items-center">

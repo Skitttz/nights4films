@@ -51,7 +51,7 @@ const Header = ({ onSearchValueChange }) => {
       <header className={`fixed z-30 w-full top-0 bg-gray-950 shadow-md`}>
         <nav
           ref={refNav}
-          className={`h-16 max-w-5xl mx-auto flex flex-wrap items-center justify-between lg:justify-between lg:max-w-5xl tm:max-w-5xl tm:flex-nowrap tm:gap-4 ${
+          className={`h-16 max-w-7xl mx-auto flex flex-wrap items-center justify-between lg:justify-between lg:max-w-5xl tm:max-w-5xl tm:flex-nowrap tm:gap-4 ${
             openMenuMB
               ? 'flex-col h-[auto] gap-y-10 mt-4 border-b border-b-purple-900 border-opacity-60 cardMD:animate-animeDown'
               : 'cardMD:flex-row cardMD:animate-animeTop'
@@ -106,7 +106,7 @@ const Header = ({ onSearchValueChange }) => {
             <div
               className={`${
                 openMenuMB ? 'cardMD:block' : 'cardMD:hidden'
-              }  flex gap-x-2`}
+              }  flex gap-x-2 xm:pr-4`}
             >
               <div
                 className={`text-purple-100 font-roboto font-light p-2  ${

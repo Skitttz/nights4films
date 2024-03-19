@@ -46,7 +46,7 @@ const RegisterForm = () => {
     }
   }
   return (
-    <section className="animate-animeLeft max-w-5xl mx-auto">
+    <section className="animate-animeLeft max-w-7xl lg:max-w-5xl mx-auto">
       <Head title=" » Cadastro" />
       <div className="grid justify-center mt-16">
         <h1

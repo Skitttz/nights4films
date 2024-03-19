@@ -106,7 +106,7 @@ const UserProfile = () => {
   }, [avatar]);
 
   return (
-    <div className="max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown">
+    <div className="max-w-7xl lg:max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown">
       <Head title={` » Meu Perfil`} description="Pagina do Perfil" />
       <div className="text-slate-200 font-roboto ">
         <div className="flex items-center justify-center">
