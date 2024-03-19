@@ -19,6 +19,8 @@ import { userAlreadyWatchedFilm } from '../User/Watch/UserWatch';
 import ReviewForms from '../Reviews/ReviewForms';
 import ReviewFeedByFilm from '../Reviews/ReviewFeedByFilm';
 import RateButton from '../User/Rate/RateButton';
+import ModalTrailer from './ModalTrailer';
+import useWindowDimensions from '../../Hooks/useWindowDimension';
 
 const FilmView = () => {
   const [films, setFilms] = React.useState(null);
@@ -62,6 +64,10 @@ const FilmView = () => {
   const refLiRate = React.useRef(null);
   const divDescriptionFilmRef = React.useRef(null);
   const pRef = React.useRef(null);
+
+  //Modal
+  const [activeModal, setActiveModal] = React.useState(false);
+  const { width } = useWindowDimensions();
 
   React.useEffect(() => {
     const ruleSlug = `/filmes?filters[slug][$eq]`;
@@ -111,6 +117,17 @@ const FilmView = () => {
 
   const actions = [
     { title: 'Criar Review', onClick: () => setModalReview(!modalReview) },
+    {
+      title: 'Trailer',
+      onClick: () => {
+        if (width > 1000) {
+          return setActiveModal(true);
+        }
+        return open(
+          `https://www.youtube.com/watch?v=${films?.data[0]?.attributes.trailer}`,
+        );
+      },
+    },
     { title: 'Compartilhar', onClick: () => clipboardFilmURL() },
   ];
 
@@ -119,106 +136,28 @@ const FilmView = () => {
   return (
     <>
       <div>
+        {activeModal ? (
+          <ModalTrailer
+            key={activeModal}
+            setModal={setActiveModal}
+            EmbedId={films?.data[0]?.attributes.trailer}
+          />
+        ) : (
+          ''
+        )}
+      </div>
+      <div>
         {films ? (
           <div
-            className="grid justify-center bg-slate-950 mt-6 animate-animeLeft"
+            className="grid justify-center bg-slate-950 mt-6 animate-animeLeft xl:px-4 lg:px-4 cardMD:px-4"
             key={films.data[0].id}
           >
             <Head
               title={` » ${films.data[0].attributes.title}`}
               description="Pagina do filme"
             />
-            {login ? (
-              <div className="font-gabarito mt-12 content-center justify-items-center  max-w-5xl h-16 cardMD:h-[auto] cardMD:p-4 tm:p-2 bg-transparent border border-blue-950 text-slate-300 rounded-t-lg flex justify-start items-center cardMD:mx-auto">
-                <div className=" cardMD:mx-8 tm:mx-1 grid grid-cols-[1fr,1fr] cardMD:grid-cols-1 tm:grid-cols-2 tm:items-center tm:gap-x-4  cardMD:gap-y-4  justify-between cardMD:justify-center mx-auto grid-row-1 w-full">
-                  <ul className="flex justify-center tm:flex-col  tm:gap-y-4 gap-x-8 cardMD:mx-auto my-auto text-center">
-                    <li
-                      className="cursor-pointer "
-                      onClick={() => setWatch(!watch)}
-                    >
-                      <WatchButton
-                        watch={watch}
-                        watchId={watchId}
-                        tokenUserLocal={tokenUserLocal}
-                        films={films}
-                        userContainsFilmInWatchListId={
-                          userContainsFilmInWatchListId
-                        }
-                        userWatchedUpdate={userWatchedUpdate}
-                        userWatchedRemove={userWatchedRemove}
-                        userWatchedCreateId={userWatchedCreateId}
-                        data={data}
-                        sizeIcons={sizeIcons}
-                      />
-                    </li>
-                    <li
-                      className="cursor-pointer "
-                      onClick={() => setLiked(!like)}
-                    >
-                      <LikeButton
-                        like={like}
-                        likeId={likeId}
-                        tokenUserLocal={tokenUserLocal}
-                        films={films}
-                        userContainsLikeId={userContainsLikeId}
-                        userLikeFilmUpdate={userLikeFilmUpdate}
-                        userLikeFilmRemove={userLikeFilmRemove}
-                        userLikeFilmCreateId={userLikeFilmCreateId}
-                        data={data}
-                        sizeIcons={sizeIcons}
-                      />
-                    </li>
-                    <li
-                      className="cursor-pointer "
-                      onClick={() => setWatchList(!watchList)}
-                    >
-                      <WatchListButton
-                        watchList={watchList}
-                        watchListId={watchListId}
-                        tokenUserLocal={tokenUserLocal}
-                        films={films}
-                        userContainsFilmInWatchListId={
-                          userContainsFilmInWatchListId
-                        }
-                        userListFilmUpdate={userListFilmUpdate}
-                        userListFilmRemove={userListFilmRemove}
-                        userListFilmCreateId={userListFilmCreateId}
-                        data={data}
-                        sizeIcons={sizeIcons}
-                      />
-                    </li>
-                    <li className="mr-12 cardMD:mr-0 relative " ref={refLiRate}>
-                      {/*ConfigProvider lib React Rate */}
-                      <RateButton
-                        tokenUserLocal={tokenUserLocal}
-                        films={films}
-                        login={login}
-                        userRateUpdate={userRateUpdate}
-                        userRateRemove={userRateRemove}
-                        userRateCreateId={userRateCreateId}
-                        data={data}
-                        sizeIcons={sizeIcons}
-                      />
-                    </li>
-                  </ul>
-                  <ul className="flex tm:flex-col justify-center gap-x-4 tm:gap-y-3 items-center text-slate-300 cardMD:mx-auto  ">
-                    {actions.map((action, index) => (
-                      <li
-                        key={index}
-                        className="p-2 tm:p-2 tm:text-center  rounded-md bg-[rgba(47,66,178)] hover:bg-[rgba(46,38,178)] cursor-pointer transition-colors"
-                        onClick={action.onClick}
-                      >
-                        {action.title}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ) : (
-              <div className="mt-12"></div>
-            )}
 
-            <div className="grid grid-cols-2 grid-rows-[auto,1fr] gap-y-8 content-center justify-items-center items-center animate-fadeIn max-w-5xl font-gabarito cardMD:grid-cols-1 cardMD:p-8 ">
+            <div className="mt-12 grid grid-cols-2 grid-rows-[auto,1fr] gap-y-8 content-center justify-items-center items-start animate-fadeIn max-w-7xl lg:max-w-5xl font-gabarito cardMD:grid-cols-1 cardMD:p-8 ">
               <div>
                 <img
                   className="w-auto h-auto bg-contain rounded-lg shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] "
@@ -226,11 +165,14 @@ const FilmView = () => {
                   alt=""
                 />
               </div>
-              <div ref={divDescriptionFilmRef} className="p-3 rounded-br-lg ">
+              <div
+                ref={divDescriptionFilmRef}
+                className="px-3 pt-3 rounded-br-lg h-full cardMD:pb-3"
+              >
                 <div className="text-center ">
                   <p
                     ref={pRef}
-                    className={`inline-block items-center text-slate-200 text-4xl p-4 border border-slate-300 border-opacity-10 rounded-xl  hover:animate-pulse`}
+                    className={`inline-block items-center text-slate-200 text-4xl p-4 border border-slate-300 border-opacity-10 rounded-xl hover:animate-pulse`}
                   >
                     {films.data[0].attributes.title}
                   </p>
@@ -242,6 +184,98 @@ const FilmView = () => {
                   </p>
                 </div>
               </div>
+              {login ? (
+                <div className="col-span-full font-gabarito content-center justify-items-center max-w-7xl lg:max-w-5xl h-16 cardMD:h-[auto] cardMD:p-4 tm:p-2 bg-transparent border border-blue-950 text-slate-300 rounded-lg flex justify-start items-center cardMD:mx-auto">
+                  <div className="cardMD:mx-8 tm:mx-1 grid grid-cols-[1fr,1fr] cardMD:grid-cols-1 tm:grid-cols-2 tm:items-center tm:gap-x-4  cardMD:gap-y-4  justify-between cardMD:justify-center mx-auto grid-row-1 ">
+                    <ul className="pl-8 flex justify-center tm:flex-col tm:gap-y-4 gap-x-8 cardMD:mx-auto my-auto text-center">
+                      <li
+                        className="cursor-pointer "
+                        onClick={() => setWatch(!watch)}
+                      >
+                        <WatchButton
+                          watch={watch}
+                          watchId={watchId}
+                          tokenUserLocal={tokenUserLocal}
+                          films={films}
+                          userContainsFilmInWatchListId={
+                            userContainsFilmInWatchListId
+                          }
+                          userWatchedUpdate={userWatchedUpdate}
+                          userWatchedRemove={userWatchedRemove}
+                          userWatchedCreateId={userWatchedCreateId}
+                          data={data}
+                          sizeIcons={sizeIcons}
+                        />
+                      </li>
+                      <li
+                        className="cursor-pointer "
+                        onClick={() => setLiked(!like)}
+                      >
+                        <LikeButton
+                          like={like}
+                          likeId={likeId}
+                          tokenUserLocal={tokenUserLocal}
+                          films={films}
+                          userContainsLikeId={userContainsLikeId}
+                          userLikeFilmUpdate={userLikeFilmUpdate}
+                          userLikeFilmRemove={userLikeFilmRemove}
+                          userLikeFilmCreateId={userLikeFilmCreateId}
+                          data={data}
+                          sizeIcons={sizeIcons}
+                        />
+                      </li>
+                      <li
+                        className="cursor-pointer "
+                        onClick={() => setWatchList(!watchList)}
+                      >
+                        <WatchListButton
+                          watchList={watchList}
+                          watchListId={watchListId}
+                          tokenUserLocal={tokenUserLocal}
+                          films={films}
+                          userContainsFilmInWatchListId={
+                            userContainsFilmInWatchListId
+                          }
+                          userListFilmUpdate={userListFilmUpdate}
+                          userListFilmRemove={userListFilmRemove}
+                          userListFilmCreateId={userListFilmCreateId}
+                          data={data}
+                          sizeIcons={sizeIcons}
+                        />
+                      </li>
+                      <li
+                        className="mr-12 cardMD:mr-0 relative "
+                        ref={refLiRate}
+                      >
+                        {/*ConfigProvider lib React Rate */}
+                        <RateButton
+                          tokenUserLocal={tokenUserLocal}
+                          films={films}
+                          login={login}
+                          userRateUpdate={userRateUpdate}
+                          userRateRemove={userRateRemove}
+                          userRateCreateId={userRateCreateId}
+                          data={data}
+                          sizeIcons={sizeIcons}
+                        />
+                      </li>
+                    </ul>
+                    <ul className="flex text-center tm:flex-col justify-center gap-x-4 tm:gap-y-3 items-center text-slate-300 cardMD:mx-auto  ">
+                      {actions.map((action, index) => (
+                        <li
+                          key={index}
+                          className="w-[7rem] lg:w-[7rem]  px-2 py-2 tm:p-2 tm:text-center rounded-md bg-[rgba(47,66,178)] hover:bg-[rgba(46,38,178)] cursor-pointer transition-colors"
+                          onClick={action.onClick}
+                        >
+                          {action.title}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-12"></div>
+              )}
               {login ? (
                 <div className="text-slate-400 inline-block mr-auto w-full col-span-full">
                   <div className="mb-24">
