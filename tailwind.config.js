@@ -107,6 +107,8 @@ export const theme = {
       xl: { max: '1279px' }, // Desktop
       // => @media (max-width: 1279px) { ... }
 
+      xm: { min: '1024px', max: '1278px' },
+
       lg: { min: '768px', max: '1023px' }, // Tablet / Laptop
       // => @media (max-width: 1023px) { ... }
 
