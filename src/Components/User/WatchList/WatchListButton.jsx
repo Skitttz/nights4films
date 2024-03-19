@@ -63,7 +63,7 @@ function WatchListButton({
       ) : (
         <>
           <FieldTimeOutlined style={{ fontSize: `${sizeIcons}px` }} />
-          <p className="text-slate-400">Adicionar</p>
+          <p className="text-slate-400">Assistir Depois</p>
         </>
       )}
     </div>

@@ -47,12 +47,12 @@ const WatchButton = ({
               fontSize: `${sizeIcons}px`,
             }}
           />
-          <p className="text-slate-400">Assistido</p>
+          <p className="text-slate-400">Visto</p>
         </>
       ) : (
         <>
           <EyeOutlined style={{ fontSize: `${sizeIcons}px` }} />
-          <p className="text-slate-400">Assistir</p>
+          <p className="text-slate-400">Ver</p>
         </>
       )}
     </div>
