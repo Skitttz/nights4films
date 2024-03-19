@@ -120,6 +120,8 @@ export const theme = {
       sm: { max: '639px' },
       // => @media (max-width: 639px) { ... }
 
+      cm: { min: '481px', max: '600px' }, // Compact mobile
+
       tm: { min: '0px', max: '480px' }, // Tiny mobile
       // => @media (max-width: 384px) { ... }
     },
