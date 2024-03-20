@@ -26,7 +26,7 @@ const RegisterForm = () => {
       if (error === null) {
         toast.success('Cadastrado com Sucesso!', {
           position: 'top-center',
-          autoClose: 8000,
+          autoClose: 3500,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -37,7 +37,7 @@ const RegisterForm = () => {
 
         setTimeout(() => {
           navigator('/login');
-        }, 9000);
+        }, 4000);
       } else {
         return null;
       }
