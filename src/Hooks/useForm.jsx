@@ -2,8 +2,8 @@ import React from 'react';
 
 const types = {
   username: {
-    regex: /^(?=.{3,12}$)(?:[a-zA-Z\d]+(?:(?:\.|-|_)[a-zA-Z\d])*)+$/,
-    message: 'Sem @#$%!?* | Mínimo 3 caracteres',
+    regex: /^(?=.{3,20}$)(?:[a-zA-Z\d]+(?:(?:\.|-|_)[a-zA-Z\d])*)+$/,
+    message: 'Sem @#$%!?* | Mínimo 3 a 20 caracteres',
   },
   email: {
     regex:
