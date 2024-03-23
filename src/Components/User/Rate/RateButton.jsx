@@ -3,7 +3,7 @@ import { Rate, ConfigProvider } from 'antd';
 import { FilmsIdFromRateId_GET } from '../../Api/Api';
 import { userAlreadyRatedFilm } from './UserRate';
 
-const WatchButton = ({
+const RateButton = ({
   tokenUserLocal,
   films,
   login,
@@ -18,34 +18,45 @@ const WatchButton = ({
   const [clearRate, setClearRate] = React.useState(false);
   const [existRate, setExistRate] = React.useState(false);
 
+  const initAlreadyRated = async () => {
+    const resolve = await userAlreadyRatedFilm(
+      films,
+      login,
+      tokenUserLocal,
+      setRateId,
+      setRate,
+    );
+    setExistRate(resolve);
+    if (existRate) {
+      setClearRate(true);
+    }
+  };
+
   React.useEffect(() => {
-    const initAlreadyRated = async () => {
-      const resolve = await userAlreadyRatedFilm(
-        films,
-        login,
-        tokenUserLocal,
-        setRateId,
-        setRate,
-      );
-      setExistRate(resolve);
-    };
     initAlreadyRated();
-  }, [setRate]);
+  }, [existRate]);
 
   const handleRateClick = async (newRate) => {
-    if (existRate === null) {
-      userRateCreateId(tokenUserLocal, films.data[0].id, newRate, data.id);
-    } else {
-      userRateUpdate(tokenUserLocal, rateId, films.data[0].id, newRate);
+    if (newRate === 0) {
+      return userRateRemove(tokenUserLocal, rateId);
     }
+    if (existRate === null) {
+      return userRateCreateId(
+        tokenUserLocal,
+        films.data[0].id,
+        newRate,
+        data.id,
+      );
+    }
+    return userRateUpdate(tokenUserLocal, rateId, films.data[0].id, newRate);
   };
   return (
     <>
       <div
-        onClick={() => {
-          setClearRate(false);
-          setRate(0);
+        onClick={async () => {
           handleRateClick(0);
+          setClearRate(!clearRate);
+          setRate(0);
         }}
         className={` cursor-pointer -top-0 -right-8 content-exit animate-animeLeft ${
           clearRate ? 'absolute' : 'hidden'
@@ -83,4 +94,4 @@ const WatchButton = ({
   );
 };
 
-export default WatchButton;
+export default RateButton;

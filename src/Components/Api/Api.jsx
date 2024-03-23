@@ -42,6 +42,24 @@ export async function userLogin_GET(token) {
     });
 }
 
+export async function userProfile_GET(token) {
+  return await api
+    .get(
+      '/users/me?populate=reviews&populate=like_films&populate=watchlist_films.filmes&populate=watched&populate=rating_films',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
 export async function userLogin_POST(userData) {
   return await api
     .post(`/auth/local`, userData)
@@ -405,6 +423,18 @@ export async function userRateFilms_PUT(token, rateId, body) {
     })
     .then((response) => {
       return response.data;
+    })
+    .catch((error) => {
+      throw error.response.data.error.message;
+    });
+}
+
+export async function userRateFilm_DELETE(token, rateId) {
+  return await api
+    .delete(`/rating-films/${rateId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
     .catch((error) => {
       throw error.response.data.error.message;
