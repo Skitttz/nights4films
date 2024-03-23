@@ -5,6 +5,7 @@ import {
   showAvatar_GET,
   FilmsIdFromWatchListId_GET,
   userListFilms_GET,
+  userProfile_GET,
 } from '../Api/Api';
 import Button from '../Forms/Button';
 import { toast } from 'react-toastify';
@@ -21,6 +22,11 @@ const UserProfile = () => {
   const [loading, setLoading] = React.useState(false);
   const [watchId, setWatchId] = React.useState();
   const [list, setList] = React.useState([]);
+  const [profileData, setProfileData] = React.useState({
+    numFilme: 0,
+    numLiked: 0,
+    numRated: 0,
+  });
 
   async function avatarGet() {
     try {
@@ -48,9 +54,9 @@ const UserProfile = () => {
     try {
       setLoading(true);
       uploadAvatar_POST(formData, tokenUserLocal).then((response) => {
-        setLoading(false);
         setAvatar(response[0].url);
       });
+      setLoading(false);
       toast.success('Avatar alterado com sucesso!', {
         position: 'top-center',
         autoClose: 5000,
@@ -94,6 +100,14 @@ const UserProfile = () => {
   }
 
   React.useEffect(() => {
+    userProfile_GET(tokenUserLocal).then((response) => {
+      setProfileData({
+        numFilme: response.watchlist_films?.filmes?.length,
+        numLiked: response.like_films.length,
+        numRated: response.rating_films.length,
+      });
+    });
+
     getListFilms(tokenUserLocal).then(() => {
       if (watchId) {
         getIdFilms(watchId, tokenUserLocal);
@@ -108,7 +122,7 @@ const UserProfile = () => {
   return (
     <div className="max-w-7xl lg:max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown">
       <Head title={` » Meu Perfil`} description="Pagina do Perfil" />
-      <div className="text-slate-200 font-roboto ">
+      <div className="text-slate-200 font-roboto">
         <div className="flex items-center justify-center">
           <p className="text-3xl cardMD:text-2xl tm:text-xl font-light border-b border-b-slate-800 mb-12">
             <span>{`Bem-vindo ao seu perfil,`} </span>
@@ -118,52 +132,71 @@ const UserProfile = () => {
           </p>
         </div>
         <form
-          className="grid gap-x-6 grid-cols-2 cardMD:grid-cols-1 cardMD:gap-y-4 cardMD:justify-items-center cardMD:justify-center h-[19.375rem]"
+          className="grid gap-x-6 grid-cols-2 cardMD:grid-cols-1 cardMD:gap-y-4 cardMD:justify-items-center cardMD:justify-center h-full "
           onSubmit={uploadImage}
         >
-          <div className="bg-slate-950 py-4 px-8 rounded-md flex flex-col gap-y-2 items-start">
-            <p className="text-2xl font-bold text-orange-200 px-2 py-1 mb-2 border-b border-b-slate-700 rounded-md">
-              Meus Dados
-            </p>
-            <p className="font-semibold">
-              {`Email:`} <span className="font-light">{` ${data.email}`}</span>{' '}
-            </p>
-            <p className="font-semibold">
-              {`Sua conta foi criada:`}{' '}
-              <span className="font-light">{`${formatDateHour(
-                data.createdAt,
-              )}`}</span>
-            </p>
-            <p className="font-semibold">
-              {`Ultima alteracao do perfil:`}{' '}
-              <span className="font-light">{`${formatDateHour(
-                data.updatedAt,
-              )}`}</span>
-            </p>
-            <p className="font-semibold">
-              {`Filmes que voce gostou:`}{' '}
-              <span className="font-light">{`-`}</span>
-            </p>
-            <p className="font-semibold">
-              {`Filmes listados:`} <span className="font-light">{`-`}</span>
-            </p>
-            <p className="font-semibold">
-              {`Filmes avaliados:`} <span className="font-light">{`-`}</span>
-            </p>
+          <div className="flex flex-col gap-y-2 items-start">
+            <div className="bg-slate-950 py-6 px-8 rounded-md w-full">
+              <h4 className="inline-block text-2xl font-bold text-orange-200 px-2 py-1 mb-4 border-b border-b-slate-700 rounded-md">
+                Meus Dados
+              </h4>
+              <p className="font-semibold mb-3">
+                {`Email:`}{' '}
+                <span className="font-light">{` ${data.email}`}</span>{' '}
+              </p>
+              <p className="font-semibold mb-3">
+                {`Sua conta foi criada:`}{' '}
+                <span className="font-light">{`${formatDateHour(
+                  data.createdAt,
+                )}`}</span>
+              </p>
+              <p className="font-semibold mb-3">
+                {`Ultima alteracao do perfil:`}{' '}
+                <span className="font-light">{`${formatDateHour(
+                  data.updatedAt,
+                )}`}</span>
+              </p>
+            </div>
+            <div className="bg-slate-950 py-6 px-8 rounded-md w-full">
+              <h4 className="inline-block text-2xl mb-4 font-bold text-purple-400 px-2 py-1 border-b border-b-slate-700 rounded-md">
+                Minhas Atividades
+              </h4>
+              <p className="font-semibold mb-3">
+                {`Filmes que gostou`}{' '}
+                <span className="select-none font-bold bg-slate-700 py-1 px-2 rounded-md">
+                  {profileData.numLiked}
+                </span>
+              </p>
+              <p className="font-semibold mb-3">
+                {`Filmes listados`}{' '}
+                <span className="select-none font-bold bg-slate-700 py-1 px-2 rounded-md">
+                  {profileData.numFilme}
+                </span>
+              </p>
+              <p className="font-semibold mb-3">
+                {`Filmes avaliados`}{' '}
+                <span className="select-none font-bold bg-slate-700 py-1 px-2 rounded-md">
+                  {profileData.numRated}
+                </span>
+              </p>
+            </div>
           </div>
+
           <div className="bg-slate-950 tm:w-[90%] py-4 px-8 rounded-md flex flex-col items-center justify-center ">
             <p className="text-lg mb-2 font-semibold">Meu avatar</p>
             {loading ? (
-              <CustomLoading />
+              <div className="w-[180px] h-[180px] mb-4 rounded-full flex justify-center">
+                <CustomLoading />
+              </div>
             ) : avatar ? (
               <img
-                className="w-[130px] h-[130px] mb-4 rounded-full animate-fadeIn"
+                className="w-[180px] h-[180px] mb-4 rounded-full animate-fadeIn"
                 src={avatar}
                 alt=""
               />
             ) : (
               <img
-                className="w-[30%] mb-4 rounded-full"
+                className="w-[180px] h-[180px] mb-4 rounded-full"
                 src={noAvatar}
                 alt=""
               />
@@ -179,17 +212,20 @@ const UserProfile = () => {
                 type="file"
                 onChange={(e) => setFiles(e.target.files)}
               />
-              <Button
-                customStyle={
-                  'w-full mt-3 opacity-90 hover:opacity-100 hover:opacity-100 p-2 border-violet-800 bg-slate-800 hover:bg-violet-800 transition-all font-bold rounded-lg'
-                }
-              >
-                Salvar
-              </Button>
+              <div className="flex gap-x-2">
+                <Button
+                  customStyle={
+                    'w-full mt-3 opacity-90 hover:opacity-100 hover:opacity-100 p-2 border-violet-800 bg-violet-800 hover:bg-violet-700 transition-all font-bold rounded-lg'
+                  }
+                >
+                  Salvar
+                </Button>
+              </div>
             </div>
           </div>
         </form>
-        <div className="mt-12">
+
+        <div className="pt-12">
           <p className="text-3xl cardMD:text-2xl font-roboto border-b border-b-slate-800 mb-4">
             <span className="text-2xl"></span> {`Minha Lista`}
           </p>
@@ -210,7 +246,7 @@ const UserProfile = () => {
                           src={film.attributes.card.data.attributes.url}
                           alt=""
                         />
-                        <p className="mt-2 font-gabarito font-semibold tm:text-xs text-center">
+                        <p className="mt-2 tm:my-4 font-gabarito font-semibold tm:text-sm text-center">
                           {film.attributes.title}
                         </p>
                       </Link>

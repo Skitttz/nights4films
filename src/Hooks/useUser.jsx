@@ -13,6 +13,9 @@ import {
   userWatchedFilms_PUT,
   userRateFilms_POST,
   userRateFilms_PUT,
+  userProfile_GET,
+  userRateFilm_DELETE,
+  userRateFilms_GET,
 } from '../Components/Api/Api';
 import { useNavigate } from 'react-router-dom';
 import { translateErrorMessage } from '../Components/Helper/Translate';
@@ -21,6 +24,7 @@ export const useUser = React.createContext();
 export const tokenUserLocal = window.localStorage.getItem('token');
 export const UserStorage = ({ children }) => {
   const [data, setData] = React.useState(null);
+  const [dataProfile, setDataProfile] = React.useState(null);
   const [login, setLogin] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
@@ -88,6 +92,17 @@ export const UserStorage = ({ children }) => {
     } finally {
       alert('AVISO: Funcionalidade em Desenvolvimento');
       setLoading(false);
+    }
+  }
+
+  async function getUserProfile(token) {
+    try {
+      const dataUserProfile = await userProfile_GET(token);
+      setDataProfile(dataUserProfile);
+      setLogin(true);
+    } catch (error) {
+      console.error(error);
+      userLogout();
     }
   }
 
@@ -299,19 +314,16 @@ export const UserStorage = ({ children }) => {
     }
   }
 
-  async function userRateRemove(token, idRate, idFilm, idToRemove) {
+  async function userRateRemove(token, idRate) {
     try {
       setLoading(true);
-      // New list of movies without idToRemove
-      const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
-
-      await userRateFilms_PUT(token, idRate, {
-        data: {
-          filme: updatedFilms,
-        },
-      });
-
+      const IdRatesUser = await userRateFilms_GET(token);
+      const IdRateUserExist = IdRatesUser.some((rate) => rate.id === idRate);
+      if (!IdRateUserExist) {
+        throw new Error();
+      }
       setError(null);
+      return await userRateFilm_DELETE(token, idRate);
     } catch (err) {
       setError(translateErrorMessage(err));
     } finally {
@@ -390,7 +402,9 @@ export const UserStorage = ({ children }) => {
         userRateCreateId,
         userRateUpdate,
         userRateRemove,
+        getUserProfile,
         data,
+        dataProfile,
         login,
         loading,
         error,
