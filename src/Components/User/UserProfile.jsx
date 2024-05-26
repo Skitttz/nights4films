@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import CustomLoading from '../Helper/CustomLoading';
 import CapitalizeLetter from '../Helper/CapitalizeLetter';
 import noAvatar from '../../Assets/noAvatar.svg';
+import PaginationFilms from '../Films/PaginationFilms';
 
 const UserProfile = () => {
   const { data } = useUserContext();
@@ -22,11 +23,16 @@ const UserProfile = () => {
   const [loading, setLoading] = React.useState(false);
   const [watchId, setWatchId] = React.useState();
   const [list, setList] = React.useState([]);
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [profileData, setProfileData] = React.useState({
     numFilme: 0,
     numLiked: 0,
     numRated: 0,
   });
+
+  function handlePageChange(newPage) {
+    setCurrentPage(newPage);
+  }
 
   async function avatarGet() {
     try {
@@ -120,7 +126,7 @@ const UserProfile = () => {
   }, [avatar]);
 
   return (
-    <div className="max-w-7xl lg:max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown">
+    <div className="max-w-7xl lg:max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown xm:px-4">
       <Head title={` » Meu Perfil`} description="Pagina do Perfil" />
       <div className="text-slate-200 font-roboto">
         <div className="flex items-center justify-center">
@@ -229,7 +235,7 @@ const UserProfile = () => {
           <p className="text-3xl cardMD:text-2xl font-roboto border-b border-b-slate-800 mb-4">
             <span className="text-2xl"></span> {`Minha Lista`}
           </p>
-          <div className="flex flex-wrap gap-x-8 list-none">
+          <div className="flex tm:mx-auto tm:w-auto cardMD:overflow-y-auto gap-x-8 tm:gap-x-4 list-none">
             {loading ? (
               <CustomLoading />
             ) : (
@@ -237,12 +243,12 @@ const UserProfile = () => {
                 {list.length !== 0 ? (
                   list.map((film) => (
                     <div
-                      className="flex-grow-1 basis-[160px] sm:mx-auto animate-fadeIn"
+                      className="flex-grow-1 tm:flex-grow-0 basis-[160px] w-full sm:mx-auto animate-fadeIn tm:px-4"
                       key={film.id}
                     >
                       <Link to={`/filmes/${film.attributes.slug}`}>
                         <img
-                          className="w-[160px] rounded-md box-shadow: 4.0px 8.0px 8.0px rgba(0,0,0,0.38) hover:scale-110 transition-all"
+                          className="max-w-fit w-[160px] h-[240px] rounded-md box-shadow: 4.0px 8.0px 8.0px rgba(0,0,0,0.38) hover:scale-110 transition-all"
                           src={film.attributes.card.data.attributes.url}
                           alt=""
                         />
