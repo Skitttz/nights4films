@@ -18,7 +18,7 @@ function App() {
     <div className="App scroll-smooth">
       <BrowserRouter>
         <UserStorage>
-          <div className="font-roboto h-[calc(100vh+25rem)] cardMD:h-[calc(100vh+40rem)] box-border bg-gray-900 m-0 flex flex-col">
+          <div className="font-roboto h-[calc(100vh+25rem)] cardMD:h-[calc(100vh+60rem)] tm:[calc(100vh+80rem)] box-border bg-gray-900 m-0 flex flex-col">
             <Header onSearchValueChange={0} />
             <ToastContainer
               position="top-center"
