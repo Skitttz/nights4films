@@ -22,9 +22,8 @@ const makeRequest = async (method, url, token = null, data = null) => {
       return response.data;
     }
     if (method === 'delete') {
-      const response = await api({ method, url });
-      console.log('Deletado com sucesso');
-      return response;
+      await api({ method, url });
+      return null;
     }
     const response = await api({ method, url, ...headers });
     return response.data;
@@ -60,7 +59,14 @@ export async function Filmes_GET(endpoint) {
 }
 
 export async function userLogin_GET(token) {
-  return makeGetRequest('/user/me', token);
+  return await api
+    .get('/users/me', getAuthHeaders(token))
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
 }
 
 export async function userProfile_GET(token) {
