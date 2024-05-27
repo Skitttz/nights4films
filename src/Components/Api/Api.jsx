@@ -22,8 +22,8 @@ const makeRequest = async (method, url, token = null, data = null) => {
       return response.data;
     }
     if (method === 'delete') {
-      await api({ method, url });
-      return null;
+      const response = await api({ method, url });
+      return response;
     }
     const response = await api({ method, url, ...headers });
     return response.data;
