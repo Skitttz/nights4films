@@ -34,12 +34,18 @@ const RateButton = ({
 
   React.useEffect(() => {
     initAlreadyRated();
-  }, [existRate]);
+  }, [existRate, rate]);
+
+  const handleRateClickRemove = async () => {
+    await userRateRemove(tokenUserLocal, rateId).then(() => {
+      setClearRate(false);
+      setExistRate(false);
+      setRate(0);
+    });
+  };
 
   const handleRateClick = async (newRate) => {
-    if (newRate === 0) {
-      return userRateRemove(tokenUserLocal, rateId);
-    }
+    setRate(newRate);
     if (existRate === null) {
       return userRateCreateId(
         tokenUserLocal,
@@ -54,9 +60,7 @@ const RateButton = ({
     <>
       <div
         onClick={async () => {
-          handleRateClick(0);
-          setClearRate(!clearRate);
-          setRate(0);
+          handleRateClickRemove();
         }}
         className={` cursor-pointer -top-0 -right-8 content-exit animate-animeLeft ${
           clearRate ? 'absolute' : 'hidden'
