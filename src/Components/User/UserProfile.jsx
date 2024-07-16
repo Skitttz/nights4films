@@ -106,24 +106,45 @@ const UserProfile = () => {
   }
 
   React.useEffect(() => {
-    userProfile_GET(tokenUserLocal).then((response) => {
-      setProfileData({
-        numFilme: response.watchlist_films?.filmes?.length,
-        numLiked: response.like_films.length,
-        numRated: response.rating_films.length,
-      });
-    });
-
-    getListFilms(tokenUserLocal).then(() => {
-      if (watchId) {
-        getIdFilms(watchId, tokenUserLocal);
+    const fetchUserProfile = async () => {
+      try {
+        const response = await userProfile_GET(tokenUserLocal);
+        setProfileData({
+          numFilme: response.watchlist_films?.filmes?.length || 0,
+          numLiked: response.like_films.length || 0,
+          numRated: response.rating_films.length || 0,
+        });
+      } catch (error) {
+        console.error("Nao foi possivel encontrar o usuario");
       }
-    });
-  }, [watchId]);
+    }
+
+    const fetchListFilms = async () => {
+      try {
+        await getListFilms(tokenUserLocal);
+        if (watchId) {
+          await getIdFilms(watchId, tokenUserLocal);
+        }
+      } catch (error) {
+        console.error("Nao foi possivel encontrar a lista de filmes do usuario");
+      }
+    }
+    const fetchData = async () => {
+      await Promise.allSettled([fetchUserProfile(), fetchListFilms()]);
+    };
+    fetchData();
+  }, [watchId,tokenUserLocal]);
 
   React.useEffect(() => {
-    avatarGet();
-  }, [avatar]);
+    const fetchAvatar = async () => {
+      try {
+        await avatarGet();
+      } catch (error) {
+        console.error('Error ao buscar avatar do usuario:', error);
+      }
+    };
+    fetchAvatar();
+  }, [avatar,tokenUserLocal]);
 
   return (
     <div className="max-w-7xl lg:max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown xm:px-4">
