@@ -1,5 +1,5 @@
 import React from 'react';
-import { Filmes_GET } from '../Api/Api';
+import { Filmes_GET } from '../../Api/index';
 import ContentFilms from './ContentFilms';
 import Loading from '../Helper/Loading';
 import PaginationFilms from './PaginationFilms';

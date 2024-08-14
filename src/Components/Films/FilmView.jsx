@@ -4,7 +4,7 @@ import Loading from '../Helper/Loading';
 import { randomColor, randomColorHEX } from '../Helper/Colors';
 import Markdown from 'https://esm.sh/react-markdown@9';
 import { useParams, Link } from 'react-router-dom';
-import { Filmes_GET } from '../Api/Api';
+import { Filmes_GET } from '../../Api/index';
 import { useUserContext, tokenUserLocal } from '../../Hooks/useUser';
 import { toast } from 'react-toastify';
 import { userAlreadyLiked, userContainsLikeId } from '../User/Like/UserLike';

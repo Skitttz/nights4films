@@ -1,4 +1,4 @@
-import { FilmsIdFromLikeId_GET, userLikeFilms_GET } from '../../Api/Api';
+import { FilmsIdFromLikeId_GET, userLikeFilms_GET } from '../../../Api/index';
 
 export async function userAlreadyLiked(
   films,

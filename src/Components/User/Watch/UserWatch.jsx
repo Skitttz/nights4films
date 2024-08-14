@@ -1,4 +1,7 @@
-import { FilmsIdFromWatchId_GET, userWatchedFilms_GET } from '../../Api/Api';
+import {
+  FilmsIdFromWatchId_GET,
+  userWatchedFilms_GET,
+} from '../../../Api/index';
 
 export async function userAlreadyWatchedFilm(
   films,

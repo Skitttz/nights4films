@@ -1,4 +1,4 @@
-import { userRateFilms_GET } from '../../Api/Api';
+import { userRateFilms_GET } from '../../../Api/index';
 
 export async function userAlreadyRatedFilm(
   films,

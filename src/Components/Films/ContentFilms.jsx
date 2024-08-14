@@ -1,5 +1,5 @@
 import React from 'react';
-import { Filmes_GET } from '../Api/Api';
+import { Filmes_GET } from '../../Api/index';
 import { Link } from 'react-router-dom';
 import ModalTrailer from './ModalTrailer';
 import useWindowDimensions from '../../Hooks/useWindowDimension';

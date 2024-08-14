@@ -6,7 +6,7 @@ import {
   FilmsIdFromWatchListId_GET,
   userListFilms_GET,
   userProfile_GET,
-} from '../Api/Api';
+} from '../../Api/index';
 import Button from '../Forms/Button';
 import { toast } from 'react-toastify';
 import Head from '../Helper/Head';
@@ -115,9 +115,9 @@ const UserProfile = () => {
           numRated: response.rating_films.length || 0,
         });
       } catch (error) {
-        console.error("Nao foi possivel encontrar o usuario");
+        console.error('Nao foi possivel encontrar o usuario');
       }
-    }
+    };
 
     const fetchListFilms = async () => {
       try {
@@ -126,14 +126,16 @@ const UserProfile = () => {
           await getIdFilms(watchId, tokenUserLocal);
         }
       } catch (error) {
-        console.error("Nao foi possivel encontrar a lista de filmes do usuario");
+        console.error(
+          'Nao foi possivel encontrar a lista de filmes do usuario',
+        );
       }
-    }
+    };
     const fetchData = async () => {
       await Promise.allSettled([fetchUserProfile(), fetchListFilms()]);
     };
     fetchData();
-  }, [watchId,tokenUserLocal]);
+  }, [watchId, tokenUserLocal]);
 
   React.useEffect(() => {
     const fetchAvatar = async () => {
@@ -144,7 +146,7 @@ const UserProfile = () => {
       }
     };
     fetchAvatar();
-  }, [avatar,tokenUserLocal]);
+  }, [avatar, tokenUserLocal]);
 
   return (
     <div className="max-w-7xl lg:max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown xm:px-4">

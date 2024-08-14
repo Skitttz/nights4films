@@ -1,6 +1,6 @@
 import React from 'react';
 import { Rate, ConfigProvider } from 'antd';
-import { FilmsIdFromRateId_GET } from '../../Api/Api';
+import { FilmsIdFromRateId_GET } from '../../../Api/index';
 import { userAlreadyRatedFilm } from './UserRate';
 
 const RateButton = ({

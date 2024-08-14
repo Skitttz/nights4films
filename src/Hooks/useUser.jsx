@@ -16,7 +16,7 @@ import {
   userProfile_GET,
   userRateFilm_DELETE,
   userRateFilms_GET,
-} from '../Components/Api/Api';
+} from '../Api/index';
 import { useNavigate } from 'react-router-dom';
 import { translateErrorMessage } from '../Components/Helper/Translate';
 

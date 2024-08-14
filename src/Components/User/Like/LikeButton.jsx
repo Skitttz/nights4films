@@ -1,6 +1,6 @@
 import React from 'react';
 import { HeartFilled, HeartOutlined } from '@ant-design/icons'; // Importe as bibliotecas corretas
-import { FilmsIdFromLikeId_GET } from '../../Api/Api';
+import { FilmsIdFromLikeId_GET } from '../../../Api/index';
 
 function LikeButton({
   like,

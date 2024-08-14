@@ -1,5 +1,5 @@
 import React from 'react';
-import { allReviewsbyFilmId_GET } from '../Api/Api';
+import { allReviewsbyFilmId_GET } from '../../Api/index';
 import noAvatar from '../../Assets/noAvatar.svg';
 import { FrownFilled } from '@ant-design/icons';
 import ReadMore from '../Helper/ReadMore';
