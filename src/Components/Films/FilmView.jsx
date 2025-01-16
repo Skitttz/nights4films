@@ -2,7 +2,7 @@ import React from 'react';
 import Head from '../Helper/Head';
 import Loading from '../Helper/Loading';
 import { randomColor, randomColorHEX } from '../Helper/Colors';
-import Markdown from 'https://esm.sh/react-markdown@9';
+import Markdown from 'react-markdown';
 import { useParams, Link } from 'react-router-dom';
 import { Filmes_GET } from '../../Api/index';
 import { useUserContext, tokenUserLocal } from '../../Hooks/useUser';
