@@ -92,11 +92,11 @@ export const theme = {
       scaleCard: 'scaleCard .3s ease-in-out forwards',
     },
     content: {
-      play: 'url(/src/Assets/i-play.svg)',
-      exit: 'url(/src/Assets/i-exit.svg)',
+      play: 'url(/src/assets/i-play.svg)',
+      exit: 'url(/src/assets/i-exit.svg)',
     },
     backgroundImage: {
-      login: 'url(/src/Assets/photo_login_l.jpg)',
+      login: 'url(/src/assets/photo_login_l.jpg)',
     },
 
     screens: {
