@@ -1,9 +1,22 @@
 import React from 'react';
 
 const getWindowDimensions = () => {
-  const { innerWidth: width } = window;
+  let isMobile;
+  if (typeof window === 'undefined') {
+    return {
+      width: 0,
+      isMobile: false,
+    };
+  }
 
-  return { width };
+  const { innerWidth: width } = window;
+  if (width < 768) {
+    isMobile = true;
+  } else {
+    isMobile = false;
+  }
+
+  return { width, isMobile };
 };
 
 export default function useWindowDimensions() {
