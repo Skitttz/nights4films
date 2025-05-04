@@ -10,7 +10,7 @@ const getWindowDimensions = () => {
   }
 
   const { innerWidth: width } = window;
-  if (width < 768) {
+  if (width < 968) {
     isMobile = true;
   } else {
     isMobile = false;
