@@ -1,4 +1,3 @@
-import { StarFilled } from '@ant-design/icons';
 import PaginationFilms from '../PaginationFilms';
 import FilmCardLoading from './FilmCard';
 
@@ -19,16 +18,7 @@ export default function CardsFilmLoading() {
           <FilmCardLoading />
         </div>
 
-        <div className="animate-animeLeft p-4 flex flex-col justify-center items-center row-start-1 col-start-2 cardMD:col-start-1 cardMD:row-start-3 lg:w-[40rem] md:w-[35rem] sm:w-[30rem] tm:w-[19rem] tm:h-[800px] cardMD:h-[700px] rounded-md bg-gray-900 border border-slate-800 border-opacity-30">
-          <p className="flex flex-col items-center font-gabarito border-b border-b-slate-400 text-xl text-slate-300 p-2 rounded-md ">
-            Selecione o Filme
-            <span className="text-xs text-slate-500">será exibido aqui</span>
-          </p>
-          <p className="text-2xl text-slate-300 hover:text-yellow-400 transition-colors hover:animate-pulse">
-            <StarFilled />
-          </p>
-        </div>
-
+        <div className="animate-animeLeft p-4 flex flex-col justify-center items-center row-start-1 col-start-2 cardMD:col-start-1 cardMD:row-start-3 lg:w-[40rem] md:w-[35rem] sm:w-[30rem] tm:w-[19rem] tm:h-[800px] cardMD:h-[700px] rounded-md bg-gray-900 border border-transparent border-opacity-30" />
         <div className="col-end-2 pb-8">
           <PaginationFilms
             totalItems={0}
