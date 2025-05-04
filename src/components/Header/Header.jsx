@@ -1,5 +1,6 @@
 import { UserOutlined } from '@ant-design/icons';
-import React from 'react';
+import { Modal } from 'antd';
+import { useRef, useState } from 'react';
 import { FiMenu } from 'react-icons/fi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import imgLougout from '../../assets/i-logout.png';
@@ -13,11 +14,12 @@ import HeaderSkeleton from './HeaderLoading';
 const Header = ({ onSearchValueChange }) => {
   const { pathname } = useLocation();
 
-  const [searchValue, setSearchValue] = React.useState('');
+  const [searchValue, setSearchValue] = useState('');
+  const [openModal, setOpenModal] = useState(false);
   const debouncedChange = useDebounce(onSearchValueChange, 300);
   const { data, userLogout, loading } = useUserContext();
-  const [openMenuMB, setOpenMenuMB] = React.useState(false);
-  const refNav = React.useRef(null);
+  const [openMenuMB, setOpenMenuMB] = useState(false);
+  const refNav = useRef(null);
   const navigate = useNavigate();
 
   const isDesktop = window.innerWidth > 768;
@@ -31,6 +33,10 @@ const Header = ({ onSearchValueChange }) => {
   const handleLogout = () => {
     userLogout();
     navigate('/login');
+  };
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
   };
 
   const handleOutsideClick = (event) => {
@@ -57,6 +63,30 @@ const Header = ({ onSearchValueChange }) => {
 
   return (
     <>
+      {openModal && (
+        <Modal
+          title="Deseja sair da sua conta?"
+          open={openModal}
+          onOk={handleLogout}
+          onCancel={() => setOpenModal(false)}
+          okText="Desconectar"
+          cancelText="Ficar"
+          centered
+          className="[&>div:first-child>div]:bg-gray-950 [&>div:first-child>div>div]:bg-gray-950 [&>div:first-child>div>div>div]:!text-gray-100 text-gray-100"
+          okButtonProps={{
+            className:
+              'bg-red-800 hover:!bg-red-700 text-white transition-all font-semibold',
+          }}
+          cancelButtonProps={{
+            className:
+              'bg-purple-800 hover:!bg-purple-700 border border-purple-700  hover:!border-purple-600 text-gray-200 hover:!text-gray-200 font-semibold transition-all',
+          }}
+        >
+          <p className="text-gray-300">
+            Você será desconectado e voltará à tela de login.
+          </p>
+        </Modal>
+      )}
       <header className="fixed z-30 w-full top-0 bg-gray-950 shadow-md">
         <nav
           ref={refNav}
@@ -151,7 +181,7 @@ const Header = ({ onSearchValueChange }) => {
                 <button
                   type="button"
                   className="cursor-pointer"
-                  onClick={handleLogout}
+                  onClick={handleOpenModal}
                 >
                   <img
                     className="cardMD:mx-auto w-[24px] invert-[.99] sepia-[.01] saturate-[0] hue-rotate-[268deg] brightness-[1.05] contrast-100"

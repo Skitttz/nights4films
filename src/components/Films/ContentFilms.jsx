@@ -11,7 +11,8 @@ const ContentFilms = ({ id }) => {
   const [loading, setLoading] = React.useState(true);
   const [activeModal, setActiveModal] = React.useState(false);
   const { width } = useWindowDimensions();
-  let hours, minutes;
+  let hours;
+  let minutes;
 
   function transformMinHours(min) {
     hours = Math.floor(min / 60);
@@ -22,6 +23,28 @@ const ContentFilms = ({ id }) => {
     minutes = min % 60;
     return minutes;
   }
+
+  const handleOpenTrailer = (event) => {
+    if (
+      event.type === 'keydown' &&
+      event.key !== 'Enter' &&
+      event.key !== ' '
+    ) {
+      return;
+    }
+
+    if (event.key === ' ') {
+      event.preventDefault();
+    }
+
+    if (width > 1000) {
+      return setActiveModal(true);
+    }
+    return window.open(
+      `https://www.youtube.com/watch?v=${films.data.attributes.trailer}`,
+      '_blank',
+    );
+  };
 
   React.useEffect(() => {
     setLoading(true);
@@ -52,7 +75,9 @@ const ContentFilms = ({ id }) => {
         </div>
       ) : (
         <div
-          className={`pt-4 w-auto h-auto lg:w-[40rem] lg:px-2 md:w-[35rem] sm:w-[30rem] tm:w-[19rem] duration-700 cardMD:pb-16 md:px-8 sm:px-8 tm:px-0 animate-animeLeft`}
+          className={
+            'pt-4 w-auto h-auto lg:w-[40rem] lg:px-2 md:w-[35rem] sm:w-[30rem] tm:w-[19rem] duration-700 cardMD:pb-16 md:px-8 sm:px-8 tm:px-0 animate-animeLeft'
+          }
         >
           <div className="bg-gray-950 h-auto w-auto rounded-md relative">
             <div>
@@ -66,14 +91,8 @@ const ContentFilms = ({ id }) => {
                 >
                   <div
                     className="relative cursor-pointer after:content-play after:opacity-40 after:hover:opacity-90 after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2 rounded-t-md bg-slate-800 lg:rounded-t-md  sm:rounded-md"
-                    onClick={() => {
-                      if (width > 1000) {
-                        return setActiveModal(true);
-                      }
-                      return open(
-                        `https://www.youtube.com/watch?v=${films.data.attributes.trailer}`,
-                      );
-                    }}
+                    onClick={handleOpenTrailer}
+                    onKeyDown={handleOpenTrailer}
                   >
                     <img
                       className="rounded-t-md h-64 w-full opacity-50 object-cover"

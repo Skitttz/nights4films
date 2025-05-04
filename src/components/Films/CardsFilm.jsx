@@ -1,5 +1,5 @@
 import { StarFilled } from '@ant-design/icons';
-import React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Filmes_GET } from '../../api/index';
 import Loading from '../Helper/Loading';
 import ContentFilms from './ContentFilms';
@@ -7,13 +7,13 @@ import FilmCard from './FilmCard';
 import PaginationFilms from './PaginationFilms';
 
 const CardsFilm = ({ searchValue }) => {
-  const [films, setFilms] = React.useState([]);
-  const [isActive, setIsActive] = React.useState(null);
-  const [filmId, setFilmId] = React.useState(null);
-  const [empty, setEmpty] = React.useState(false);
-  const [currentPage, setCurrentPage] = React.useState(1);
+  const [films, setFilms] = useState([]);
+  const [isActive, setIsActive] = useState(null);
+  const [filmId, setFilmId] = useState(null);
+  const [empty, setEmpty] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const limitItemPerPage = 9;
-  const refScroll = React.useRef(null);
+  const refScroll = useRef(null);
 
   // Setar o card do filme
   function handleClick(index) {
@@ -26,10 +26,10 @@ const CardsFilm = ({ searchValue }) => {
   }
 
   //Trata de filtrar filmes diretamente pela API e tambem entregar os filmes relacionados a sua respectiva pagina
-  React.useEffect(() => {
+  useEffect(() => {
     const startIndex = (currentPage - 1) * limitItemPerPage;
 
-    const ruleCardItem = `sort=id&populate=card`;
+    const ruleCardItem = 'sort=id&populate=card';
     const ruleFilter = `filters[title][$containsi]=${searchValue}`;
     const rulePagination = `pagination[start]=${startIndex}&pagination[limit]=${limitItemPerPage}`;
 
@@ -58,7 +58,7 @@ const CardsFilm = ({ searchValue }) => {
   }, [currentPage, searchValue]);
 
   //Controla a rolagem para o card ativo.
-  React.useEffect(() => {
+  useEffect(() => {
     if (isActive !== null) {
       const cardWidth = 175; // Largura de cada card
       const scrollX =
