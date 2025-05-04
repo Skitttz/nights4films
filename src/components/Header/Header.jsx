@@ -15,13 +15,16 @@ const Header = ({ onSearchValueChange }) => {
 
   const [searchValue, setSearchValue] = React.useState('');
   const debouncedChange = useDebounce(onSearchValueChange, 300);
-  const { data, userLogout } = useUserContext();
+  const { data, userLogout, loading } = useUserContext();
   const [openMenuMB, setOpenMenuMB] = React.useState(false);
   const refNav = React.useRef(null);
   const navigate = useNavigate();
-  const isDesktop = window.innerWidth > 768;
 
-  if (!data && isDesktop) {
+  const isDesktop = window.innerWidth > 768;
+  const isDifPathLoginUser = pathname !== '/login';
+  const isLoadingHeaderDesktop = loading && isDesktop && isDifPathLoginUser;
+
+  if (isLoadingHeaderDesktop) {
     return <HeaderSkeleton />;
   }
 
