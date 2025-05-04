@@ -104,32 +104,31 @@ const UserProfile = () => {
     }
   }
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await userProfile_GET(tokenUserLocal);
-        setProfileData({
-          numFilme: response.watchlist_films?.filmes?.length || 0,
-          numLiked: response.like_films.length || 0,
-          numRated: response.rating_films.length || 0,
-        });
-      } catch (error) {
-        console.error('Nao foi possivel encontrar o usuario');
-      }
-    };
+  const fetchUserProfile = async () => {
+    try {
+      const response = await userProfile_GET(tokenUserLocal);
+      setProfileData({
+        numFilme: response.watchlist_films?.filmes?.length || 0,
+        numLiked: response.like_films.length || 0,
+        numRated: response.rating_films.length || 0,
+      });
+    } catch (error) {
+      console.error('Nao foi possivel encontrar o usuario');
+    }
+  };
 
-    const fetchListFilms = async () => {
-      try {
-        await getListFilms(tokenUserLocal);
-        if (watchId) {
-          await getIdFilms(watchId, tokenUserLocal);
-        }
-      } catch (error) {
-        console.error(
-          'Nao foi possivel encontrar a lista de filmes do usuario',
-        );
+  const fetchListFilms = async () => {
+    try {
+      await getListFilms(tokenUserLocal);
+      if (watchId) {
+        await getIdFilms(watchId, tokenUserLocal);
       }
-    };
+    } catch (error) {
+      console.error('Nao foi possivel encontrar a lista de filmes do usuario');
+    }
+  };
+
+  useEffect(() => {
     const fetchData = async () => {
       await Promise.allSettled([fetchUserProfile(), fetchListFilms()]);
     };

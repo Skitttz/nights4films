@@ -18,10 +18,13 @@ const FilmCard = ({
   if (searchValue && searchValue.length > 1 && !ilgatch) {
     return null;
   }
-
+  const titleId = `${id}-${title}`;
   return (
     <div
-      className={`p-3 cardMD:pt-5 cardMD:pb-6 cardMD:w-[10.5rem] cardMD:ml-2 cardMD:flex-shrink-0`}
+      id={titleId}
+      className={
+        'p-3 cardMD:pt-5 cardMD:pb-6 cardMD:w-[10.5rem] cardMD:ml-2 cardMD:flex-shrink-0'
+      }
     >
       <img
         onClick={() => {

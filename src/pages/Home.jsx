@@ -1,10 +1,10 @@
-import React from 'react';
+import { useState } from 'react';
 import Header from '../components/Header/Header';
 import Intro from '../components/Intro';
 import Main from '../components/Main';
 
 const Home = () => {
-  const [searchValue, setSearchValue] = React.useState('');
+  const [searchValue, setSearchValue] = useState('');
 
   const handleSearchValueChange = (value) => {
     setSearchValue(value);

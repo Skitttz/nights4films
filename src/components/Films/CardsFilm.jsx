@@ -1,61 +1,60 @@
 import { StarFilled } from '@ant-design/icons';
 import { useEffect, useRef, useState } from 'react';
-import { Filmes_GET } from '../../api/index';
-import Loading from '../Helper/Loading';
+import slugify from 'slugify';
+import { useFilms } from '../../hooks/useFilms';
+import useWindowDimensions from '../../hooks/useWindowDimension';
+import { scrollToElementWithOffset } from '../../utils/scroll';
 import ContentFilms from './ContentFilms';
 import FilmCard from './FilmCard';
+import CardsFilmLoading from './Loading/CardsFilm';
 import PaginationFilms from './PaginationFilms';
 
 const CardsFilm = ({ searchValue }) => {
-  const [films, setFilms] = useState([]);
+  const { isMobile } = useWindowDimensions();
   const [isActive, setIsActive] = useState(null);
   const [filmId, setFilmId] = useState(null);
-  const [empty, setEmpty] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const limitItemPerPage = 9;
   const refScroll = useRef(null);
+  const contentFilmRef = useRef(null);
+  const mainContainerFilmRef = useRef(null);
+
+  const handleScroll = () => {
+    const toContentFilm = () => {
+      const contentFilm = contentFilmRef?.current;
+      if (isMobile && contentFilm) {
+        const offsetHeader = 80;
+        scrollToElementWithOffset(contentFilm, offsetHeader);
+      }
+    };
+
+    const toTopContainerFilm = () => {
+      const mainContainerFilm = mainContainerFilmRef?.current;
+      if (mainContainerFilm) {
+        const offsetHeader = isMobile ? 80 : 500;
+        scrollToElementWithOffset(mainContainerFilm, offsetHeader);
+      }
+    };
+
+    return {
+      toContentFilm,
+      toTopContainerFilm,
+    };
+  };
+
+  const scroll = handleScroll();
 
   // Setar o card do filme
   function handleClick(index) {
+    scroll.toContentFilm();
     setIsActive(index);
   }
 
   // Setar pagina atual -> nova
   function handlePageChange(newPage) {
+    scroll.toTopContainerFilm();
     setCurrentPage(newPage);
   }
-
-  //Trata de filtrar filmes diretamente pela API e tambem entregar os filmes relacionados a sua respectiva pagina
-  useEffect(() => {
-    const startIndex = (currentPage - 1) * limitItemPerPage;
-
-    const ruleCardItem = 'sort=id&populate=card';
-    const ruleFilter = `filters[title][$containsi]=${searchValue}`;
-    const rulePagination = `pagination[start]=${startIndex}&pagination[limit]=${limitItemPerPage}`;
-
-    const searchWithFilter = `${ruleFilter}&${ruleCardItem}`;
-    const pagination = `${ruleCardItem}&${rulePagination}`;
-
-    Filmes_GET(
-      searchValue.length === 0
-        ? `/filmes?${pagination}`
-        : `/filmes?${searchWithFilter}`,
-    )
-      .then((data) => {
-        setFilms(data);
-        if (data.data.length !== 0) {
-          setEmpty(false);
-        } else {
-          setEmpty(true);
-        }
-      })
-      .catch((error) => {
-        console.error('Erro ao buscar filmes:', error);
-      });
-    if (searchValue.length !== 0) {
-      handlePageChange(currentPage);
-    }
-  }, [currentPage, searchValue]);
 
   //Controla a rolagem para o card ativo.
   useEffect(() => {
@@ -70,29 +69,37 @@ const CardsFilm = ({ searchValue }) => {
     }
   }, [isActive]);
 
+  const { data, isLoading, isError, error } = useFilms(
+    currentPage,
+    searchValue,
+    limitItemPerPage,
+  );
+  if (isLoading) return <CardsFilmLoading />;
+  if (isError || error) return null;
+
+  const { films, isEmpty, totalItems } = data;
+
+  const hasFilms = films.length !== 0 && !isEmpty;
+
   return (
     <div>
-      <div className="text-slate-200 font-gabarito font-medium text-2xl ml-8 mb-3 border-b-slate-800 border-b cardMD:w-[80%] cardMD:text-lg animate-animeDown">
+      <div
+        className="text-slate-200 font-gabarito font-medium text-2xl ml-8 mb-3 border-b-slate-800 border-b cardMD:w-[80%] cardMD:text-lg translate-y-0"
+        ref={mainContainerFilmRef}
+      >
         <p>Filmes</p>
       </div>
-      {films.length !== 0 ? (
+      {hasFilms ? (
         <div
           className="grid grid-cols-[600px,_1fr] justify-center justify-items-center gap-x-4 cardMD:grid-cols-1 
-      cardMD:max-w-5xl xl:max-w-6xl lg:max-w-5xl xm:max-w-[64rem] cardMD:justify-center animate-fadeIn"
+      cardMD:max-w-5xl xl:max-w-6xl lg:max-w-5xl cardMD:justify-center animate-fadeIn"
         >
           <div
             className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1
       cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 cardMD:scroll-smooth
-      lg:w-[45rem] md:w-[35rem] sm:w-[25rem] tm:w-[18rem]"
+      lg:w-[45rem] md:w-[35rem] sm:w-[25rem] tm:w-[24rem]"
             ref={refScroll}
           >
-            {empty ? (
-              <div className="flex content-center items-center text-yellow-50 text-center text-xl font-bold animate-fadeIn col-span-full row-span-full  h-[8.5rem] mx-auto">
-                <p>Ops! Não encontramos nenhum filme correspondente.</p>
-              </div>
-            ) : (
-              ''
-            )}
             {films
               ? films.data.map((film, index) => (
                   <FilmCard
@@ -111,28 +118,36 @@ const CardsFilm = ({ searchValue }) => {
                 ))
               : ''}
           </div>
-          {filmId ? (
-            <div className="cardMD:row-start-3">
-              <ContentFilms key={filmId} id={filmId} />
+          {filmId && films ? (
+            <div className="cardMD:row-start-3 w-full" ref={contentFilmRef}>
+              <ContentFilms
+                key={filmId}
+                id={filmId}
+                name={slugify(films.data[isActive].attributes.title, {
+                  lower: true,
+                })}
+              />
             </div>
           ) : (
-            <div className="animate-animeLeft p-4 flex flex-col justify-center items-center row-start-1 col-start-2 w-full cardMD:col-start-1 cardMD:row-start-3 lg:w-[40rem] md:w-[35rem] sm:w-[30rem] tm:w-[19rem] tm:h-[800px] cardMD:h-[700px] rounded-md bg-gray-900 border border-slate-800 border-opacity-30">
-              <p className="flex flex-col items-center font-gabarito border-b border-b-slate-400 text-xl text-slate-300 p-2 rounded-md ">
-                Selecione o Filme
-                <span className="text-xs text-slate-500">
-                  será exibido aqui
-                </span>
-              </p>
-              <p className="text-2xl text-slate-300 hover:text-yellow-400 transition-colors hover:animate-pulse">
-                <StarFilled />
-              </p>
+            <div className="tm:px-4 lg:px-4 md:px-4 sm:px-4 w-full">
+              <div className="animate-animeLeft p-4 flex flex-col justify-center items-center row-start-1 col-start-2 w-full cardMD:col-start-1 cardMD:row-start-3 lg:w-full md:w-full sm:w-full tm:w-full tm:h-[800px] cardMD:h-[700px] rounded-md bg-gray-900 border border-slate-800 border-opacity-30 h-full">
+                <p className="flex flex-col items-center font-gabarito border-b border-b-slate-400 text-xl text-slate-300 p-2 rounded-md ">
+                  Selecione o Filme
+                  <span className="text-xs text-slate-500">
+                    será exibido aqui
+                  </span>
+                </p>
+                <p className="text-2xl text-slate-300 hover:text-yellow-400 transition-colors hover:animate-pulse">
+                  <StarFilled />
+                </p>
+              </div>
             </div>
           )}
 
           <div className="col-end-2 pb-8">
             {films.length !== 0 && (
               <PaginationFilms
-                totalItems={films.meta.pagination.total}
+                totalItems={totalItems}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 limitItemPage={9}
@@ -141,8 +156,8 @@ const CardsFilm = ({ searchValue }) => {
           </div>
         </div>
       ) : (
-        <div>
-          <Loading />
+        <div className="flex content-center items-center text-yellow-50 text-center text-xl font-bold animate-fadeIn col-span-full row-span-full h-[8.5rem] mx-auto ml-8">
+          <p>Ops! Não encontramos nenhum filme correspondente.</p>
         </div>
       )}
     </div>

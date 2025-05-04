@@ -73,8 +73,8 @@ const FilmView = () => {
   const { width } = useWindowDimensions();
 
   React.useEffect(() => {
-    const ruleSlug = `/filmes?filters[slug][$eq]`;
-    const populateAll = `populate=*`;
+    const ruleSlug = '/filmes?filters[slug][$eq]';
+    const populateAll = 'populate=*';
     Filmes_GET(`${ruleSlug}=${id}&${populateAll}`)
       .then((data) => {
         setFilms(data);
