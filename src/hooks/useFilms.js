@@ -17,14 +17,13 @@ export const useFilms = (currentPage, searchValue, limitItemPerPage) => {
       : `/filmes?${searchWithFilter}`;
 
   return useQuery({
-    queryKey: ['films', currentPage, searchValue], // Cache único por página e busca
-    queryFn: () => Filmes_GET(queryUrl), // Usa a função utilitária
+    queryKey: ['films', currentPage, searchValue],
+    queryFn: () => Filmes_GET(queryUrl),
     select: (data) => ({
       films: data,
       isEmpty: data.data.length === 0,
       totalItems: data.meta.pagination.total,
     }),
-    staleTime: 5 * 60 * 1000, // Cache de 5 minutos para evitar requisições frequentes
   });
 };
 
