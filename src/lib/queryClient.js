@@ -1,8 +1,6 @@
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { QueryClient } from '@tanstack/react-query';
-import {
-  createAsyncStoragePersister,
-  persistQueryClient,
-} from '@tanstack/react-query-persist-client';
+import { persistQueryClient } from '@tanstack/react-query-persist-client';
 import localforage from 'localforage';
 
 /**
