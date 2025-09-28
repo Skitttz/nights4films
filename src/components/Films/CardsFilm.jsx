@@ -12,7 +12,10 @@ import PaginationFilms from './PaginationFilms';
 const CardsFilm = ({ searchValue }) => {
   const { isMobile } = useWindowDimensions();
   const [isActive, setIsActive] = useState(null);
-  const [filmId, setFilmId] = useState(null);
+  const [filmData, setFilmData] = useState({
+    id: null,
+    title: null,
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const limitItemPerPage = 9;
   const refScroll = useRef(null);
@@ -105,7 +108,7 @@ const CardsFilm = ({ searchValue }) => {
                   <FilmCard
                     key={film.id}
                     id={film.id}
-                    setFilmId={setFilmId}
+                    setFilmData={setFilmData}
                     searchValue={searchValue}
                     isActive={isActive}
                     index={index}
@@ -116,14 +119,14 @@ const CardsFilm = ({ searchValue }) => {
                     onClick={handleClick}
                   />
                 ))
-              : ''}
+              : null}
           </div>
-          {filmId && films ? (
+          {filmData.title && films ? (
             <div className="cardMD:row-start-3 w-full" ref={contentFilmRef}>
               <ContentFilms
-                key={filmId}
-                id={filmId}
-                name={slugify(films.data[isActive].attributes.title, {
+                key={filmData.id}
+                id={filmData.id}
+                name={slugify(filmData.title, {
                   lower: true,
                 })}
               />

@@ -27,9 +27,9 @@ export const useFilms = (currentPage, searchValue, limitItemPerPage) => {
   });
 };
 
-export const useFilmById = (id, name) => {
+export const useFilmById = (id) => {
   return useQuery({
-    queryKey: ['film', id, name],
+    queryKey: ['film', id],
     queryFn: () => Filmes_GET(`/filmes/${id}?populate=*`),
     enabled: Boolean(id),
     select: (data) => data,

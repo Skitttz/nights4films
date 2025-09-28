@@ -8,7 +8,7 @@ const FilmCard = ({
   onClick,
   width,
   height,
-  setFilmId,
+  setFilmData,
   searchValue,
   isActive,
 }) => {
@@ -28,8 +28,11 @@ const FilmCard = ({
     >
       <img
         onClick={() => {
-          onClick(index);
-          setFilmId(id);
+          onClick(id);
+          setFilmData({
+            id: id,
+            title: title,
+          });
         }}
         className={`rounded-2xl transition ease-in-out delay-600 hover:shadow-[0px_1px_12px_4px_rgba(130,166,237,0.1)] hover:border border-sky-200 border-opacity-10 hover:scale-110 	${
           activeIndex
