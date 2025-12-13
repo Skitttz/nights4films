@@ -2,7 +2,6 @@ import React from 'react';
 
 const FilmCard = ({
   title,
-  index,
   id,
   image,
   onClick,
@@ -12,7 +11,7 @@ const FilmCard = ({
   searchValue,
   isActive,
 }) => {
-  const activeIndex = index === isActive;
+  const activeIndex = id === isActive;
   const lowerSearchValue = searchValue.toLowerCase();
   const ilgatch = title.toLowerCase().includes(lowerSearchValue);
   if (searchValue && searchValue.length > 1 && !ilgatch) {

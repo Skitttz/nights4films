@@ -104,14 +104,13 @@ const CardsFilm = ({ searchValue }) => {
             ref={refScroll}
           >
             {films
-              ? films.data.map((film, index) => (
+              ? films.data.map((film) => (
                   <FilmCard
                     key={film.id}
                     id={film.id}
                     setFilmData={setFilmData}
                     searchValue={searchValue}
                     isActive={isActive}
-                    index={index}
                     title={film.attributes.title}
                     image={`${film.attributes.card.data.attributes.url}`}
                     width={`${film.attributes.card.data.attributes.width}`}
