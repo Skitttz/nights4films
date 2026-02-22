@@ -21,12 +21,13 @@ const LoginForm = () => {
   return (
     <div className="relative">
       <Head title=" » Login" description="Login page" />
-      <section className="max-w-5xl animate-animeLeft mx-auto font-roboto grid grid-cols-2 mt-24 before:bg-login before:bg-cover before:bg-center before:bg-no-repeat before:h-[auto] before:w-[15rem] before:ml-auto before:rounded-s-xl z-10 sm:before:hidden sm:grid-cols-1">
-        <div className="relative sm:mx-auto">
-          <div className="border-e bg-slate-900 border-orange-900 my-auto max-w-xs desktop:max-w-sm text-slate-200 px-10 py-6 rounded-e-lg grid grid-cols-1 gap-y-4 font-medium mr-auto">
+      <section className="max-w-5xl animate-animeLeft mx-auto font-roboto grid grid-cols-[15rem,auto] items-center justify-center mt-20 px-0 z-10 sm:grid-cols-1">
+        <div className="sm:hidden block w-[15rem] h-[26.5rem] bg-login bg-cover bg-center bg-no-repeat rounded-l-xl shadow-[0_10px_25px_rgba(0,0,0,0.45)] opacity-95" />
+        <div className="relative -ml-2 sm:ml-0 sm:flex sm:justify-center sm:px-4">
+          <div className="bg-slate-900 border border-orange-900 my-auto w-full max-w-sm text-slate-200 px-8 py-6 rounded-r-xl rounded-l-none sm:rounded-l-xl grid grid-cols-1 gap-y-4 font-medium">
             <h1 className="text-3xl text-slate-50">Login</h1>
             <form
-              className="grid gap-y-5 desktop:max-w-[250px]"
+              className="grid gap-y-5 w-full"
               onSubmit={handleSubmit}
             >
               <Input
@@ -37,7 +38,7 @@ const LoginForm = () => {
                   'focus:bg-slate-200 indent-1 focus:text-slate-900 '
                 }
                 customStyleDiv={'h-[5.2rem] '}
-                width={'250px'}
+                width={'100%'}
                 {...username}
               />
               <div className="relative">
@@ -49,7 +50,7 @@ const LoginForm = () => {
                   customStyleInput={
                     'focus:bg-slate-200 indent-1 focus:text-slate-900'
                   }
-                  width={'250px'}
+                  width={'100%'}
                   {...password}
                 />
                 <Link
@@ -61,12 +62,12 @@ const LoginForm = () => {
               </div>
               <div className="transition-transform duration-300">
                 <Button
-                  customStyle={`h-12 w-28 bg-orange-800 hover:bg-orange-700 transition-all duration-300 hover:text-slate-100 text-slate-300 rounded-lg`}
+                  customStyle={`h-12 w-full bg-orange-800 hover:bg-orange-700 transition-all duration-300 hover:text-slate-100 text-slate-300 rounded-lg`}
                 >
                   {loading ? (
                     <LoadingOutlined className="text-[24px]" />
                   ) : (
-                    <p className="font-bold">Entrar</p>
+                    <p className="font-bold text-center">Entrar</p>
                   )}
                 </Button>
                 <div className="absolute">
