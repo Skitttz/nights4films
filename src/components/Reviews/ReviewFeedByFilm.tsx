@@ -23,7 +23,7 @@ const ReviewFeedByFilm = ({ tokenUser, FilmId }: ReviewFeedByFilmProps) => {
     setCurrentPage(newPage);
   }
 
-  React.useEffect(() => {
+  const fetchReviews = React.useCallback(() => {
     setLoading(true);
     const startIndex = (currentPage - 1) * limitItemPerPage;
     const rulePagination = `pagination[start]=${startIndex}&pagination[limit]=${limitItemPerPage}`;
@@ -33,10 +33,27 @@ const ReviewFeedByFilm = ({ tokenUser, FilmId }: ReviewFeedByFilmProps) => {
         setData(true);
         setLoading(false);
       })
-      .catch((error: any) => {
-        console.error('Ocorreu um erro para mostrar as reviews:', error);
+      .catch(() => {
+        setLoading(false);
       });
-  }, [currentPage]);
+  }, [currentPage, tokenUser, FilmId]);
+
+  React.useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  React.useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<any>).detail;
+      if (detail && detail.filmId === FilmId) {
+        fetchReviews();
+      }
+    };
+    window.addEventListener('review:created', handler as EventListener);
+    return () => {
+      window.removeEventListener('review:created', handler as EventListener);
+    };
+  }, [FilmId, fetchReviews]);
 
   return (
     <>
@@ -58,7 +75,7 @@ const ReviewFeedByFilm = ({ tokenUser, FilmId }: ReviewFeedByFilmProps) => {
                       >
                         <div className="mr-4 ">
                           {review.attributes.user.data?.id &&
-                          review.attributes.user.data.attributes.avatar.data !==
+                            review.attributes.user.data.attributes.avatar.data !==
                             null ? (
                             <img
                               className="w-[60px] h-[60px] rounded-full box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;"

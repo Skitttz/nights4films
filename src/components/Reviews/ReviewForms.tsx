@@ -1,5 +1,6 @@
 import { Checkbox, ConfigProvider } from 'antd';
 import React from 'react';
+import { toast } from 'react-toastify';
 import { tokenUserLocal, useUserContext } from '../../hooks/useUser';
 import Button from '../Forms/Button';
 import {
@@ -47,20 +48,34 @@ const ReviewForms = ({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (tokenUserLocal && reviewContent.length > 0 && reviewContent.length < 1000) {
-      userCreateReview(
+    if (!tokenUserLocal) {
+      toast.error('Faça login para criar uma review.');
+      return;
+    }
+    if (reviewContent.length === 0 || reviewContent.length >= 1000) {
+      toast.error('Ops! Sua review está muito grande ou vazia.');
+      return;
+    }
+    try {
+      await userCreateReview(
         tokenUserLocal,
         reviewContent,
         idFilmReview,
         data.id,
         hasSpoiler,
       );
-      alert('Review criada com sucesso');
+      toast.success('Review criada com sucesso!');
       setIsActive(false);
       setModal(false);
-      location.reload();
-    } else {
-      alert('Ops! Sua review está muito grande ou vazia.');
+      window.dispatchEvent(
+        new CustomEvent('review:created', {
+          detail: { filmId: idFilmReview },
+        }),
+      );
+      setReviewContent('');
+      setHasSpoiler(false);
+    } catch {
+      toast.error('Erro ao criar review. Tente novamente.');
     }
   }
 
