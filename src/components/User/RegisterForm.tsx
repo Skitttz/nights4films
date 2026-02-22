@@ -46,25 +46,28 @@ const RegisterForm = () => {
     }
   }
   return (
-    <section className="animate-animeLeft max-w-7xl lg:max-w-5xl mx-auto">
+    <section className="animate-animeLeft max-w-md sm:max-w-lg mx-auto px-4">
       <Head title=" » Cadastro" description="Registration Page" />
-      <div className="grid justify-center mt-16">
+      <div className="grid justify-center mt-12">
         <h1
-          className="text-4xl font-gabarito text-[rgba(107,70,178)] font-bold mb-2 border-b border-b-1 border-b-gray-700 rounded-lg
+          className="text-3xl sm:text-4xl font-gabarito text-[rgba(107,70,178)] font-bold mb-4 border-b border-b-1 border-b-gray-700 rounded-lg
         "
         >
           Cadastre-se
         </h1>
         <form
-          className="bg-slate-200 px-12 py-6 rounded-xl flex flex-col gap-y-3 font-roboto sm:px-4"
+          className="bg-slate-200 px-6 sm:px-8 py-6 rounded-xl flex flex-col gap-y-4 font-roboto shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
           onSubmit={handleSubmit}
         >
           <Input
             label="Email"
             type="email"
             name="email"
-            customStyleInput={'tm:w-[14rem] tm:indent-0'}
-            customStyleDiv={'h-[5.2rem] '}
+            autoComplete="email"
+            customStyleInput={'tm:w-full tm:indent-0 focus:ring-2 focus:ring-purple-700'}
+            customStyleDiv={'h-[auto] '}
+            width={'100%'}
+            height={'48px'}
             labelStyle={'font-semibold'}
             {...email}
           />
@@ -72,8 +75,11 @@ const RegisterForm = () => {
             label="Username"
             type="text"
             name="username"
-            customStyleInput={'tm:w-[14rem] tm:indent-0'}
-            customStyleDiv={'h-[5.2rem]'}
+            autoComplete="username"
+            customStyleInput={'tm:w-full tm:indent-0 focus:ring-2 focus:ring-purple-700'}
+            customStyleDiv={'h-[auto]'}
+            width={'100%'}
+            height={'48px'}
             labelStyle={'font-semibold'}
             {...username}
           />
@@ -81,9 +87,12 @@ const RegisterForm = () => {
             label="Senha"
             type="password"
             name="senha"
-            customStyleInput={'tm:w-[14rem] tm:indent-0'}
+            autoComplete="new-password"
+            customStyleInput={'tm:w-full tm:indent-0 focus:ring-2 focus:ring-purple-700'}
             labelStyle={'font-semibold'}
-            customStyleDiv={'h-[5.2rem]'}
+            customStyleDiv={'h-[auto]'}
+            width={'100%'}
+            height={'48px'}
             {...password}
           />
           <div className="text-sm">
@@ -93,13 +102,15 @@ const RegisterForm = () => {
               ''
             )}
           </div>
-          <div className="flex flex-col justify-center items-center font-bold font-gabarito text-lg">
+          <div className="flex flex-col justify-center items-center font-bold font-gabarito text-lg mt-2">
             {loading ? (
-              <Button disabled>Cadastrando...</Button>
+              <Button disabled customStyle="h-12 w-full bg-purple-900 text-white rounded-lg">Cadastrando...</Button>
             ) : (
-              <Button>Cadastrar</Button>
+              <Button customStyle="h-12 w-full bg-purple-900 hover:bg-purple-800 transition-colors text-white rounded-lg active:scale-[.99]">Cadastrar</Button>
             )}
-            <Error error={error} />
+            <div aria-live="polite" role="alert" className="w-full mt-2">
+              <Error error={error} />
+            </div>
           </div>
         </form>
       </div>
