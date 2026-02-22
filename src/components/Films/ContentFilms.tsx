@@ -27,7 +27,7 @@ const ContentFilms = ({ id, name }: ContentFilmsProps) => {
     return minutes;
   }
 
-  const { data: film, isError, error, isLoading } = useFilmById(id);
+  const { data: film, isError, error, isLoading } = useFilmById(String(id));
 
   const handleOpenTrailer = (event: any) => {
     if (

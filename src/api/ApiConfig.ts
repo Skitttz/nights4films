@@ -47,6 +47,6 @@ export const makeRequest = async <TResponse>(
     return response.data;
   } catch (error) {
     handleApiError(error as AxiosError<StrapiErrorResponse>);
+    throw error as Error;
   }
 };
-

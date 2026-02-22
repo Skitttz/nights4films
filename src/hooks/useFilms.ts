@@ -31,7 +31,7 @@ export const useFilms = (
     queryFn: () => Filmes_GET(queryUrl),
     staleTime: 30_000,
     refetchOnWindowFocus: false,
-    placeholderData: (prev) => prev as any,
+    placeholderData: (prev: FilmsResponse) => prev,
     select: (data: FilmsResponse): UseFilmsResult => ({
       films: data,
       isEmpty: data.data.length === 0,
