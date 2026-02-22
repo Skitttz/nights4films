@@ -91,7 +91,7 @@ const CardsFilm = () => {
 
         </div>
       </div>
-      <div className="flex items-center ml-8 mb-4 mt-2">
+      <div className="flex items-center ml-8 mb-4 mt-2 tm:pr-4">
         <input
           aria-label="Buscar filmes"
           className="block transition-colors duration-300 border border-transparent hover:border-slate-500 w-[20rem] sm:w-[14rem] p-1 bg-gray-800 placeholder:text-sm placeholder:text-gray-500 text-slate-200 text-sm opacity-80  focus:ring-1 focus:ring-slate-500 tm:w-full indent-6 rounded-md focus-visible:outline-none"
