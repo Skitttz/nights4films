@@ -216,7 +216,7 @@ const CardsFilm = () => {
           </div>
         ) : (
           <div className="tm:px-4 lg:px-4 md:px-4 sm:px-4 w-full">
-            <div className="animate-animeLeft p-4 flex flex-col justify-center items-center row-start-1 col-start-2 w-full cardMD:col-start-1 cardMD:row-start-3 lg:w-full md:w-full sm:w-full tm:w-full tm:min-h-[280px] cardMD:min-h-[360px] rounded-md bg-gray-900 border border-slate-800 border-opacity-30">
+            <div className="animate-animeLeft p-4 flex flex-col justify-center items-center row-start-1 col-start-2 w-full cardMD:col-start-1 cardMD:row-start-3 lg:w-full md:w-full sm:w-full tm:w-full tm:min-h-[280px] cardMD:min-h-[360px] rounded-md bg-gray-900 border border-slate-800 border-opacity-30 h-full">
               <p className="flex flex-col items-center font-gabarito border-b border-b-slate-400 text-xl text-slate-300 p-2 rounded-md ">
                 Selecione o Filme
                 <span className="text-xs text-slate-500">
