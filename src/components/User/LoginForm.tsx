@@ -31,7 +31,7 @@ const LoginForm = () => {
               onSubmit={handleSubmit}
             >
               <Input
-                label="Usuario"
+                label="Nome de usuário"
                 type="username"
                 name="username"
                 customStyleInput={
@@ -54,7 +54,7 @@ const LoginForm = () => {
                   {...password}
                 />
                 <Link
-                  to={'recuperar'}
+                  to={'password/forgot'}
                   className="pt-1 text-sm underline text-right absolute right-0 -bottom-3"
                 >
                   Esqueceu a senha?

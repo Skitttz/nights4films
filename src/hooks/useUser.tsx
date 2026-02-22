@@ -25,11 +25,13 @@ import {
   userWatchedFilms_PUT,
 } from '../api/index';
 import { translateErrorMessage } from '../components/Helper/Translate';
+import { userPasswordLost_POST, userPasswordReset_POST } from '../api/Auth';
 
 interface UserContextType {
   userLogin: (username: string, password: string) => Promise<void>;
   userLogout: () => Promise<void>;
   userPasswordLost: (email: string) => Promise<void>;
+  userPasswordReset: (code: string, password: string, passwordConfirmation: string) => Promise<void>;
   userRegister: (email: string, username: string, password: string) => Promise<void>;
   userLikeFilmCreateId: (token: string, idFilm: any, idUser: any) => Promise<void>;
   userLikeFilmUpdate: (token: string, idLike: any, idFilm: any[], idNewFilm: any) => Promise<void>;
@@ -121,13 +123,28 @@ export const UserStorage = ({ children }: UserStorageProps) => {
     try {
       setError(null);
       setLoading(true);
-      // await userPasswordLost_POST({
-      //   email: email,
-      // });
+      await userPasswordLost_POST({
+        email: email,
+      });
     } catch (error: any) {
-      setError(error.message);
+      setError(translateErrorMessage(error));
     } finally {
-      alert('AVISO: Funcionalidade em Desenvolvimento');
+      setLoading(false);
+    }
+  }
+
+  async function userPasswordReset(code: string, password: string, passwordConfirmation: string) {
+    try {
+      setError(null);
+      setLoading(true);
+      await userPasswordReset_POST({
+        code,
+        password,
+        passwordConfirmation,
+      });
+    } catch (error: any) {
+      setError(translateErrorMessage(error));
+    } finally {
       setLoading(false);
     }
   }
@@ -426,6 +443,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
         userLogin,
         userLogout,
         userPasswordLost,
+        userPasswordReset,
         userRegister,
         userLikeFilmCreateId,
         userLikeFilmUpdate,

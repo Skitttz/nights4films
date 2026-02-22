@@ -1,19 +1,9 @@
-import React from 'react';
 
 const PasswordSecurity = ({ children }: { children: string }) => {
-  /* Tamanho */
-  const validateTL = children.length >= 6 && children.length <= 20;
-
-  /* Caract Especial */
+  const validateTL = children.length >= 8 && children.length <= 64;
   const validateSC = /[^A-Za-z0-9]/.test(children);
-
-  /* Lower Case */
   const validateLW = /[a-z]/.test(children);
-
-  /* Upper Case */
   const validateUC = /[A-Z]/.test(children);
-
-  /* Number Case */
   const validateNC = /[0-9]/.test(children);
 
   return (
@@ -23,24 +13,24 @@ const PasswordSecurity = ({ children }: { children: string }) => {
     >
       <p>
         {validateTL
-          ? '✔️ OK! Temos entre 6 a 20 caracteres.'
-          : `❌ Crie uma senha de 6 a 20 caracteres.`}
+          ? '✔️ Requisito atendido: 8 a 64 caracteres.'
+          : '❌ A senha deve ter entre 8 e 64 caracteres.'}
       </p>
       <p>
         {validateUC
-          ? '✔️ OK! Temos uma letra maiúscula aqui. '
-          : `❌ Insira uma letra maiúscula.`}
+          ? '✔️ Requisito atendido: letra maiúscula.'
+          : '❌ Inclua ao menos uma letra maiúscula.'}
       </p>
       <p>
         {validateLW
-          ? '✔️ OK! Temos uma letra minúscula. '
-          : '❌ Insira uma letra minúscula. '}
+          ? '✔️ Requisito atendido: letra minúscula.'
+          : '❌ Inclua ao menos uma letra minúscula.'}
       </p>
-      <p>{validateNC ? '✔️ OK! Temos um número. ' : `❌ Insira um número.`}</p>
+      <p>{validateNC ? '✔️ Requisito atendido: número.' : '❌ Inclua ao menos um número.'}</p>
       <p>
         {validateSC
-          ? '✔️ OK! Temos um caracter especial.'
-          : `❌ Insira um carácter especial. `}
+          ? '✔️ Requisito atendido: símbolo.'
+          : '❌ Inclua ao menos um símbolo.'}
       </p>
     </div>
   );

@@ -11,8 +11,8 @@ const types: { [key: string]: { regex: RegExp; message: string } } = {
     message: 'Preencha um e-mail válido. ',
   },
   password: {
-    regex: /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%?=*&]).{6,20})/,
-    message: '',
+    regex: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%?=*&]).{8,64}$/,
+    message: 'A senha deve ter no mínimo 8 caracteres, com letras maiúsculas, minúsculas, números e símbolos.',
   },
   contentReview: {
     regex: /^.{1,1000}$/,

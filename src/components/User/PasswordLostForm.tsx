@@ -5,59 +5,62 @@ import { useUserContext } from '../../hooks/useUser';
 import Button from '../Forms/Button';
 import Input from '../Forms/Input';
 import Head from '../Helper/Head';
+import { toast } from 'react-toastify';
 
 const PasswordLostForm = () => {
   const email = useForm('email');
   const { userPasswordLost, loading } = useUserContext();
   const navigator = useNavigate();
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    userPasswordLost(email.value);
-    navigator('/login');
+    const isValid = email.validate();
+    if (!isValid) {
+      toast.error('Preencha um e-mail válido.', { theme: 'dark' });
+      return;
+    }
+    await userPasswordLost(email.value);
+    toast.success('Se o e-mail estiver cadastrado, você receberá instruções para redefinir sua senha. Verifique Caixa de Entrada e Spam.', { theme: 'dark' });
+    setTimeout(() => navigator('/login'), 1500);
   }
 
   return (
-    <div className="max-w-5xl grid grid-cols-1 justify-items-center animate-animeLeft mx-auto font-roboto mt-24 transition-colors">
-      <Head title=" » " description="Recover Password" />
-      <div className="flex flex-col justify-center py-4 px-8 items-center bg-slate-200 rounded-lg tm:py-2 tm:px-4">
-        <p className="text-2xl mb-3 font-gabarito">Recuperar Senha</p>
-        <form className="" onSubmit={handleSubmit}>
+    <section className="animate-animeLeft max-w-md sm:max-w-lg mx-auto px-4">
+      <Head title=" » Recuperar Senha" description="Recover Password" />
+      <div className="grid justify-center mt-12">
+        <p className="text-3xl sm:text-4xl font-gabarito text-[rgba(107,70,178)] font-bold mb-4 border-b-gray-700 rounded-lg">
+          Recuperar Senha
+        </p>
+        <form className="bg-slate-200 px-6 sm:px-8 py-6 rounded-xl flex flex-col gap-y-4 font-roboto shadow-[0_8px_20px_rgba(0,0,0,0.25)]" onSubmit={handleSubmit}>
           <Input
             label="Email"
-            type="text"
+            type="email"
             name="email"
-            width={'250px'}
+            autoComplete="email"
+            width={'100%'}
+            height={'48px'}
             placeholder={'Digite seu email'}
-            customStyleDiv={'h-[5.5rem]'}
-            customStyleInput={
-              'focus:bg-slate-200 indent-1 focus:text-slate-900 tm:indent-0'
-            }
+            customStyleDiv={'h-[auto]'}
+            customStyleInput={'tm:w-full tm:indent-0 focus:ring-2 focus:ring-purple-700'}
             {...email}
           />
-          <div className=" ml-[64%]">
+          <p className="text-xs text-slate-600">
+            Por segurança, não informamos se um e-mail está cadastrado. Caso não receba em alguns minutos, solicite novamente.
+          </p>
+          <div className="flex flex-col justify-center items-center font-semibold font-gabarito text-lg">
             {loading ? (
-              <Button
-                customStyle={
-                  'p-2 bg-slate-300 rounded-lg mt-2 hover:bg-slate-900 hover:text-slate-300 transition-colors'
-                }
-                disabled
-              >
-                Recuperando...
+              <Button disabled customStyle="h-12 w-full bg-purple-900 text-white rounded-lg">
+                Enviando...
               </Button>
             ) : (
-              <Button
-                customStyle={
-                  'p-2 bg-slate-300 rounded-lg mt-2 hover:bg-slate-900 hover:text-slate-300 transition-colors'
-                }
-              >
-                Recuperar
+              <Button disabled={!email.value} customStyle="h-12 w-full bg-purple-900 hover:bg-purple-800 transition-colors text-white rounded-lg active:scale-[.99] px-4">
+                Enviar instruções por e-mail
               </Button>
             )}
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 

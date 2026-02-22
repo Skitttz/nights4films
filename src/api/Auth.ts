@@ -28,3 +28,7 @@ export async function userRegister_POST(userData: any) {
 export async function userPasswordLost_POST(emailUser: any) {
   return makePostWithoutTokenRequest('/auth/forgot-password', emailUser, null);
 }
+
+export async function userPasswordReset_POST(body: { code: string; password: string; passwordConfirmation: string }) {
+  return makePostWithoutTokenRequest('/auth/reset-password', body, null);
+}
