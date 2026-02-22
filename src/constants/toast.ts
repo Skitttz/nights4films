@@ -1,7 +1,7 @@
-import { Slide } from "react-toastify";
+import { Slide, type ToastContainerProps, type ToastPosition } from "react-toastify";
 
-const toastConfig = {
-  position: 'top-center',
+const toastConfig: ToastContainerProps = {
+  position: 'top-center' as ToastPosition,
   transition: Slide,
   autoClose: 5000,
   hideProgressBar: true,
