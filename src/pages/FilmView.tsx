@@ -30,6 +30,7 @@ const FilmView = () => {
   const {
     login,
     data,
+    loading,
     userLikeFilmCreateId,
     userLikeFilmUpdate,
     userLikeFilmRemove,
@@ -106,7 +107,7 @@ const FilmView = () => {
         divDescriptionFilmRef.current.style.boxShadow = `0px 0px 2px -1px ${randomColorHexOne}`;
       }
     }
-  }, [films]);
+  }, [films, login]);
 
   function clipboardFilmURL() {
     const { href } = window.location;
@@ -192,7 +193,7 @@ const FilmView = () => {
                   </p>
                 </div>
               </div>
-              {login && tokenUserLocal ? (
+              {login === true && tokenUserLocal ? (
                 <div className="col-span-full tm:w-full font-gabarito content-center justify-items-center max-w-7xl lg:max-w-5xl h-16 cardMD:h-[auto] cardMD:p-4 tm:p-2 bg-transparent border border-blue-950 text-slate-300 rounded-lg flex justify-start items-center cardMD:mx-auto sm:gap-x-4 md:p-1">
                   <div className="cardMD:mx-8 md:mx-0 sm:mx-2 tm:mx-6 tm:mb-6 tm:mt-2 grid grid-cols-[1fr,1fr] cardMD:grid-cols-1 tm:grid-cols-1 tm:items-center tm:gap-x-4 cardMD:gap-y-4 justify-between cardMD:justify-center mx-auto grid-row-1 w-full">
                     <ul className="pl-14 md:pl-0 md:mx-auto sm:pl-0 tm:pl-0 grid grid-cols-[26px,30px,120px,200px] justify-center md:grid-cols-4 sm:grid-cols-2 tm:grid-cols-[auto] sm:gap-y-4 md:gap-y-4 tm:gap-y-6 tm:gap-x-3 gap-x-8 cardMD:mx-auto my-auto text-center cardMD:grid-cols-[24px,40px,100px,140px] tm:py-4 cm:grid-cols-[auto,1fr]">
@@ -281,10 +282,12 @@ const FilmView = () => {
                     </ul>
                   </div>
                 </div>
-              ) : (
+              ) : login === false ? (
                 <div className="mt-12"></div>
+              ) : (
+                <Loading />
               )}
-              {login && tokenUserLocal ? (
+              {login === true && tokenUserLocal ? (
                 <div className="text-slate-400 inline-block mr-auto w-full col-span-full">
                   <div className="mb-24">
                     <p className="border-b border-b-slate-900 text-lg rounded-sm mt-8 mb-8">

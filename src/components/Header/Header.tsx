@@ -45,8 +45,12 @@ const Header = () => {
     return <HeaderSkeleton />;
   }
 
-  const handleLogout = () => {
-    userLogout();
+  const handleLogout = async () => {
+    await userLogout();
+    setOpenModal(false);
+    if (openMenuMB) {
+      handleCloseMenu();
+    }
     navigate('/login');
   };
 
