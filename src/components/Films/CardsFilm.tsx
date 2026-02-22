@@ -25,6 +25,13 @@ const CardsFilm = () => {
   const debouncedChange = useDebounce((value: string) => setQuery(value), 300);
   const refScroll = useRef<HTMLDivElement>(null);
   const contentFilmRef = useRef<HTMLDivElement>(null);
+
+  const [contentReady, setContentReady] = useState(false);
+  const setContentRef = useCallback((node: HTMLDivElement | null) => {
+    contentFilmRef.current = node;
+    setContentReady(Boolean(node));
+  }, []);
+
   const mainContainerFilmRef = useRef<HTMLDivElement>(null);
 
   const toContentFilm = () => {
@@ -35,11 +42,12 @@ const CardsFilm = () => {
     }
   };
 
-  const toTopContainerFilm = () => {
-    const mainContainerFilm = mainContainerFilmRef.current;
-    if (mainContainerFilm) {
-      const offsetHeader = isMobile ? 80 : 500;
-      scrollToElementWithOffset(mainContainerFilm, offsetHeader);
+
+  const toListContainerFilm = () => {
+    const listContainer = refScroll.current;
+    if (listContainer) {
+      const offsetHeader = isMobile ? 80 : 120;
+      scrollToElementWithOffset(listContainer, offsetHeader);
     }
   };
 
@@ -51,9 +59,7 @@ const CardsFilm = () => {
 
   // Setar pagina atual -> nova
   const handlePageChange = useCallback((newPage: number) => {
-    if (filmData.id === null) {
-      toTopContainerFilm();
-    }
+    toListContainerFilm();
     setCurrentPage(newPage);
   }, [isMobile, filmData.id]);
 
@@ -70,15 +76,68 @@ const CardsFilm = () => {
     }
   }, [isActive]);
 
-  const { data, isLoading, isError, error, isSuccess, isFetching } = useFilms(
+  const { data, isLoading, isFetching } = useFilms(
     currentPage,
     query,
     limitItemPerPage,
   );
   const films = data?.films;
-  const isEmpty = data?.isEmpty ?? false;
   const totalItems = data?.totalItems ?? 0;
   const hasFilms = Boolean(films && films.data && films.data.length > 0);
+  const totalPages = totalItems ? Math.ceil(totalItems / limitItemPerPage) : 0;
+
+
+  const swipeStartX = useRef<number | null>(null);
+  const swipeStartY = useRef<number | null>(null);
+  const swipeStartTime = useRef<number | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.changedTouches[0];
+    swipeStartX.current = touch.clientX;
+    swipeStartY.current = touch.clientY;
+    swipeStartTime.current = Date.now();
+  }, []);
+
+  const gotoPrevPage = useCallback(() => {
+    if (currentPage > 1) {
+      handlePageChange(currentPage - 1);
+    }
+  }, [currentPage, handlePageChange]);
+
+  const gotoNextPage = useCallback(() => {
+    if (totalPages > 0 && currentPage < totalPages) {
+      handlePageChange(currentPage + 1);
+    }
+  }, [currentPage, totalPages, handlePageChange]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.changedTouches[0];
+    const startX = swipeStartX.current ?? touch.clientX;
+    const startY = swipeStartY.current ?? touch.clientY;
+    const endX = touch.clientX;
+    const endY = touch.clientY;
+
+    const dt = Date.now() - (swipeStartTime.current ?? Date.now());
+    const dx = endX - startX;
+    const dy = endY - startY;
+
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+
+    const maxDuration = 300;
+    const minDistance = 70;
+    const isHorizontalSwipe = absDx >= minDistance && absDx > absDy && dt <= maxDuration;
+
+    if (isHorizontalSwipe) {
+      if (dx < 0) gotoNextPage();
+      else gotoPrevPage();
+    }
+
+    swipeStartX.current = null;
+    swipeStartY.current = null;
+    swipeStartTime.current = null;
+  }, [gotoNextPage, gotoPrevPage]);
+
 
   return (
     <div>
@@ -120,6 +179,8 @@ const CardsFilm = () => {
       cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 cardMD:scroll-smooth
       lg:w-[45rem] md:w-[35rem] sm:w-[25rem] tm:w-[24rem]"
           ref={refScroll}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           {(isLoading || (isFetching && !data)) ? (
             <FilmCardLoading />
@@ -144,7 +205,7 @@ const CardsFilm = () => {
             )}
         </div>
         {filmData.title && films && filmData.id ? (
-          <div className="cardMD:row-start-3 w-full" ref={contentFilmRef}>
+          <div className="cardMD:row-start-3 w-full" ref={setContentRef}>
             <ContentFilms
               key={filmData.id}
               id={filmData.id}
@@ -155,7 +216,7 @@ const CardsFilm = () => {
           </div>
         ) : (
           <div className="tm:px-4 lg:px-4 md:px-4 sm:px-4 w-full">
-            <div className="animate-animeLeft p-4 flex flex-col justify-center items-center row-start-1 col-start-2 w-full cardMD:col-start-1 cardMD:row-start-3 lg:w-full md:w-full sm:w-full tm:w-full tm:h-[800px] cardMD:h-[700px] rounded-md bg-gray-900 border border-slate-800 border-opacity-30 h-full">
+            <div className="animate-animeLeft p-4 flex flex-col justify-center items-center row-start-1 col-start-2 w-full cardMD:col-start-1 cardMD:row-start-3 lg:w-full md:w-full sm:w-full tm:w-full tm:min-h-[280px] cardMD:min-h-[360px] rounded-md bg-gray-900 border border-slate-800 border-opacity-30">
               <p className="flex flex-col items-center font-gabarito border-b border-b-slate-400 text-xl text-slate-300 p-2 rounded-md ">
                 Selecione o Filme
                 <span className="text-xs text-slate-500">
@@ -169,13 +230,16 @@ const CardsFilm = () => {
           </div>
         )}
 
-        <div className="col-end-2 pb-8">
+        <div className="col-end-2 pb-8 tm:pb-20 tm:mt-2">
           {hasFilms && films.data.length !== 0 && (
             <PaginationFilms
               totalItems={totalItems}
               currentPage={currentPage}
               onPageChange={handlePageChange}
               limitItemPage={limitItemPerPage}
+              contentRef={contentFilmRef}
+              isMobile={isMobile}
+              contentReady={contentReady}
             />
           )}
         </div>
