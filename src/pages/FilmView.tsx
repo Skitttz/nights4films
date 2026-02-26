@@ -166,7 +166,7 @@ const FilmView = () => {
               description="Pagina do filme"
             />
 
-            <div className="mt-12 grid grid-cols-2 grid-rows-[auto,1fr] gap-y-8 content-center justify-items-center items-start animate-fadeIn max-w-7xl lg:max-w-5xl font-gabarito cardMD:grid-cols-1 cardMD:p-8">
+            <div className="mt-12 grid grid-cols-2 grid-rows-[auto,1fr] gap-y-8 content-center justify-items-center items-start animate-fadeIn max-w-7xl lg:max-w-5xl font-gabarito cardMD:grid-cols-1 cardMD:p-2">
               <div>
                 <img
                   className="w-auto h-auto bg-contain rounded-lg shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px] "
@@ -188,7 +188,7 @@ const FilmView = () => {
                 </div>
 
                 <div>
-                  <p className="text-slate-400 mt-3 mx-auto text-normal px-2 text-justify font-gabarito hover:text-slate-300 animate-fadeIn transition-colors py-1 ml-2">
+                  <p className="text-slate-400 mt-3 mx-auto text-normal px-2 tm:ml-0 tm:px-0 text-justify font-gabarito hover:text-slate-300 animate-fadeIn transition-colors py-1 ml-2">
                     {films.data[0].attributes.description}
                   </p>
                 </div>
@@ -283,7 +283,7 @@ const FilmView = () => {
                   </div>
                 </div>
               ) : login === false ? (
-                <div className="mt-12"></div>
+                <div className="mt-12 tm:mt-0"></div>
               ) : (
                 <Loading />
               )}
