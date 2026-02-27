@@ -1,4 +1,4 @@
-import { HeartFilled, HeartOutlined } from '@ant-design/icons';
+import { HeartFilled, HeartOutlined, LoadingOutlined } from '@ant-design/icons';
 import React from 'react';
 import { FilmsIdFromLikeId_GET } from '../../../api/index';
 
@@ -13,6 +13,7 @@ interface LikeButtonProps {
   userLikeFilmCreateId: (token: string, idFilm: any, idUser: any) => Promise<void>;
   data: any;
   sizeIcons: number;
+  loading?: boolean;
 }
 
 function LikeButton({
@@ -26,6 +27,7 @@ function LikeButton({
   userLikeFilmCreateId,
   data,
   sizeIcons,
+  loading = false,
 }: LikeButtonProps) {
   const handleLikeClick = async () => {
     if (like) {
@@ -43,8 +45,16 @@ function LikeButton({
     }
   };
 
+  if (loading) {
+    return (
+      <div style={{ pointerEvents: 'none' }}>
+        <LoadingOutlined style={{ fontSize: `${sizeIcons}px` }} />
+      </div>
+    );
+  }
+
   return (
-    <div onClick={handleLikeClick}>
+    <div onClick={handleLikeClick} className='flex flex-col gap-1 items-center justify-center py-5'>
       {like ? (
         <>
           <HeartFilled

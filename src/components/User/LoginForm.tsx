@@ -63,6 +63,7 @@ const LoginForm = () => {
               <div className="transition-transform duration-300">
                 <Button
                   customStyle={`h-12 w-full bg-orange-800 hover:bg-orange-700 transition-all duration-300 hover:text-slate-100 text-slate-300 rounded-lg`}
+                  disabled={loading}
                 >
                   {loading ? (
                     <LoadingOutlined className="text-[24px]" />

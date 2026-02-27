@@ -15,7 +15,7 @@ import {
   userContainsLikeId,
 } from '../components/User/Like/UserLike';
 import RateButton from '../components/User/Rate/RateButton';
-import { userAlreadyWatchedFilm } from '../components/User/Watch/UserWatch';
+import { userAlreadyWatchedFilm, userContainsFilmInWatchedId } from '../components/User/Watch/UserWatch';
 import WatchButton from '../components/User/Watch/WatchButton';
 import {
   userAlreadyListedFilm,
@@ -64,6 +64,9 @@ const FilmView = () => {
   const [watchListId, setWatchListId] = React.useState('');
   const [watchList, setWatchList] = React.useState(false);
 
+  // Loading de engajamento
+  const [engagementLoading, setEngagementLoading] = React.useState(false);
+
   // Rate
   const refLiRate = React.useRef<HTMLLIElement>(null);
   const divDescriptionFilmRef = React.useRef<HTMLDivElement>(null);
@@ -87,15 +90,39 @@ const FilmView = () => {
 
   React.useEffect(() => {
     if (!tokenUserLocal) return;
-    userAlreadyLiked(films, login, tokenUserLocal, setLikedId, setLiked);
-    userAlreadyListedFilm(
-      films,
-      login,
-      tokenUserLocal,
-      setWatchListId,
-      setWatchList,
-    );
-    userAlreadyWatchedFilm(films, login, tokenUserLocal, setWatchId, setWatch);
+    let mounted = true;
+    const initEngagement = async () => {
+      if (!tokenUserLocal) return;
+      setEngagementLoading(true);
+      try {
+        await Promise.all([
+          userAlreadyLiked(films, login, tokenUserLocal, setLikedId, setLiked),
+          userAlreadyListedFilm(
+            films,
+            login,
+            tokenUserLocal,
+            setWatchListId,
+            setWatchList,
+          ),
+          userAlreadyWatchedFilm(
+            films,
+            login,
+            tokenUserLocal,
+            setWatchId,
+            setWatch,
+          ),
+        ]);
+      } finally {
+        if (mounted) setEngagementLoading(false);
+      }
+    };
+    initEngagement();
+    return () => {
+      mounted = false;
+    };
+  }, [films, login]);
+
+  React.useEffect(() => {
     const randomColorValueOne = randomColor();
     const randomColorValueTwo = randomColor();
     const randomColorHexOne = randomColorHEX();
@@ -107,7 +134,7 @@ const FilmView = () => {
         divDescriptionFilmRef.current.style.boxShadow = `0px 0px 2px -1px ${randomColorHexOne}`;
       }
     }
-  }, [films, login]);
+  }, [films]);
 
   function clipboardFilmURL() {
     const { href } = window.location;
@@ -141,7 +168,7 @@ const FilmView = () => {
   ];
 
   const sizeIcons = 21;
-
+  const isAuthenticated = login === true && tokenUserLocal
   return (
     <>
       <div>
@@ -193,22 +220,27 @@ const FilmView = () => {
                   </p>
                 </div>
               </div>
-              {login === true && tokenUserLocal ? (
-                <div className="col-span-full tm:w-full font-gabarito content-center justify-items-center max-w-7xl lg:max-w-5xl h-16 cardMD:h-[auto] cardMD:p-4 tm:p-2 bg-transparent border border-blue-950 text-slate-300 rounded-lg flex justify-start items-center cardMD:mx-auto sm:gap-x-4 md:p-1">
-                  <div className="cardMD:mx-8 md:mx-0 sm:mx-2 tm:mx-6 tm:mb-6 tm:mt-2 grid grid-cols-[1fr,1fr] cardMD:grid-cols-1 tm:grid-cols-1 tm:items-center tm:gap-x-4 cardMD:gap-y-4 justify-between cardMD:justify-center mx-auto grid-row-1 w-full">
-                    <ul className="pl-14 md:pl-0 md:mx-auto sm:pl-0 tm:pl-0 grid grid-cols-[26px,30px,120px,200px] justify-center md:grid-cols-4 sm:grid-cols-2 tm:grid-cols-[auto] sm:gap-y-4 md:gap-y-4 tm:gap-y-6 tm:gap-x-3 gap-x-8 cardMD:mx-auto my-auto text-center cardMD:grid-cols-[24px,40px,100px,140px] tm:py-4 cm:grid-cols-[auto,1fr]">
+              {isAuthenticated ? (
+                <div className="col-span-full w-full max-w-7xl lg:max-w-5xl font-gabarito">
+                  <div className="rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm text-slate-200 shadow-md px-5 py-4 tm:px-4 tm:py-3 cardMD:px-4 cardMD:py-3">
+                    <ul
+                      className={`grid grid-cols-4 cardMD:grid-cols-2 sm:grid-cols-1 tm:grid-cols-1 gap-4 cardMD:gap-3 tm:gap-3 items-stretch tm:items-center  auto-rows-fr ${engagementLoading ? 'animate-pulse' : ''}`}
+                      role="group"
+                      aria-label="Ações do usuário"
+                    >
                       <li
-                        className="cursor-pointer"
-                        onClick={() => setWatch(!watch)}
+                        className={`h-full group relative cursor-pointer w-full flex items-center justify-center rounded-lg border border-slate-800 bg-slate-900/40 shadow-sm transition-all duration-200 hover:bg-slate-800/50 hover:shadow-[0_0_0_2px_rgba(10,241,95,0.418)] focus-within:ring-2 focus-within:ring-green-700 ${engagementLoading ? 'pointer-events-none opacity-60' : ''}`}
+                        onClick={() => {
+                          if (!engagementLoading) setWatch(!watch);
+                        }}
                       >
                         <WatchButton
                           watch={watch}
                           watchId={watchId}
-                          tokenUserLocal={tokenUserLocal}
+                          tokenUserLocal={tokenUserLocal as string}
                           films={films}
-                          userContainsFilmInWatchListId={
-                            userContainsFilmInWatchListId
-                          }
+                          loading={engagementLoading}
+                          userContainsFilmInWatchedId={userContainsFilmInWatchedId}
                           userWatchedUpdate={userWatchedUpdate}
                           userWatchedRemove={userWatchedRemove}
                           userWatchedCreateId={userWatchedCreateId}
@@ -217,14 +249,17 @@ const FilmView = () => {
                         />
                       </li>
                       <li
-                        className="cursor-pointer "
-                        onClick={() => setLiked(!like)}
+                        className={`h-full group relative cursor-pointer w-full flex items-center justify-center rounded-lg border border-slate-800 bg-slate-900/40 shadow-sm transition-all duration-200 hover:bg-slate-800/50 hover:shadow-[0_0_0_2px_rgba(244,63,94,0.25)] focus-within:ring-2 focus-within:ring-pink-400 ${engagementLoading ? 'pointer-events-none opacity-60' : ''}`}
+                        onClick={() => {
+                          if (!engagementLoading) setLiked(!like);
+                        }}
                       >
                         <LikeButton
                           like={like}
                           likeId={likeId}
-                          tokenUserLocal={tokenUserLocal}
+                          tokenUserLocal={tokenUserLocal as string}
                           films={films}
+                          loading={engagementLoading}
                           userContainsLikeId={userContainsLikeId}
                           userLikeFilmUpdate={userLikeFilmUpdate}
                           userLikeFilmRemove={userLikeFilmRemove}
@@ -234,14 +269,17 @@ const FilmView = () => {
                         />
                       </li>
                       <li
-                        className="cursor-pointer "
-                        onClick={() => setWatchList(!watchList)}
+                        className={`h-full group relative cursor-pointer w-full flex items-center justify-center rounded-lg border border-slate-800 bg-slate-900/40 shadow-sm transition-all duration-200 hover:bg-slate-800/50 hover:shadow-[0_0_0_2px_rgba(34,197,94,0.25)] focus-within:ring-2 focus-within:ring-green-400 ${engagementLoading ? 'pointer-events-none opacity-60' : ''}`}
+                        onClick={() => {
+                          if (!engagementLoading) setWatchList(!watchList);
+                        }}
                       >
                         <WatchListButton
                           watchList={watchList}
                           watchListId={watchListId}
-                          tokenUserLocal={tokenUserLocal}
+                          tokenUserLocal={tokenUserLocal as string}
                           films={films}
+                          loading={engagementLoading}
                           userContainsFilmInWatchListId={
                             userContainsFilmInWatchListId
                           }
@@ -253,14 +291,14 @@ const FilmView = () => {
                         />
                       </li>
                       <li
-                        className="mr-12 cardMD:mr-0 relative "
+                        className="h-full relative overflow-hidden w-full flex items-center justify-center rounded-lg border border-slate-800 bg-slate-900/40 shadow-sm transition-all duration-200 hover:bg-slate-800/50 hover:shadow-[0_0_0_2px_rgba(129,140,248,0.25)] focus-within:ring-2 focus-within:ring-indigo-500"
                         ref={refLiRate}
                       >
-                        {/*ConfigProvider lib React Rate */}
                         <RateButton
-                          tokenUserLocal={tokenUserLocal}
+                          tokenUserLocal={tokenUserLocal as string}
                           films={films}
                           login={login}
+                          loading={engagementLoading}
                           userRateUpdate={userRateUpdate}
                           userRateRemove={userRateRemove}
                           userRateCreateId={userRateCreateId}
@@ -269,11 +307,11 @@ const FilmView = () => {
                         />
                       </li>
                     </ul>
-                    <ul className="flex text-center tm:flex-1 tm:gap-x-2 flex-wrap tm:gap-y-4 justify-center gap-x-4 items-center text-slate-300 cardMD:mx-auto cm:flex-wrap cm:flex-1 cm:gap-y-4">
+                    <ul className="mt-5 flex flex-wrap gap-3 items-center justify-center text-slate-300 cardMD:grid cardMD:grid-cols-3 cardMD:gap-4 tm:grid-cols-1 cardMD:justify-center tm:grid tm:gap-4 tm:justify-center">
                       {actions.map((action, index) => (
                         <li
                           key={index}
-                          className="w-[7rem] lg:w-[7rem]  px-2 py-2 tm:p-2 tm:text-center rounded-md bg-[rgba(47,66,178)] hover:bg-[rgba(46,38,178)] cursor-pointer transition-colors"
+                          className="px-3 py-2 rounded-full border border-slate-700 bg-slate-800/50 hover:bg-slate-700/60 hover:border-slate-500 text-sm font-medium cursor-pointer  transition-colors duration-200 shadow-sm min-w-[7rem] text-center"
                           onClick={action.onClick}
                         >
                           {action.title}
@@ -287,7 +325,7 @@ const FilmView = () => {
               ) : (
                 <Loading />
               )}
-              {login === true && tokenUserLocal ? (
+              {isAuthenticated ? (
                 <div className="text-slate-400 inline-block mr-auto w-full col-span-full">
                   <div className="mb-24">
                     <p className="border-b border-b-slate-900 text-lg rounded-sm mt-8 mb-8">
@@ -297,7 +335,7 @@ const FilmView = () => {
                       </span>
                     </p>
                     <ReviewFeedByFilm
-                      tokenUser={tokenUserLocal}
+                      tokenUser={tokenUserLocal as string}
                       FilmId={films.data[0].id}
                     />
                   </div>

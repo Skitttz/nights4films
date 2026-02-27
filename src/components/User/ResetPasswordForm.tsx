@@ -28,10 +28,13 @@ const ResetPasswordForm = () => {
       return toast.error('As senhas não coincidem.', { theme: 'dark' });
     }
     if (isPasswordValid && isConfirmValid && codeParam.length > 0) {
-      await userPasswordReset(codeParam, password.value, confirm.value);
-      if (!error) {
+      try {
+        await userPasswordReset(codeParam, password.value, confirm.value);
         toast.success('Senha alterada com sucesso!', { theme: 'dark' });
         setTimeout(() => navigate('/login'), 2000);
+      } catch (e: any) {
+        const message = e?.message || 'Erro ao redefinir senha.';
+        toast.error(message, { theme: 'dark' });
       }
     }
   }

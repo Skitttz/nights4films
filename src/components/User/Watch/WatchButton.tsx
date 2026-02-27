@@ -1,4 +1,4 @@
-import { EyeFilled, EyeOutlined } from '@ant-design/icons';
+import { EyeFilled, EyeOutlined, LoadingOutlined } from '@ant-design/icons';
 import React from 'react';
 import { FilmsIdFromWatchId_GET } from '../../../api/index';
 
@@ -7,12 +7,13 @@ interface WatchButtonProps {
   watchId: string;
   tokenUserLocal: string;
   films: any;
-  userContainsFilmInWatchListId: (token: string) => Promise<boolean>;
+  userContainsFilmInWatchedId: (token: string) => Promise<boolean>;
   userWatchedUpdate: (token: string, idWatched: any, idFilm: any[], idNewFilm: any) => Promise<void>;
   userWatchedRemove: (token: string, idWatched: any, idFilm: any[], idToRemove: any) => Promise<void>;
   userWatchedCreateId: (token: string, idFilm: any, idUser: any) => Promise<void>;
   data: any;
   sizeIcons: number;
+  loading?: boolean;
 }
 
 const WatchButton = ({
@@ -20,12 +21,13 @@ const WatchButton = ({
   watchId,
   tokenUserLocal,
   films,
-  userContainsFilmInWatchListId,
+  userContainsFilmInWatchedId,
   userWatchedUpdate,
   userWatchedRemove,
   userWatchedCreateId,
   data,
   sizeIcons,
+  loading = false,
 }: WatchButtonProps) => {
   const handleWatchClick = async () => {
     if (watch) {
@@ -35,7 +37,7 @@ const WatchButton = ({
       );
       userWatchedRemove(tokenUserLocal, watchId, watchedIdFilms, films.data[0]);
     } else {
-      const containsWatched = await userContainsFilmInWatchListId(
+      const containsWatched = await userContainsFilmInWatchedId(
         tokenUserLocal,
       );
       if (containsWatched && watchId) {
@@ -50,8 +52,16 @@ const WatchButton = ({
       }
     }
   };
+  if (loading) {
+    return (
+      <div style={{ pointerEvents: 'none' }} className='py-5'>
+        <LoadingOutlined style={{ fontSize: `${sizeIcons}px` }} />
+      </div>
+    );
+  }
+
   return (
-    <div onClick={handleWatchClick}>
+    <div onClick={handleWatchClick} className='flex flex-col gap-1 items-center justify-center py-2'>
       {watch ? (
         <>
           <EyeFilled

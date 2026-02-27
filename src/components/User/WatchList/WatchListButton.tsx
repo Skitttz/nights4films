@@ -1,4 +1,4 @@
-import { FieldTimeOutlined } from '@ant-design/icons';
+import { FieldTimeOutlined, LoadingOutlined } from '@ant-design/icons';
 import React from 'react';
 import { FilmsIdFromWatchListId_GET } from '../../../api/index';
 
@@ -13,6 +13,7 @@ interface WatchListButtonProps {
   userListFilmCreateId: (token: string, idFilm: any, idUser: any) => Promise<void>;
   data: any;
   sizeIcons: number;
+  loading?: boolean;
 }
 
 function WatchListButton({
@@ -26,6 +27,7 @@ function WatchListButton({
   userListFilmCreateId,
   data,
   sizeIcons,
+  loading = false,
 }: WatchListButtonProps) {
   const handleWatchListClick = async () => {
     if (watchList) {
@@ -61,8 +63,16 @@ function WatchListButton({
     }
   };
 
+  if (loading) {
+    return (
+      <div style={{ pointerEvents: 'none' }}>
+        <LoadingOutlined style={{ fontSize: `${sizeIcons}px` }} />
+      </div>
+    );
+  }
+
   return (
-    <div onClick={handleWatchListClick}>
+    <div onClick={handleWatchListClick} className='flex flex-col gap-1 items-center justify-center py-5'>
       {watchList ? (
         <>
           <FieldTimeOutlined

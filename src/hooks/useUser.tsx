@@ -12,20 +12,26 @@ import {
   userLikeFilms_PUT,
   userListFilms_POST,
   userListFilms_PUT,
-  userLogin_GET,
-  userLogin_POST,
-  userProfile_GET,
   userRateFilm_DELETE,
   userRateFilms_GET,
   userRateFilms_POST,
   userRateFilms_PUT,
-  userRegister_POST,
   userReview_POST,
   userWatchedFilms_POST,
   userWatchedFilms_PUT,
 } from '../api/index';
+import {
+  loginAndStoreToken,
+  fetchCurrentUser,
+  registerUser,
+  forgotPasswordRequest,
+  resetPasswordRequest,
+  fetchProfile,
+  logoutAndClearToken,
+} from '../controllers/userController';
 import { translateErrorMessage } from '../components/Helper/Translate';
-import { userPasswordLost_POST, userPasswordReset_POST } from '../api/Auth';
+import { getCookie } from '../utils/cookieManager';
+import { getTokenCookieName } from '../constants/cookies';
 
 interface UserContextType {
   userLogin: (username: string, password: string) => Promise<void>;
@@ -55,7 +61,8 @@ interface UserContextType {
 }
 
 export const useUser = createContext<UserContextType | null>(null);
-export const tokenUserLocal = window.localStorage.getItem('token');
+
+export const tokenUserLocal = getCookie(getTokenCookieName());
 
 interface UserStorageProps {
   children: ReactNode;
@@ -71,7 +78,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
 
   async function getUser(token: string) {
     try {
-      const dataUserGet = await userLogin_GET(token);
+      const dataUserGet = await fetchCurrentUser(token);
       setData(dataUserGet);
       setLogin(true);
     } catch (error) {
@@ -83,11 +90,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
   async function userRegister(email: string, username: string, password: string) {
     try {
       setLoading(true);
-      await userRegister_POST({
-        email: email,
-        username: username,
-        password: password,
-      });
+      await registerUser({ email, username, password });
 
       setError(null);
     } catch (err: any) {
@@ -101,12 +104,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
     try {
       setError(null);
       setLoading(true);
-      const userDataPOST = await userLogin_POST({
-        username: username,
-        password: password,
-      });
-      const token = userDataPOST.jwt;
-      window.localStorage.setItem('token', token);
+      const { token } = await loginAndStoreToken(username, password);
       await getUser(token);
       navigate('/');
     } catch (err: any) {
@@ -123,11 +121,11 @@ export const UserStorage = ({ children }: UserStorageProps) => {
     try {
       setError(null);
       setLoading(true);
-      await userPasswordLost_POST({
-        email: email,
-      });
+      await forgotPasswordRequest(email);
     } catch (error: any) {
-      setError(translateErrorMessage(error));
+      const msg = translateErrorMessage(error);
+      setError(msg);
+      throw new Error(msg);
     } finally {
       setLoading(false);
     }
@@ -137,13 +135,11 @@ export const UserStorage = ({ children }: UserStorageProps) => {
     try {
       setError(null);
       setLoading(true);
-      await userPasswordReset_POST({
-        code,
-        password,
-        passwordConfirmation,
-      });
+      await resetPasswordRequest({ code, password, passwordConfirmation });
     } catch (error: any) {
-      setError(translateErrorMessage(error));
+      const msg = translateErrorMessage(error);
+      setError(msg);
+      throw new Error(msg);
     } finally {
       setLoading(false);
     }
@@ -151,7 +147,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
 
   async function getUserProfile(token: string) {
     try {
-      const dataUserProfile = await userProfile_GET(token);
+      const dataUserProfile = await fetchProfile(token);
       setDataProfile(dataUserProfile);
       setLogin(true);
     } catch (error) {
@@ -163,7 +159,6 @@ export const UserStorage = ({ children }: UserStorageProps) => {
   // ****** userLike ******
   async function userLikeFilmCreateId(token: string, idFilm: any, idUser: any) {
     try {
-      setLoading(true);
       await userLikeFilms_POST(token, {
         data: {
           hasLiked: true,
@@ -171,34 +166,25 @@ export const UserStorage = ({ children }: UserStorageProps) => {
           user: idUser,
         },
       });
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
   async function userLikeFilmUpdate(token: string, idLike: any, idFilm: any[], idNewFilm: any) {
     try {
-      setLoading(true);
       await userLikeFilms_PUT(token, idLike, {
         data: {
           filme: [...idFilm, idNewFilm],
         },
       });
-
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
   async function userLikeFilmRemove(token: string, idLike: any, idFilm: any[], idToRemove: any) {
     try {
-      setLoading(true);
       // New list of movies without idToRemove
       const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
 
@@ -207,12 +193,8 @@ export const UserStorage = ({ children }: UserStorageProps) => {
           filme: updatedFilms,
         },
       });
-
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
@@ -220,7 +202,6 @@ export const UserStorage = ({ children }: UserStorageProps) => {
 
   async function userListFilmCreateId(token: string, idFilm: any, idUser: any) {
     try {
-      setLoading(true);
       await userListFilms_POST(token, {
         data: {
           hasEntryList: true,
@@ -228,34 +209,25 @@ export const UserStorage = ({ children }: UserStorageProps) => {
           user: idUser,
         },
       });
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
   async function userListFilmUpdate(token: string, idList: any, idFilm: any[], idNewFilm: any) {
     try {
-      setLoading(true);
       await userListFilms_PUT(token, idList, {
         data: {
           filmes: [...idFilm, idNewFilm],
         },
       });
-
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
   async function userListFilmRemove(token: string, idList: any, idFilm: any[], idToRemove: any) {
     try {
-      setLoading(true);
       // New list of movies without idToRemove
       const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
 
@@ -264,12 +236,8 @@ export const UserStorage = ({ children }: UserStorageProps) => {
           filmes: updatedFilms,
         },
       });
-
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
@@ -277,7 +245,6 @@ export const UserStorage = ({ children }: UserStorageProps) => {
 
   async function userWatchedCreateId(token: string, idFilm: any, idUser: any) {
     try {
-      setLoading(true);
       await userWatchedFilms_POST(token, {
         data: {
           hasWatched: true,
@@ -285,34 +252,25 @@ export const UserStorage = ({ children }: UserStorageProps) => {
           user: idUser,
         },
       });
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
   async function userWatchedUpdate(token: string, idWatched: any, idFilm: any[], idNewFilm: any) {
     try {
-      setLoading(true);
       await userWatchedFilms_PUT(token, idWatched, {
         data: {
           filmes: [...idFilm, idNewFilm],
         },
       });
-
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
   async function userWatchedRemove(token: string, idWatched: any, idFilm: any[], idToRemove: any) {
     try {
-      setLoading(true);
       // New list of movies without idToRemove
       const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
 
@@ -321,12 +279,8 @@ export const UserStorage = ({ children }: UserStorageProps) => {
           filmes: updatedFilms,
         },
       });
-
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
@@ -334,7 +288,6 @@ export const UserStorage = ({ children }: UserStorageProps) => {
 
   async function userRateCreateId(token: string, idFilm: any, rateValue: number, idUser: any) {
     try {
-      setLoading(true);
       await userRateFilms_POST(token, {
         data: {
           user: idUser,
@@ -342,46 +295,34 @@ export const UserStorage = ({ children }: UserStorageProps) => {
           ratingValue: rateValue,
         },
       });
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
   async function userRateUpdate(token: string, idRate: any, idFilm: any, newValue: number) {
     try {
-      setLoading(true);
       await userRateFilms_PUT(token, idRate, {
         data: {
           filme: idFilm,
           ratingValue: newValue,
         },
       });
-
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
   async function userRateRemove(token: string, idRate: any) {
     try {
-      setLoading(true);
       const IdRatesUser = await userRateFilms_GET(token);
       const IdRateUserExist = IdRatesUser.some((rate: any) => rate.id === idRate);
       if (!IdRateUserExist) {
         throw new Error();
       }
-      setError(null);
-      return await userRateFilm_DELETE(token, idRate);
+      await userRateFilm_DELETE(token, idRate);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
@@ -389,7 +330,6 @@ export const UserStorage = ({ children }: UserStorageProps) => {
 
   async function userCreateReview(token: string, content: string, idFilm: any, idUser: any, hasSpoiler: boolean) {
     try {
-      setLoading(true);
       await userReview_POST(token, {
         data: {
           reviewContent: content,
@@ -398,12 +338,8 @@ export const UserStorage = ({ children }: UserStorageProps) => {
           hasSpoiler,
         },
       });
-
-      setError(null);
     } catch (err: any) {
-      setError(translateErrorMessage(err));
-    } finally {
-      setLoading(false);
+      console.error(translateErrorMessage(err));
     }
   }
 
@@ -412,13 +348,13 @@ export const UserStorage = ({ children }: UserStorageProps) => {
     setError(null);
     setLoading(false);
     setLogin(false);
-    window.localStorage.removeItem('token');
+    await logoutAndClearToken();
   }, []);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     async function autoLogin() {
-      const token = window.localStorage.getItem('token');
+      const token = getCookie(getTokenCookieName());
       if (token) {
         try {
           setError(null);

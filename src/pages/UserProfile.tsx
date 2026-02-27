@@ -111,10 +111,10 @@ const UserProfile = () => {
           </p>
         </div>
         <form
-          className="grid gap-x-6 grid-cols-2 cardMD:grid-cols-1 cardMD:gap-y-4 cardMD:justify-items-center cardMD:justify-center h-full "
+          className="grid gap-x-6 grid-cols-2 cardMD:grid-cols-2 tm:grid-cols-1 cardMD:gap-y-4 cardMD:justify-items-center cardMD:justify-center h-full "
           onSubmit={uploadImage}
         >
-          <div className="flex flex-col gap-y-2 items-start">
+          <div className="flex flex-col gap-y-2 items-start cardMD:w-full">
             <div className="bg-slate-950 py-6 px-8 rounded-md w-full">
               <h4 className="inline-block text-2xl font-bold text-orange-200 px-2 py-1 mb-4 border-b border-b-slate-700 rounded-md">
                 Meus Dados
@@ -161,7 +161,7 @@ const UserProfile = () => {
             </div>
           </div>
 
-          <div className="bg-slate-950 tm:w-[90%] py-4 px-8 rounded-md flex flex-col items-center justify-center ">
+          <div className="bg-slate-950 w-full py-4 px-8 rounded-md flex flex-col items-center justify-center ">
             <p className="text-lg mb-2 font-semibold">Meu avatar</p>
             {loadingAvatar ? (
               <div className="w-[180px] h-[180px] mb-4 rounded-full flex justify-center">

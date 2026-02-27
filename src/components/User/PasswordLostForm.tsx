@@ -19,9 +19,22 @@ const PasswordLostForm = () => {
       toast.error('Preencha um e-mail válido.', { theme: 'dark' });
       return;
     }
-    await userPasswordLost(email.value);
-    toast.success('Se o e-mail estiver cadastrado, você receberá instruções para redefinir sua senha. Verifique Caixa de Entrada e Spam.', { theme: 'dark' });
-    setTimeout(() => navigator('/login'), 1500);
+    try {
+      await userPasswordLost(email.value);
+      toast.success('Se o e-mail estiver cadastrado, você receberá instruções para redefinir sua senha via e-mail.', {
+        theme: 'dark', position: 'top-center',
+        autoClose: 3500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => navigator('/login'), 3000);
+    } catch (e: any) {
+      const message = 'Erro ao solicitar recuperação de senha.';
+      toast.error(message, { theme: 'dark' });
+    }
   }
 
   return (
