@@ -14,38 +14,38 @@ import Button from '../components/Forms/Button';
 import CapitalizeLetter from '../components/Helper/CapitalizeLetter';
 import Loading from '../components/Helper/Loading';
 import Head from '../components/Helper/Head';
-import { tokenUserLocal, useUserContext } from '../hooks/useUser';
+import { useUserContext } from '../hooks/useUser';
 
 const UserProfile = () => {
-  const { data } = useUserContext();
+  const { data, token } = useUserContext();
   const [files, setFiles] = useState<FileList | null>(null);
 
-  const { data: profileRes } = useQuery({
-    queryKey: ['profile', tokenUserLocal],
-    queryFn: async () => userProfile_GET(tokenUserLocal as string),
-    enabled: !!tokenUserLocal,
+  const { data: profileRes, isLoading: loadingProfile } = useQuery({
+    queryKey: ['profile', token],
+    queryFn: async () => userProfile_GET(token as string),
+    enabled: !!token,
   });
 
   const { data: watchListId } = useQuery({
-    queryKey: ['watchId', tokenUserLocal],
-    queryFn: async () => userListFilms_GET(tokenUserLocal as string),
-    enabled: !!tokenUserLocal,
+    queryKey: ['watchId', token],
+    queryFn: async () => userListFilms_GET(token as string),
+    enabled: !!token,
   });
 
   const { data: listRes, isLoading: loadingList } = useQuery({
-    queryKey: ['watchFilms', watchListId, tokenUserLocal],
+    queryKey: ['watchFilms', watchListId, token],
     queryFn: async () =>
-      FilmsIdFromWatchListId_GET(watchListId as string, tokenUserLocal as string),
-    enabled: !!tokenUserLocal && !!watchListId,
+      FilmsIdFromWatchListId_GET(watchListId as string, token as string),
+    enabled: !!token && !!watchListId,
   });
 
   const { data: avatarUrl, isLoading: loadingAvatar, refetch: refetchAvatar } = useQuery({
-    queryKey: ['avatar', tokenUserLocal],
+    queryKey: ['avatar', token],
     queryFn: async () => {
-      const resp = await showAvatar_GET(tokenUserLocal as string);
+      const resp = await showAvatar_GET(token as string);
       return resp?.avatar?.url ? `${resp.avatar.url}?t=${Date.now()}` : null;
     },
-    enabled: !!tokenUserLocal,
+    enabled: !!token,
   });
 
   const stats = {
@@ -64,7 +64,7 @@ const UserProfile = () => {
 
   const uploadImage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!files || !files[0] || !tokenUserLocal) return;
+    if (!files || !files[0] || !token || !data?.id) return;
     const formData = new FormData();
     formData.append('ref', 'plugin::users-permissions.user');
     formData.append('refId', data.id);
@@ -72,7 +72,7 @@ const UserProfile = () => {
     formData.append('files', files[0]);
     formData.append('source', 'users-permissions');
     try {
-      const response: any = await uploadAvatar_POST(formData, tokenUserLocal);
+      const response: any = await uploadAvatar_POST(formData, token);
       const newUrl = response?.[0]?.url ? `${response[0].url}?t=${Date.now()}` : null;
       if (newUrl) {
         await refetchAvatar();
@@ -97,6 +97,17 @@ const UserProfile = () => {
   useEffect(() => {
     // placeholder caso precise efeitos locais no futuro
   }, []);
+
+  if (!token || !data || loadingProfile) {
+    return (
+      <div className="max-w-7xl lg:max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown xm:px-4">
+        <Head title={' » Meu Perfil'} description="Pagina do Perfil" />
+        <div className="pt-10 flex justify-center">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl lg:max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown xm:px-4">
@@ -226,7 +237,7 @@ const UserProfile = () => {
                           src={film.attributes.card.data.attributes.url}
                           alt=""
                         />
-                        <p className="mt-2 tm:my-4 font-gabarito font-semibold tm:text-sm text-center">
+                        <p className="mt-4 tm:my-4 font-gabarito font-semibold tm:text-sm text-center">
                           {film.attributes.title}
                         </p>
                       </Link>

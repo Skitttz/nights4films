@@ -53,6 +53,7 @@ interface UserContextType {
   userRateUpdate: (token: string, idRate: any, idFilm: any, newValue: number) => Promise<void>;
   userRateRemove: (token: string, idRate: any) => Promise<void>;
   getUserProfile: (token: string) => Promise<void>;
+  token: string | null;
   data: any;
   dataProfile: any;
   login: boolean | null;
@@ -74,6 +75,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
   const [login, setLogin] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(() => getCookie(getTokenCookieName()));
   const navigate = useNavigate();
 
   async function getUser(token: string) {
@@ -105,6 +107,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
       setError(null);
       setLoading(true);
       const { token } = await loginAndStoreToken(username, password);
+      setToken(token);
       await getUser(token);
       navigate('/');
     } catch (err: any) {
@@ -348,6 +351,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
     setError(null);
     setLoading(false);
     setLogin(false);
+    setToken(null);
     await logoutAndClearToken();
   }, []);
 
@@ -359,6 +363,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
         try {
           setError(null);
           setLoading(true);
+          setToken(token);
           await getUser(token);
         } catch (err: any) {
           userLogout();
@@ -368,6 +373,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
         }
       } else {
         setLogin(false);
+        setToken(null);
       }
     }
     autoLogin();
@@ -395,6 +401,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
         userRateUpdate,
         userRateRemove,
         getUserProfile,
+        token,
         data,
         dataProfile,
         login,

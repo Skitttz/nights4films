@@ -1,7 +1,7 @@
 import { Checkbox, ConfigProvider } from 'antd';
 import React from 'react';
 import { toast } from 'react-toastify';
-import { tokenUserLocal, useUserContext } from '../../hooks/useUser';
+import { useUserContext } from '../../hooks/useUser';
 import Button from '../Forms/Button';
 import {
   borderModal,
@@ -25,7 +25,7 @@ const ReviewForms = ({
   dateFilmReview,
   photoFilmReview,
 }: ReviewFormsProps) => {
-  const { login, data, userCreateReview } = useUserContext();
+  const { login, data, token, userCreateReview } = useUserContext();
   const [reviewContent, setReviewContent] = React.useState('');
   const [hasSpoiler, setHasSpoiler] = React.useState(false);
   const [isActive, setIsActive] = React.useState(false);
@@ -48,7 +48,7 @@ const ReviewForms = ({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!tokenUserLocal) {
+    if (!token) {
       toast.error('Faça login para criar uma review.');
       return;
     }
@@ -58,7 +58,7 @@ const ReviewForms = ({
     }
     try {
       await userCreateReview(
-        tokenUserLocal,
+        token,
         reviewContent,
         idFilmReview,
         data.id,
