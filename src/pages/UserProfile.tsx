@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -19,6 +19,9 @@ import { useUserContext } from '../hooks/useUser';
 const UserProfile = () => {
   const { data, token } = useUserContext();
   const [files, setFiles] = useState<FileList | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [fileInputKey, setFileInputKey] = useState(0);
+  const selectedFile = files?.[0] ?? null;
 
   const { data: profileRes, isLoading: loadingProfile } = useQuery({
     queryKey: ['profile', token],
@@ -39,7 +42,11 @@ const UserProfile = () => {
     enabled: !!token && !!watchListId,
   });
 
-  const { data: avatarUrl, isLoading: loadingAvatar, refetch: refetchAvatar } = useQuery({
+  const {
+    data: avatarUrl,
+    isLoading: loadingAvatar,
+    refetch: refetchAvatar,
+  } = useQuery({
     queryKey: ['avatar', token],
     queryFn: async () => {
       const resp = await showAvatar_GET(token as string);
@@ -64,19 +71,24 @@ const UserProfile = () => {
 
   const uploadImage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!files || !files[0] || !token || !data?.id) return;
+    if (!selectedFile || !token || !data?.id) return;
     const formData = new FormData();
     formData.append('ref', 'plugin::users-permissions.user');
     formData.append('refId', data.id);
     formData.append('field', 'avatar');
-    formData.append('files', files[0]);
+    formData.append('files', selectedFile);
     formData.append('source', 'users-permissions');
     try {
+      setIsUploadingAvatar(true);
       const response: any = await uploadAvatar_POST(formData, token);
-      const newUrl = response?.[0]?.url ? `${response[0].url}?t=${Date.now()}` : null;
+      const newUrl = response?.[0]?.url
+        ? `${response[0].url}?t=${Date.now()}`
+        : null;
       if (newUrl) {
         await refetchAvatar();
       }
+      setFiles(null);
+      setFileInputKey((k) => k + 1);
       toast.success('Avatar alterado com sucesso!', {
         position: 'top-center',
         autoClose: 5000,
@@ -88,171 +100,213 @@ const UserProfile = () => {
         theme: 'dark',
       });
     } catch (error) {
-      console.error('Ops! Houve um problema ao carregar o avatar.', error);
+      toast.error('Ops! Não conseguimos atualizar seu avatar.');
     } finally {
-      // nada
+      setIsUploadingAvatar(false);
     }
   };
 
-  useEffect(() => {
-    // placeholder caso precise efeitos locais no futuro
-  }, []);
-
   if (!token || !data || loadingProfile) {
     return (
-      <div className="max-w-7xl lg:max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown xm:px-4">
+      <div className="min-h-screen bg-slate-950">
         <Head title={' » Meu Perfil'} description="Pagina do Perfil" />
-        <div className="pt-10 flex justify-center">
-          <Loading />
+        <div className="mx-auto w-full max-w-7xl lg:max-w-5xl px-4 tm:px-3 cardMD:px-4 pt-16 pb-20 animate-animeDown">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/30 p-6 tm:p-4">
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-slate-200 text-lg font-semibold">Meu perfil</p>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <Loading />
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
+  const username = CapitalizeLetter(data.username);
+
   return (
-    <div className="max-w-7xl lg:max-w-5xl mt-16 mx-auto cardMD:p-4 tm:p-2 animate-animeDown xm:px-4">
+    <div className="min-h-screen bg-slate-950">
       <Head title={' » Meu Perfil'} description="Pagina do Perfil" />
-      <div className="text-slate-200 font-roboto">
-        <div className="flex items-center justify-center">
-          <p className="text-3xl cardMD:text-2xl tm:text-xl font-light border-b border-b-slate-800 mb-12">
-            <span>{'Bem-vindo ao seu perfil,'} </span>
-            <span className="font-extrabold font-gabarito text-violet-600">{`${CapitalizeLetter(
-              data.username,
-            )}`}</span>{' '}
-          </p>
-        </div>
-        <form
-          className="grid gap-x-6 grid-cols-2 cardMD:grid-cols-2 tm:grid-cols-1 cardMD:gap-y-4 cardMD:justify-items-center cardMD:justify-center h-full "
-          onSubmit={uploadImage}
-        >
-          <div className="flex flex-col gap-y-2 items-start cardMD:w-full">
-            <div className="bg-slate-950 py-6 px-8 rounded-md w-full">
-              <h4 className="inline-block text-2xl font-bold text-orange-200 px-2 py-1 mb-4 border-b border-b-slate-700 rounded-md">
-                Meus Dados
-              </h4>
-              <p className="font-semibold mb-3">
-                {'Email:'}{' '}
-                <span className="font-light">{` ${data.email}`}</span>{' '}
-              </p>
-              <p className="font-semibold mb-3">
-                {'Sua conta foi criada:'}{' '}
-                <span className="font-light">{`${formatDateHour(
-                  data.createdAt,
-                )}`}</span>
-              </p>
-              <p className="font-semibold mb-3">
-                {'Ultima alteracao do perfil:'}{' '}
-                <span className="font-light">{`${formatDateHour(
-                  data.updatedAt,
-                )}`}</span>
-              </p>
-            </div>
-            <div className="bg-slate-950 py-6 px-8 rounded-md w-full">
-              <h4 className="inline-block text-2xl mb-4 font-bold text-purple-400 px-2 py-1 border-b border-b-slate-700 rounded-md">
-                Minhas Atividades
-              </h4>
-              <p className="font-semibold mb-3">
-                {'Filmes que gostou'}{' '}
-                <span className="select-none font-bold bg-slate-700 py-1 px-2 rounded-md">
-                  {stats.numLiked}
+      <div className="mx-auto w-full max-w-7xl lg:max-w-5xl px-4 tm:px-3 cardMD:px-4 pt-14 pb-20 animate-animeDown text-slate-200 font-roboto">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/30 p-6 tm:p-4">
+          <div className="flex items-start justify-between gap-4 tm:flex-col tm:items-stretch">
+            <div className="min-w-0">
+              <h1 className="text-3xl tm:text-2xl font-semibold tracking-tight text-slate-100">
+                Olá, <span className="text-violet-400">{username}</span>
+              </h1>
+              <p className="mt-2 text-sm text-slate-400">{data.email}</p>
+              <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-300">
+                <span className="rounded-full border border-slate-700 bg-slate-900/60 px-3 py-1">
+                  Conta criada: {formatDateHour(data.createdAt)}
                 </span>
-              </p>
-              <p className="font-semibold mb-3">
-                {'Filmes listados'}{' '}
-                <span className="select-none font-bold bg-slate-700 py-1 px-2 rounded-md">
-                  {stats.numFilme}
+                <span className="rounded-full border border-slate-700 bg-slate-900/60 px-3 py-1">
+                  Atualizado: {formatDateHour(data.updatedAt)}
                 </span>
-              </p>
-              <p className="font-semibold mb-3">
-                {'Filmes avaliados'}{' '}
-                <span className="select-none font-bold bg-slate-700 py-1 px-2 rounded-md">
-                  {stats.numRated}
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-slate-950 w-full py-4 px-8 rounded-md flex flex-col items-center justify-center ">
-            <p className="text-lg mb-2 font-semibold">Meu avatar</p>
-            {loadingAvatar ? (
-              <div className="w-[180px] h-[180px] mb-4 rounded-full flex justify-center">
-                <Loading />
               </div>
-            ) : avatarUrl ? (
-              <img
-                className="w-[180px] h-[180px] mb-4 rounded-full animate-fadeIn"
-                src={avatarUrl}
-                alt=""
-              />
-            ) : (
-              <img
-                className="w-[180px] h-[180px] mb-4 rounded-full"
-                src={noAvatar}
-                alt=""
-              />
-            )}
+            </div>
 
-            <div className="flex flex-col gap-y-2">
-              <input
-                aria-label="Selecione sua foto de perfil"
-                className="block w-full text-normal text-slate-500 
-              file:mr-2 file:py-2 file:px-4 file:rounded-md
-              file:border-0 file:text-sm file:font-semibold
-              file:bg-orange-900 file:text-slate-100 
-              hover:file:bg-orange-600 file:cursor-pointer"
-                type="file"
-                onChange={(e) => setFiles(e.target.files)}
-              />
-              <div className="flex gap-x-2">
-                <Button
-                  customStyle={
-                    'w-full mt-3 opacity-90 hover:opacity-100 hover:opacity-100 p-2 border-violet-800 bg-violet-800 hover:bg-violet-700 transition-all font-bold rounded-lg'
-                  }
+            <div className="grid grid-cols-3 gap-3 tm:grid-cols-3">
+              {[
+                { label: 'Curtidos', value: stats.numLiked, accent: 'text-rose-200' },
+                { label: 'Na lista', value: stats.numFilme, accent: 'text-emerald-200' },
+                { label: 'Avaliados', value: stats.numRated, accent: 'text-indigo-200' },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="rounded-xl border border-slate-800 bg-slate-900/40 px-4 py-3 tm:px-3"
                 >
-                  Salvar
-                </Button>
-              </div>
+                  <p className={`text-2xl tm:text-xl font-bold ${s.accent}`}>
+                    {s.value}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-400">{s.label}</p>
+                </div>
+              ))}
             </div>
           </div>
-        </form>
+        </div>
 
-        <div className="pt-12">
-          <p className="text-3xl cardMD:text-2xl font-roboto border-b border-b-slate-800 mb-4">
-            {'Minha Lista'}
-          </p>
-          <div className="flex tm:mx-auto tm:w-auto cardMD:overflow-y-auto gap-x-8 tm:gap-x-4 list-none">
-            {loadingList ? (
-              <Loading />
-            ) : (
-              <>
-                {(listRes || []).length !== 0 ? (
-                  (listRes || []).map((film: any) => (
-                    <div
-                      className="flex-grow-1 tm:flex-grow-0 basis-[160px] w-full sm:mx-auto animate-fadeIn tm:px-4"
-                      key={film.id}
-                    >
-                      <Link to={`/filmes/${film.attributes.slug}`}>
-                        <img
-                          className="max-w-fit w-[160px] h-[240px] rounded-md box-shadow: 4.0px 8.0px 8.0px rgba(0,0,0,0.38) hover:scale-110 transition-all"
-                          src={film.attributes.card.data.attributes.url}
-                          alt=""
-                        />
-                        <p className="mt-4 tm:my-4 font-gabarito font-semibold tm:text-sm text-center">
-                          {film.attributes.title}
-                        </p>
-                      </Link>
-                    </div>
-                  ))
-                ) : (
-                  <div className="w-full">
-                    <p className="font-roboto text-center text-lg font-bold animate-fadeIn">
-                      Até o momento, você ainda não adicionou nenhum filme à sua
-                      lista
-                    </p>
+        <div className="mt-6 grid grid-cols-12 gap-6 items-start">
+          <div className="col-span-4 tm:col-span-12 cardMD:col-span-12 rounded-2xl border border-slate-800 bg-slate-900/30 p-6 tm:p-4">
+            <form onSubmit={uploadImage}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-lg font-semibold text-slate-100">Avatar</p>
+                  <p className="mt-1 text-sm text-slate-400">
+                    Atualize sua foto.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 flex items-center justify-center">
+                {loadingAvatar ? (
+                  <div className="w-[168px] h-[168px] rounded-full border border-slate-800 bg-slate-900/40 flex items-center justify-center">
+                    <Loading />
                   </div>
+                ) : (
+                  <img
+                    className="w-[168px] h-[168px] rounded-full border-2 border-slate-800 object-cover"
+                    src={avatarUrl || noAvatar}
+                    alt={`Avatar de ${username}`}
+                  />
                 )}
-              </>
-            )}
+              </div>
+
+              <div className="mt-5">
+                <input
+                  key={fileInputKey}
+                  id="avatar-file"
+                  aria-label="Selecione sua foto de perfil"
+                  className="sr-only"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setFiles(e.target.files)}
+                />
+
+                <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-slate-100">
+                        {selectedFile ? 'Arquivo selecionado' : 'Selecionar arquivo'}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-400 truncate">
+                        {selectedFile ? selectedFile.name : 'PNG ou JPG'}
+                      </p>
+                    </div>
+
+                    <label
+                      htmlFor="avatar-file"
+                      className={`inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/50 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-slate-800/60 transition-colors whitespace-nowrap ${isUploadingAvatar ? 'pointer-events-none opacity-60' : ''}`}
+                    >
+                      {selectedFile ? 'Trocar' : 'Escolher'}
+                    </label>
+                  </div>
+
+                  <div className="mt-4 flex items-center gap-2">
+                    <Button
+                      type="submit"
+                      disabled={!selectedFile || isUploadingAvatar}
+                      customStyle="flex-1 p-2 border-violet-800 bg-violet-800 hover:bg-violet-700 transition-colors font-bold rounded-lg"
+                    >
+                      {isUploadingAvatar ? 'Salvando...' : 'Salvar avatar'}
+                    </Button>
+                    <button
+                      type="button"
+                      className="px-4 py-2 rounded-lg border border-slate-800 bg-slate-900/50 text-sm font-semibold text-slate-200 hover:bg-slate-800/60 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                      disabled={!selectedFile || isUploadingAvatar}
+                      onClick={() => {
+                        setFiles(null);
+                        setFileInputKey((k) => k + 1);
+                      }}
+                    >
+                      Remover
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div className="col-span-8 tm:col-span-12 cardMD:col-span-12 rounded-2xl border border-slate-800 bg-slate-900/30 p-6 tm:p-4">
+            <div className="flex items-center justify-between gap-3 tm:flex-col tm:items-stretch">
+              <div>
+                <p className="text-lg font-semibold text-slate-100">Minha lista</p>
+                <p className="mt-1 text-sm text-slate-400">
+                  Filmes que você adicionou para ver depois.
+                </p>
+              </div>
+              <Link
+                to="/"
+                className="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/50 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-slate-800/60 transition-colors"
+              >
+                Voltar ao catálogo
+              </Link>
+            </div>
+
+            <div className="mt-6 tm:mt-8 tm:w-full">
+              {loadingList ? (
+                <div className="py-10 flex justify-center">
+                  <Loading />
+                </div>
+              ) : (listRes || []).length !== 0 ? (
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(176px,auto))] gap-4 justify-center tm:overflow-x-auto tm:flex tm:shrink-0 tm:pb-6">
+                  {(listRes || []).map((film: any) => (
+                    <Link
+                      key={film.id}
+                      to={`/filmes/${film.attributes.slug}`}
+                      className="tm:w-full group w-[176px] rounded-xl border border-slate-800 bg-slate-900/40 p-3 hover:bg-slate-900/60 transition-colors"
+                    >
+                      <img
+                        className="w-[160px] h-[240px] object-cover rounded-lg mx-auto transition-transform duration-200 group-hover:scale-[1.02] tm:w-full tm:min-w-[160px]"
+                        src={film.attributes.card.data.attributes.url}
+                        alt={film.attributes.title}
+                      />
+                      <p className="mt-3 text-sm font-semibold text-slate-200 group-hover:text-white transition-colors truncate">
+                        {film.attributes.title}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-6 text-center">
+                  <p className="text-slate-300 text-sm font-semibold">
+                    Você ainda não adicionou nenhum filme à sua lista.
+                  </p>
+                  <p className="mt-2 text-slate-400 text-sm">
+                    Explore filmes e comece sua coleção.
+                  </p>
+                  <div className="mt-4 flex justify-center">
+                    <Link
+                      to="/filmes"
+                      className="inline-flex items-center justify-center rounded-full bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-white transition-colors"
+                    >
+                      Ver filmes
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

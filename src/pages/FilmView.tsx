@@ -22,7 +22,7 @@ import {
   userContainsFilmInWatchListId,
 } from '../components/User/WatchList/UserWatchList';
 import WatchListButton from '../components/User/WatchList/WatchListButton';
-import { useUserContext } from '../hooks/useUser';
+import { tokenUserLocal, useUserContext } from '../hooks/useUser';
 import useWindowDimensions from '../hooks/useWindowDimension';
 
 const FilmView = () => {
@@ -31,7 +31,6 @@ const FilmView = () => {
     login,
     data,
     loading,
-    token,
     userLikeFilmCreateId,
     userLikeFilmUpdate,
     userLikeFilmRemove,
@@ -90,25 +89,25 @@ const FilmView = () => {
   }, [id]);
 
   React.useEffect(() => {
-    if (!token) return;
+    if (!tokenUserLocal) return;
     let mounted = true;
     const initEngagement = async () => {
-      if (!token) return;
+      if (!tokenUserLocal) return;
       setEngagementLoading(true);
       try {
         await Promise.all([
-          userAlreadyLiked(films, login, token, setLikedId, setLiked),
+          userAlreadyLiked(films, login, tokenUserLocal, setLikedId, setLiked),
           userAlreadyListedFilm(
             films,
             login,
-            token,
+            tokenUserLocal,
             setWatchListId,
             setWatchList,
           ),
           userAlreadyWatchedFilm(
             films,
             login,
-            token,
+            tokenUserLocal,
             setWatchId,
             setWatch,
           ),
@@ -121,7 +120,7 @@ const FilmView = () => {
     return () => {
       mounted = false;
     };
-  }, [films, login, token]);
+  }, [films, login]);
 
   React.useEffect(() => {
     const randomColorValueOne = randomColor();
@@ -169,7 +168,7 @@ const FilmView = () => {
   ];
 
   const sizeIcons = 21;
-  const isAuthenticated = login === true && !!token
+  const isAuthenticated = login === true && tokenUserLocal
   return (
     <>
       <div>
@@ -238,7 +237,7 @@ const FilmView = () => {
                         <WatchButton
                           watch={watch}
                           watchId={watchId}
-                          tokenUserLocal={token as string}
+                          tokenUserLocal={tokenUserLocal as string}
                           films={films}
                           loading={engagementLoading}
                           userContainsFilmInWatchedId={userContainsFilmInWatchedId}
@@ -258,7 +257,7 @@ const FilmView = () => {
                         <LikeButton
                           like={like}
                           likeId={likeId}
-                          tokenUserLocal={token as string}
+                          tokenUserLocal={tokenUserLocal as string}
                           films={films}
                           loading={engagementLoading}
                           userContainsLikeId={userContainsLikeId}
@@ -278,7 +277,7 @@ const FilmView = () => {
                         <WatchListButton
                           watchList={watchList}
                           watchListId={watchListId}
-                          tokenUserLocal={token as string}
+                          tokenUserLocal={tokenUserLocal as string}
                           films={films}
                           loading={engagementLoading}
                           userContainsFilmInWatchListId={
@@ -296,7 +295,7 @@ const FilmView = () => {
                         ref={refLiRate}
                       >
                         <RateButton
-                          tokenUserLocal={token as string}
+                          tokenUserLocal={tokenUserLocal as string}
                           films={films}
                           login={login}
                           loading={engagementLoading}
@@ -336,7 +335,7 @@ const FilmView = () => {
                       </span>
                     </p>
                     <ReviewFeedByFilm
-                      tokenUser={token as string}
+                      tokenUser={tokenUserLocal as string}
                       FilmId={films.data[0].id}
                     />
                   </div>
