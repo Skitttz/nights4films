@@ -20,8 +20,8 @@ const Header = () => {
   const navigate = useNavigate();
 
   const isDesktop = window.innerWidth > 768;
-  const isDifPathLoginUser = pathname !== '/login';
-  const isLoadingHeaderDesktop = loading && isDesktop && isDifPathLoginUser;
+  const isAuthRoute = pathname.startsWith('/login');
+  const isLoadingHeaderDesktop = loading && isDesktop && !isAuthRoute;
 
   const handleOutsideClick = (event: MouseEvent) => {
     if (
