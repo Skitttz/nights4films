@@ -1,12 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useForm from '../../hooks/useForm';
 import { useUserContext } from '../../hooks/useUser';
 import Button from '../Forms/Button';
 import Input from '../Forms/Input';
-import Error from '../Helper/Error';
+import FormError from '../Helper/Error';
 import Head from '../Helper/Head';
 import PasswordSecurity from './PasswordSecurity';
 
@@ -14,33 +13,36 @@ const RegisterForm = () => {
   const username = useForm('username');
   const password = useForm('password');
   const email = useForm('email');
-  const { userRegister, loading, error } = useUserContext();
-  const navigator = useNavigate();
+  const { userRegister, clearError, loading, error } = useUserContext();
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (username.validate() && password.validate() && email.validate()) {
-      await userRegister(email.value, username.value, password.value);
-      if (error === null) {
-        toast.success('Cadastro realizado. Você será redirecionado para o login.', {
-          position: 'top-center',
-          autoClose: 3500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'dark',
-        });
+    if (loading) return;
+    if (!username.validate() || !password.validate() || !email.validate()) return;
 
-        setTimeout(() => {
-          navigator('/login');
-        }, 4000);
-      } else {
-        return null;
-      }
-    } else {
-      return null;
+    const toastConfig = {
+      position: 'top-center' as const,
+      autoClose: 3500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'dark' as const,
+    };
+
+    try {
+      await userRegister(email.value, username.value, password.value);
+
+      toast.success('Cadastro concluído e login automático realizado.', toastConfig);
+      email.setValue('');
+      username.setValue('');
+      password.setValue('');
+    } catch (err: any) {
+      const raw =
+        err instanceof globalThis.Error ? err.message : typeof err === 'string' ? err : String(err ?? '');
+      const userMessage = raw.trim().length ? raw : 'Não foi possível concluir o cadastro. Tente novamente.';
+      toast.error(userMessage, { ...toastConfig, autoClose: 5000 });
     }
   }
   return (
@@ -62,12 +64,17 @@ const RegisterForm = () => {
             type="email"
             name="email"
             autoComplete="email"
+            disabled={loading}
             customStyleInput={'tm:w-full tm:indent-0 focus:ring-2 focus:ring-purple-700'}
             customStyleDiv={'h-[auto] '}
             width={'100%'}
             height={'48px'}
             labelStyle={'font-semibold'}
             {...email}
+            onChange={(e) => {
+              email.onChange(e);
+              if (error) clearError();
+            }}
           />
           <p className="text-xs text-slate-600">Use um e‑mail válido. Você receberá comunicações importantes por ele.</p>
           <Input
@@ -75,12 +82,17 @@ const RegisterForm = () => {
             type="text"
             name="username"
             autoComplete="username"
+            disabled={loading}
             customStyleInput={'tm:w-full tm:indent-0 focus:ring-2 focus:ring-purple-700'}
             customStyleDiv={'h-[auto]'}
             width={'100%'}
             height={'48px'}
             labelStyle={'font-semibold'}
             {...username}
+            onChange={(e) => {
+              username.onChange(e);
+              if (error) clearError();
+            }}
           />
           <p className="text-xs text-slate-600">Entre 3 e 20 caracteres. Evite espaços e caracteres especiais.</p>
           <Input
@@ -88,12 +100,17 @@ const RegisterForm = () => {
             type="password"
             name="senha"
             autoComplete="new-password"
+            disabled={loading}
             customStyleInput={'tm:w-full tm:indent-0 focus:ring-2 focus:ring-purple-700'}
             labelStyle={'font-semibold'}
             customStyleDiv={'h-[auto]'}
             width={'100%'}
             height={'48px'}
             {...password}
+            onChange={(e) => {
+              password.onChange(e);
+              if (error) clearError();
+            }}
           />
           <div className="text-sm">
             {password.value || password.value === '' ? (
@@ -109,7 +126,6 @@ const RegisterForm = () => {
               <Button disabled={!email.value || !username.value || !password.value} customStyle="h-12 w-full bg-purple-900 hover:bg-purple-800 transition-colors text-white rounded-lg active:scale-[.99]">Criar conta</Button>
             )}
             <div aria-live="polite" role="alert" className="w-full mt-2">
-              <Error error={error} />
             </div>
           </div>
         </form>

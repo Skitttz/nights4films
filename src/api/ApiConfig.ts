@@ -16,16 +16,22 @@ export const getAuthHeaders = (token: string | null): AuthHeaders | {} => {
 
 type StrapiErrorResponse = {
   error?: {
+    status?: number;
+    name?: string;
     message?: string;
+    details?: unknown;
   };
 };
 
 export const handleApiError = (
   error: AxiosError<StrapiErrorResponse>
 ): never => {
+  const err = error.response?.data?.error;
+  const details =
+    typeof err?.details === 'string' && err.details.trim().length ? err.details.trim() : null;
   const message =
-    error.response?.data?.error?.message ?? error.message ?? "Erro na requisição";
-  throw message;
+    typeof err?.message === 'string' && err.message.trim().length ? err.message.trim() : null;
+  throw details ?? message ?? error.message ?? 'Erro na requisição';
 };
 
 export const makeRequest = async <TResponse>(

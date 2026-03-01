@@ -6,7 +6,7 @@ import {
   useState,
   ReactNode
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   userLikeFilms_POST,
   userLikeFilms_PUT,
@@ -23,7 +23,7 @@ import {
 import {
   loginAndStoreToken,
   fetchCurrentUser,
-  registerUser,
+  registerAndStoreToken,
   forgotPasswordRequest,
   resetPasswordRequest,
   fetchProfile,
@@ -39,6 +39,7 @@ interface UserContextType {
   userPasswordLost: (email: string) => Promise<void>;
   userPasswordReset: (code: string, password: string, passwordConfirmation: string) => Promise<void>;
   userRegister: (email: string, username: string, password: string) => Promise<void>;
+  clearError: () => void;
   userLikeFilmCreateId: (token: string, idFilm: any, idUser: any) => Promise<void>;
   userLikeFilmUpdate: (token: string, idLike: any, idFilm: any[], idNewFilm: any) => Promise<void>;
   userLikeFilmRemove: (token: string, idLike: any, idFilm: any[], idToRemove: any) => Promise<void>;
@@ -77,6 +78,12 @@ export const UserStorage = ({ children }: UserStorageProps) => {
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(() => getCookie(getTokenCookieName()));
   const navigate = useNavigate();
+  const location = useLocation();
+  const clearError = useCallback(() => setError(null), []);
+
+  useEffect(() => {
+    clearError();
+  }, [clearError, location.pathname]);
 
   async function getUser(token: string) {
     try {
@@ -91,12 +98,17 @@ export const UserStorage = ({ children }: UserStorageProps) => {
 
   async function userRegister(email: string, username: string, password: string) {
     try {
-      setLoading(true);
-      await registerUser({ email, username, password });
-
       setError(null);
-    } catch (err: any) {
-      setError(translateErrorMessage(err));
+      setLoading(true);
+      const { token, user } = await registerAndStoreToken({ email, username, password });
+      setToken(token);
+      setData(user);
+      setLogin(true);
+      navigate('/');
+    } catch (error: any) {
+      const msg = translateErrorMessage(error);
+      setError(msg);
+      throw new Error(msg);
     } finally {
       setLoading(false);
     }
@@ -387,6 +399,7 @@ export const UserStorage = ({ children }: UserStorageProps) => {
         userPasswordLost,
         userPasswordReset,
         userRegister,
+        clearError,
         userLikeFilmCreateId,
         userLikeFilmUpdate,
         userLikeFilmRemove,

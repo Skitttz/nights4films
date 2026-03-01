@@ -17,8 +17,9 @@ export const getCurrentUser = async (token: string): Promise<User> => {
   return userLogin_GET(token) as unknown as User;
 };
 
-export const register = async (payload: RegisterPayload): Promise<void> => {
-  await userRegister_POST(payload);
+export const register = async (payload: RegisterPayload): Promise<AuthResponse> => {
+  const data = await userRegister_POST(payload);
+  return data as AuthResponse;
 };
 
 export const forgotPassword = async (payload: ForgotPasswordPayload): Promise<void> => {
