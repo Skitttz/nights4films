@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
+  Filmes_GET,
   FilmsIdFromWatchListId_GET,
   showAvatar_GET,
   uploadAvatar_POST,
@@ -21,7 +22,9 @@ const UserProfile = () => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [fileInputKey, setFileInputKey] = useState(0);
+  const [isRandomFilmLoading, setIsRandomFilmLoading] = useState(false);
   const selectedFile = files?.[0] ?? null;
+  const navigate = useNavigate();
 
   const { data: profileRes, isLoading: loadingProfile } = useQuery({
     queryKey: ['profile', token],
@@ -103,6 +106,46 @@ const UserProfile = () => {
       toast.error('Ops! Não conseguimos atualizar seu avatar.');
     } finally {
       setIsUploadingAvatar(false);
+    }
+  };
+
+  const handleRandomFilmClick = async () => {
+    if (isRandomFilmLoading) return;
+    try {
+      setIsRandomFilmLoading(true);
+      const totalRes: any = await Filmes_GET(
+        '/filmes?sort=id&pagination[start]=0&pagination[limit]=1&fields[0]=slug',
+      );
+      const total = totalRes?.meta?.pagination?.total;
+      if (typeof total !== 'number' || total <= 0) {
+        throw new Error('Sem filmes disponíveis no momento.');
+      }
+
+      const randomIndex = Math.floor(Math.random() * total);
+      const randomRes: any = await Filmes_GET(
+        `/filmes?sort=id&pagination[start]=${randomIndex}&pagination[limit]=1&fields[0]=slug`,
+      );
+      const slug = randomRes?.data?.[0]?.attributes?.slug;
+      if (typeof slug !== 'string' || slug.trim().length === 0) {
+        throw new Error('Não foi possível selecionar um filme agora.');
+      }
+      navigate(`/filmes/${slug}`);
+    } catch (err: any) {
+      const raw =
+        err instanceof globalThis.Error ? err.message : typeof err === 'string' ? err : String(err ?? '');
+      const msg = raw.trim().length ? raw : 'Não foi possível buscar um filme aleatório.';
+      toast.error(msg, {
+        position: 'top-center',
+        autoClose: 4000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'dark',
+      });
+    } finally {
+      setIsRandomFilmLoading(false);
     }
   };
 
@@ -294,15 +337,17 @@ const UserProfile = () => {
                     Você ainda não adicionou nenhum filme à sua lista.
                   </p>
                   <p className="mt-2 text-slate-400 text-sm">
-                    Explore filmes e comece sua coleção.
+                    Explore e comece sua coleção.
                   </p>
                   <div className="mt-4 flex justify-center">
-                    <Link
-                      to="/filmes"
-                      className="inline-flex items-center justify-center rounded-full bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-white transition-colors"
+                    <button
+                      type="button"
+                      onClick={handleRandomFilmClick}
+                      disabled={isRandomFilmLoading}
+                      className="inline-flex items-center justify-center rounded-full bg-slate-200 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-white transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      Ver filmes
-                    </Link>
+                      {isRandomFilmLoading ? 'Sorteando...' : 'Veja um filme aleatório'}
+                    </button>
                   </div>
                 </div>
               )}
