@@ -14,14 +14,14 @@ const Header = () => {
   const { pathname } = useLocation();
 
   const [openModal, setOpenModal] = useState(false);
-  const { data, userLogout, loading } = useUserContext();
+  const { data, status, userLogout, retrySession } = useUserContext();
   const [openMenuMB, setOpenMenuMB] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const refNav = useRef<HTMLElement>(null);
   const navigate = useNavigate();
 
-  const isAuthRoute = pathname.startsWith('/login');
-  const isLoadingHeader = loading && !isAuthRoute;
+  const isSessionError = status === 'error';
+  const hasResolvedSession = status === 'authenticated' || status === 'guest';
 
   const handleOutsideClick = (event: MouseEvent) => {
     if (
@@ -41,7 +41,7 @@ const Header = () => {
       window.removeEventListener('click', listener);
     };
   }, [openMenuMB]);
-  if (isLoadingHeader) {
+  if (status === 'checking') {
     return <HeaderSkeleton />;
   }
 
@@ -137,10 +137,16 @@ const Header = () => {
               </p>
             </Link>
           </div>
-          <FiMenu
+          <button
+            type="button"
+            aria-label="Abrir menu"
+            aria-expanded={openMenuMB && hasResolvedSession}
+            disabled={!hasResolvedSession}
             onClick={handleToggleMenu}
-            className="hidden cardMD:order-1 cardMD:block h-6 w-6 cursor-pointer text-[rgba(107,80,178,.9)] hover:text-[rgba(107,66,178,1)] cardMD:mr-3 transition-transform duration-200"
-          />
+            className="hidden cardMD:order-1 cardMD:block h-6 w-6 cursor-pointer text-[rgba(107,80,178,.9)] hover:text-[rgba(107,66,178,1)] cardMD:mr-3 transition-transform duration-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <FiMenu className="h-full w-full" />
+          </button>
           {data ? (
             <div className="hidden desktop:flex items-center gap-x-2 xm:pr-4">
               <div
@@ -180,7 +186,7 @@ const Header = () => {
                 </button>
               </div>
             </div>
-          ) : (
+          ) : status === 'guest' ? (
             <Link
               className="hidden desktop:flex"
               to={'/login'}
@@ -189,9 +195,18 @@ const Header = () => {
                 <p>Login / Registrar</p>
               </div>
             </Link>
-          )}
+          ) : null}
         </nav>
-        {(openMenuMB || isClosing) && (
+        {isSessionError && (
+          <div role="alert" className="flex h-12 items-center justify-center gap-3 border-t border-slate-800 px-4 text-sm text-slate-300 tm:h-[4.5rem] tm:flex-col tm:gap-1">
+            <p>Não foi possível verificar sua conta.</p>
+            <button type="button" aria-label="Tentar novamente a validação da sessão" onClick={retrySession}
+              className="shrink-0 rounded-md px-3 py-1 text-purple-200 transition-colors hover:bg-purple-900/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400">
+              Tentar novamente
+            </button>
+          </div>
+        )}
+        {(openMenuMB || isClosing) && hasResolvedSession && (
           <div
             className={`cardMD:block border-b border-b-purple-900 border-opacity-60 bg-gray-950 ${getAnimationClass()}`}
           >
@@ -232,7 +247,7 @@ const Header = () => {
                     <p className="text-white">Sair</p>
                   </button>
                 </>
-              ) : (
+              ) : status === 'guest' ? (
                 <Link
                   to={'/login'}
                   onClick={() => {
@@ -245,12 +260,12 @@ const Header = () => {
                     <p>Login / Registrar</p>
                   </div>
                 </Link>
-              )}
+              ) : null}
             </div>
           </div>
         )}
       </header>
-      <div className="pb-[2.5rem]" />
+      <div className={isSessionError ? 'pb-[5.5rem] tm:pb-[7rem]' : 'pb-[2.5rem]'} />
     </>
   );
 };

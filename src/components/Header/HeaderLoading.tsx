@@ -1,25 +1,17 @@
-import React from 'react';
+import { LoadingOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 const HeaderSkeleton = () => {
-  const openMenuMB = false;
   return (
     <>
-      <header className="fixed z-30 w-full top-0 bg-gray-950 shadow-md">
+      <header aria-busy="true" className="fixed z-30 w-full top-0 bg-gray-950 shadow-md">
         <nav
-          className={`h-16 max-w-7xl mx-auto flex flex-wrap items-center justify-between lg:justify-between lg:max-w-5xl tm:max-w-5xl tm:flex-nowrap tm:gap-4 ${openMenuMB
-              ? 'flex-col h-[auto] gap-y-10 mt-4 border-b border-b-purple-900 border-opacity-60 cardMD:animate-animeDown'
-              : 'cardMD:flex-row cardMD:animate-animeTop'
-            }`}
+          className="h-16 max-w-7xl mx-auto flex items-center justify-between lg:max-w-5xl tm:gap-4 px-4"
         >
           <div>
             <Link
-              className={`flex items-center select-none  ${openMenuMB ? 'ml-0' : 'ml-7'
-                }`}
+              className="flex items-center select-none ml-2"
               to={'/'}
-              onClick={() => {
-                console.log('');
-              }}
             >
               <p className="font-gabarito font-thin text-2xl text-gray-200 ">
                 Nights
@@ -30,7 +22,10 @@ const HeaderSkeleton = () => {
               </p>
             </Link>
           </div>
-          <div className="w-[240px] h-[35px] bg-gray-900 animate-pulse rounded mb-1" />
+          <div role="status" aria-label="Verificando sua conta" className="flex items-center gap-2 text-sm text-slate-400">
+            <LoadingOutlined spin aria-hidden="true" className="text-purple-300" />
+            <span className="cardMD:sr-only">Verificando sua conta...</span>
+          </div>
         </nav>
       </header>
       <div className="pb-[2.5rem]" />
