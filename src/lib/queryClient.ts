@@ -24,7 +24,11 @@ export const queryPersistenceOptions = {
   maxAge: 24 * 60 * 60 * 1000,
   // Discard the previous cache, which included tokens and private data.
   buster: 'public-catalog-v2',
-  dehydrateOptions: { shouldDehydrateQuery: (query: Query) => isPublicQuery(query) && query.state.status === 'success' },
+  dehydrateOptions: {
+    shouldDehydrateQuery: (query: Query) => isPublicQuery(query) && (
+      query.state.status === 'success' || (query.queryKey[0] === 'films' && query.state.data !== undefined)
+    ),
+  },
 };
 
 export const clearPrivateQueries = async (client: QueryClient) => {

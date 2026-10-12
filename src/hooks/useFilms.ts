@@ -11,7 +11,8 @@ export const useFilms = (currentPage: number, searchValue: string, limitItemPerP
   return useQuery({
     queryKey: ['films', currentPage, searchValue, limitItemPerPage],
     queryFn: ({ signal }) => Filmes_GET(`/filmes?${params}`, signal),
-    staleTime: 30_000,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
     placeholderData: previous => previous,
     select: data => ({ films: data, isEmpty: data.data.length === 0, totalItems: data.meta.pagination.total as number }),
   });
@@ -21,6 +22,7 @@ export const useFilmById = (id: string | undefined) => useQuery({
   queryKey: ['film', id],
   queryFn: ({ signal }) => Filmes_GET(`/filmes/${encodeURIComponent(id!)}?populate=card,photo_description,genres`, signal),
   enabled: !!id,
+  retry: false,
 });
 
 export const useFilmBySlug = (slug: string | undefined) => useQuery({
@@ -30,4 +32,5 @@ export const useFilmBySlug = (slug: string | undefined) => useQuery({
     return Filmes_GET(`/filmes?${params}`, signal);
   },
   enabled: !!slug,
+  retry: false,
 });

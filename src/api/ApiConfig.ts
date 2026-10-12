@@ -53,6 +53,7 @@ export const makeRequest = async <TResponse>(
   token: string | null = null,
   data?: unknown,
   signal?: AbortSignal,
+  timeout?: number,
 ): Promise<TResponse> => {
   const headers = token ? getAuthHeaders(token) : {};
 
@@ -62,6 +63,7 @@ export const makeRequest = async <TResponse>(
       url,
       data,
       signal,
+      timeout,
       ...headers,
     });
 
