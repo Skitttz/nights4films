@@ -5,13 +5,15 @@ import { useFilmById } from '../../hooks/useFilms';
 import useWindowDimensions from '../../hooks/useWindowDimension';
 import CustomLoading from '../Helper/CustomLoading';
 import ModalTrailer from './ModalTrailer';
+import QueryFeedback from '../Helper/QueryFeedback';
+import FilmImage from './FilmImage';
 
 interface ContentFilmsProps {
   id: string | number;
   name: string;
 }
 
-const ContentFilms = ({ id, name }: ContentFilmsProps) => {
+const ContentFilms = ({ id }: ContentFilmsProps) => {
   const [activeModal, setActiveModal] = React.useState(false);
   const { width } = useWindowDimensions();
   let hours;
@@ -27,7 +29,7 @@ const ContentFilms = ({ id, name }: ContentFilmsProps) => {
     return minutes;
   }
 
-  const { data: film, isError, error, isLoading } = useFilmById(String(id));
+  const { data: film, isError, error, isLoading, refetch } = useFilmById(String(id));
 
   const handleOpenTrailer = (event: any) => {
     if (
@@ -42,6 +44,7 @@ const ContentFilms = ({ id, name }: ContentFilmsProps) => {
       event.preventDefault();
     }
 
+    if (!film?.data?.attributes.trailer) return;
     if (width > 1000) {
       return setActiveModal(true);
     }
@@ -61,7 +64,7 @@ const ContentFilms = ({ id, name }: ContentFilmsProps) => {
       </div>
     );
 
-  if (isError || error) return <></>;
+  if (isError || error) return <QueryFeedback error={error} onRetry={() => { void refetch(); }} />;
 
   return (
     <>
@@ -85,10 +88,10 @@ const ContentFilms = ({ id, name }: ContentFilmsProps) => {
                   onClick={handleOpenTrailer}
                   onKeyDown={handleOpenTrailer}
                 >
-                  <img
+                  <FilmImage
                     className="rounded-t-md h-64 w-full opacity-50 object-cover"
-                    src={`${film.data.attributes.photo_description.data.attributes.url}`}
-                    alt=""
+                    src={film.data.attributes.photo_description?.data?.attributes?.url}
+                    alt={film.data.attributes.title}
                   />
                 </div>
 
@@ -109,7 +112,7 @@ const ContentFilms = ({ id, name }: ContentFilmsProps) => {
                     )}min`}
                   </span>
                   <div className="flex flex-row flex-wrap justify-items-start	justify-start text-lg text-slate-600 font-light gap-1 transition-opacity">
-                    {film.data.attributes.genres.data.map((genre: any) => (
+                    {(film.data.attributes.genres?.data ?? []).map((genre: any) => (
                       <span
                         className="p-2  bg-slate-900 text-slate-400 text-xs rounded-lg mb-2"
                         key={genre.id}

@@ -1,438 +1,131 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode
-} from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  userLikeFilms_POST,
-  userLikeFilms_PUT,
-  userListFilms_POST,
-  userListFilms_PUT,
-  userRateFilm_DELETE,
-  userRateFilms_GET,
-  userRateFilms_POST,
-  userRateFilms_PUT,
-  userReview_POST,
-  userWatchedFilms_POST,
-  userWatchedFilms_PUT,
-} from '../api/index';
-import {
-  loginAndStoreToken,
-  fetchCurrentUser,
-  registerAndStoreToken,
-  forgotPasswordRequest,
-  resetPasswordRequest,
-  fetchProfile,
-  logoutAndClearToken,
-} from '../controllers/userController';
+import { ApiError } from '../api/ApiConfig';
+import { fetchCurrentUser, forgotPasswordRequest, loginAndStoreToken, logoutAndClearToken, registerAndStoreToken, resetPasswordRequest } from '../controllers/userController';
 import { translateErrorMessage } from '../components/Helper/Translate';
 import { getCookie } from '../utils/cookieManager';
 import { getTokenCookieName } from '../constants/cookies';
+import { clearPrivateQueries } from '../lib/queryClient';
+import type { User } from '../types/auth';
 
+type AuthStatus = 'checking' | 'authenticated' | 'guest' | 'error';
 interface UserContextType {
   userLogin: (username: string, password: string) => Promise<void>;
   userLogout: () => Promise<void>;
+  userRegister: (email: string, username: string, password: string) => Promise<void>;
   userPasswordLost: (email: string) => Promise<void>;
   userPasswordReset: (code: string, password: string, passwordConfirmation: string) => Promise<void>;
-  userRegister: (email: string, username: string, password: string) => Promise<void>;
   clearError: () => void;
-  userLikeFilmCreateId: (token: string, idFilm: any, idUser: any) => Promise<void>;
-  userLikeFilmUpdate: (token: string, idLike: any, idFilm: any[], idNewFilm: any) => Promise<void>;
-  userLikeFilmRemove: (token: string, idLike: any, idFilm: any[], idToRemove: any) => Promise<void>;
-  userListFilmCreateId: (token: string, idFilm: any, idUser: any) => Promise<void>;
-  userListFilmUpdate: (token: string, idList: any, idFilm: any[], idNewFilm: any) => Promise<void>;
-  userListFilmRemove: (token: string, idList: any, idFilm: any[], idToRemove: any) => Promise<void>;
-  userCreateReview: (token: string, content: string, idFilm: any, idUser: any, hasSpoiler: boolean) => Promise<void>;
-  userWatchedCreateId: (token: string, idFilm: any, idUser: any) => Promise<void>;
-  userWatchedUpdate: (token: string, idWatched: any, idFilm: any[], idNewFilm: any) => Promise<void>;
-  userWatchedRemove: (token: string, idWatched: any, idFilm: any[], idToRemove: any) => Promise<void>;
-  userRateCreateId: (token: string, idFilm: any, rateValue: number, idUser: any) => Promise<void>;
-  userRateUpdate: (token: string, idRate: any, idFilm: any, newValue: number) => Promise<void>;
-  userRateRemove: (token: string, idRate: any) => Promise<void>;
-  getUserProfile: (token: string) => Promise<void>;
+  retrySession: () => void;
   token: string | null;
-  data: any;
-  dataProfile: any;
+  data: User | null;
   login: boolean | null;
+  status: AuthStatus;
   loading: boolean;
   error: string | null;
 }
 
-export const useUser = createContext<UserContextType | null>(null);
+const UserContext = createContext<UserContextType | null>(null);
 
-export const tokenUserLocal = getCookie(getTokenCookieName());
-
-interface UserStorageProps {
-  children: ReactNode;
-}
-
-export const UserStorage = ({ children }: UserStorageProps) => {
-  const [data, setData] = useState<any>(null);
-  const [dataProfile, setDataProfile] = useState<any>(null);
-  const [login, setLogin] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+export const UserStorage = ({ children }: { children: ReactNode }) => {
+  const [token, setToken] = useState(() => getCookie(getTokenCookieName()));
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(() => getCookie(getTokenCookieName()));
+  const actionPending = useRef(false);
+  const authVersion = useRef(0);
+  const client = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
+  const session = useQuery({
+    queryKey: ['session', token],
+    queryFn: ({ signal }) => fetchCurrentUser(token!, signal),
+    enabled: !!token,
+    staleTime: Infinity,
+  });
+  const invalidSession = session.error instanceof ApiError && [401, 403].includes(session.error.status ?? 0);
+  const status: AuthStatus = !token || invalidSession ? 'guest' : session.data ? 'authenticated' : session.isError ? 'error' : 'checking';
+  const login = status === 'authenticated' ? true : status === 'guest' ? false : null;
+  const data = status === 'authenticated' ? session.data! : null;
   const clearError = useCallback(() => setError(null), []);
 
-  useEffect(() => {
-    clearError();
-  }, [clearError, location.pathname]);
-
-  async function getUser(token: string) {
-    try {
-      const dataUserGet = await fetchCurrentUser(token);
-      setData(dataUserGet);
-      setLogin(true);
-    } catch (error) {
-      console.error(error);
-      userLogout();
-    }
-  }
-
-  async function userRegister(email: string, username: string, password: string) {
-    try {
-      setError(null);
-      setLoading(true);
-      const { token, user } = await registerAndStoreToken({ email, username, password });
-      setToken(token);
-      setData(user);
-      setLogin(true);
-      navigate('/');
-    } catch (error: any) {
-      const msg = translateErrorMessage(error);
-      setError(msg);
-      throw new Error(msg);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function userLogin(username: string, password: string) {
-    try {
-      setError(null);
-      setLoading(true);
-      const { token } = await loginAndStoreToken(username, password);
-      setToken(token);
-      await getUser(token);
-      navigate('/');
-    } catch (err: any) {
-      setError(translateErrorMessage(err));
-      setTimeout(() => {
-        setError(null);
-      }, 20000);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function userPasswordLost(email: string) {
-    try {
-      setError(null);
-      setLoading(true);
-      await forgotPasswordRequest(email);
-    } catch (error: any) {
-      const msg = translateErrorMessage(error);
-      setError(msg);
-      throw new Error(msg);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function userPasswordReset(code: string, password: string, passwordConfirmation: string) {
-    try {
-      setError(null);
-      setLoading(true);
-      await resetPasswordRequest({ code, password, passwordConfirmation });
-    } catch (error: any) {
-      const msg = translateErrorMessage(error);
-      setError(msg);
-      throw new Error(msg);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function getUserProfile(token: string) {
-    try {
-      const dataUserProfile = await fetchProfile(token);
-      setDataProfile(dataUserProfile);
-      setLogin(true);
-    } catch (error) {
-      console.error(error);
-      userLogout();
-    }
-  }
-
-  // ****** userLike ******
-  async function userLikeFilmCreateId(token: string, idFilm: any, idUser: any) {
-    try {
-      await userLikeFilms_POST(token, {
-        data: {
-          hasLiked: true,
-          filme: idFilm,
-          user: idUser,
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  async function userLikeFilmUpdate(token: string, idLike: any, idFilm: any[], idNewFilm: any) {
-    try {
-      await userLikeFilms_PUT(token, idLike, {
-        data: {
-          filme: [...idFilm, idNewFilm],
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  async function userLikeFilmRemove(token: string, idLike: any, idFilm: any[], idToRemove: any) {
-    try {
-      // New list of movies without idToRemove
-      const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
-
-      await userLikeFilms_PUT(token, idLike, {
-        data: {
-          filme: updatedFilms,
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  // ****** userListFilms ******
-
-  async function userListFilmCreateId(token: string, idFilm: any, idUser: any) {
-    try {
-      await userListFilms_POST(token, {
-        data: {
-          hasEntryList: true,
-          filmes: idFilm,
-          user: idUser,
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  async function userListFilmUpdate(token: string, idList: any, idFilm: any[], idNewFilm: any) {
-    try {
-      await userListFilms_PUT(token, idList, {
-        data: {
-          filmes: [...idFilm, idNewFilm],
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  async function userListFilmRemove(token: string, idList: any, idFilm: any[], idToRemove: any) {
-    try {
-      // New list of movies without idToRemove
-      const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
-
-      await userListFilms_PUT(token, idList, {
-        data: {
-          filmes: updatedFilms,
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  // ****** userWatched ******
-
-  async function userWatchedCreateId(token: string, idFilm: any, idUser: any) {
-    try {
-      await userWatchedFilms_POST(token, {
-        data: {
-          hasWatched: true,
-          filmes: idFilm,
-          user: idUser,
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  async function userWatchedUpdate(token: string, idWatched: any, idFilm: any[], idNewFilm: any) {
-    try {
-      await userWatchedFilms_PUT(token, idWatched, {
-        data: {
-          filmes: [...idFilm, idNewFilm],
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  async function userWatchedRemove(token: string, idWatched: any, idFilm: any[], idToRemove: any) {
-    try {
-      // New list of movies without idToRemove
-      const updatedFilms = idFilm.filter((film) => film.id !== idToRemove.id);
-
-      await userWatchedFilms_PUT(token, idWatched, {
-        data: {
-          filmes: updatedFilms,
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  // ****** userRate ******
-
-  async function userRateCreateId(token: string, idFilm: any, rateValue: number, idUser: any) {
-    try {
-      await userRateFilms_POST(token, {
-        data: {
-          user: idUser,
-          filme: idFilm,
-          ratingValue: rateValue,
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  async function userRateUpdate(token: string, idRate: any, idFilm: any, newValue: number) {
-    try {
-      await userRateFilms_PUT(token, idRate, {
-        data: {
-          filme: idFilm,
-          ratingValue: newValue,
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  async function userRateRemove(token: string, idRate: any) {
-    try {
-      const IdRatesUser = await userRateFilms_GET(token);
-      const IdRateUserExist = IdRatesUser.some((rate: any) => rate.id === idRate);
-      if (!IdRateUserExist) {
-        throw new Error();
-      }
-      await userRateFilm_DELETE(token, idRate);
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
-
-  // ****** Create Review ******
-
-  async function userCreateReview(token: string, content: string, idFilm: any, idUser: any, hasSpoiler: boolean) {
-    try {
-      await userReview_POST(token, {
-        data: {
-          reviewContent: content,
-          filme: idFilm,
-          user: idUser,
-          hasSpoiler,
-        },
-      });
-    } catch (err: any) {
-      console.error(translateErrorMessage(err));
-    }
-  }
+  useEffect(clearError, [clearError, location.pathname]);
 
   const userLogout = useCallback(async () => {
-    setData(null);
-    setError(null);
-    setLoading(false);
-    setLogin(false);
+    authVersion.current++;
     setToken(null);
+    setError(null);
     await logoutAndClearToken();
-  }, []);
+    await clearPrivateQueries(client);
+  }, [client]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    async function autoLogin() {
-      const token = getCookie(getTokenCookieName());
-      if (token) {
-        try {
-          setError(null);
-          setLoading(true);
-          setToken(token);
-          await getUser(token);
-        } catch (err: any) {
-          userLogout();
-          setError(err.message);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setLogin(false);
-        setToken(null);
-      }
-    }
-    autoLogin();
-  }, [userLogout]);
+    if (invalidSession) void userLogout();
+  }, [invalidSession, userLogout]);
 
-  return (
-    <useUser.Provider
-      value={{
-        userLogin,
-        userLogout,
-        userPasswordLost,
-        userPasswordReset,
-        userRegister,
-        clearError,
-        userLikeFilmCreateId,
-        userLikeFilmUpdate,
-        userLikeFilmRemove,
-        userListFilmCreateId,
-        userListFilmUpdate,
-        userListFilmRemove,
-        userCreateReview,
-        userWatchedCreateId,
-        userWatchedUpdate,
-        userWatchedRemove,
-        userRateCreateId,
-        userRateUpdate,
-        userRateRemove,
-        getUserProfile,
-        token,
-        data,
-        dataProfile,
-        login,
-        loading,
-        error,
-      }}
-    >
-      {children}
-    </useUser.Provider>
-  );
+  async function authenticate(request: () => Promise<{ token: string; user: User }>, propagateError: boolean) {
+    if (actionPending.current) return;
+    actionPending.current = true;
+    setPending(true);
+    setError(null);
+    const version = ++authVersion.current;
+    try {
+      const auth = await request();
+      if (authVersion.current !== version) {
+        await logoutAndClearToken();
+        return;
+      }
+      await clearPrivateQueries(client);
+      if (authVersion.current !== version) {
+        await logoutAndClearToken();
+        return;
+      }
+      client.setQueryData(['session', auth.token], auth.user);
+      setToken(auth.token);
+      const from = (location.state as { from?: string } | null)?.from;
+      navigate(from?.startsWith('/') && !from.startsWith('//') && !from.includes('\\') && !from.startsWith('/login') ? from : '/', { replace: true });
+    } catch (cause) {
+      const message = translateErrorMessage(cause);
+      setError(message);
+      if (propagateError) throw new Error(message);
+    } finally {
+      actionPending.current = false;
+      setPending(false);
+    }
+  }
+
+  async function passwordRequest(request: () => Promise<void>) {
+    if (actionPending.current) return;
+    actionPending.current = true;
+    setPending(true);
+    setError(null);
+    try {
+      await request();
+    } catch (cause) {
+      const message = translateErrorMessage(cause);
+      setError(message);
+      throw new Error(message);
+    } finally {
+      actionPending.current = false;
+      setPending(false);
+    }
+  }
+
+  return <UserContext.Provider value={{
+    token, data, login, status,
+    loading: pending || status === 'checking',
+    error: error ?? (status === 'error' ? translateErrorMessage(session.error) : null),
+    clearError, userLogout,
+    retrySession: () => { void session.refetch(); },
+    userLogin: (username, password) => authenticate(() => loginAndStoreToken(username, password), false),
+    userRegister: (email, username, password) => authenticate(() => registerAndStoreToken({ email, username, password }), true),
+    userPasswordLost: email => passwordRequest(() => forgotPasswordRequest(email)),
+    userPasswordReset: (code, password, passwordConfirmation) => passwordRequest(() => resetPasswordRequest({ code, password, passwordConfirmation })),
+  }}>{children}</UserContext.Provider>;
 };
 
 export function useUserContext() {
-  const context = useContext(useUser);
-
-  if (!context) {
-    throw new Error('useUser must be used within a Provider');
-  }
-
+  const context = useContext(UserContext);
+  if (!context) throw new Error('useUserContext deve ser usado dentro de UserStorage.');
   return context;
 }

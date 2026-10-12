@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import useForm from '../../hooks/useForm';
 import { useUserContext } from '../../hooks/useUser';
 import Button from '../Forms/Button';
@@ -9,6 +9,7 @@ import Error from '../Helper/Error';
 import Head from '../Helper/Head';
 
 const LoginForm = () => {
+  const location = useLocation();
   const username = useForm(false);
   const password = useForm(false);
   const { userLogin, error, loading } = useUserContext();
@@ -83,6 +84,7 @@ const LoginForm = () => {
                 <Link
                   className="text-orange-400 font-extrabold"
                   to={'register'}
+                  state={location.state}
                 >
                   Clique Aqui.
                 </Link>

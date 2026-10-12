@@ -5,7 +5,6 @@ import useForm from '../../hooks/useForm';
 import { useUserContext } from '../../hooks/useUser';
 import Button from '../Forms/Button';
 import Input from '../Forms/Input';
-import FormError from '../Helper/Error';
 import Head from '../Helper/Head';
 import PasswordSecurity from './PasswordSecurity';
 

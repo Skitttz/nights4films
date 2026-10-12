@@ -1,19 +1,22 @@
-import { api, getAuthHeaders } from './ApiConfig';
 import { makeGetRequest, makePostWithoutTokenRequest } from './Requests';
+import type { UserProfile } from '../types/auth';
 
-export async function userLogin_GET(token: string) {
-  return await api
-    .get('/users/me', getAuthHeaders(token))
-    .then((response) => response.data)
-    .catch((error) => {
-      throw error;
-    });
+export async function userLogin_GET(token: string, signal?: AbortSignal) {
+  return makeGetRequest('/users/me', token, signal);
 }
 
-export async function userProfile_GET(token: string) {
-  return makeGetRequest(
-    '/users/me?populate=reviews&populate=like_films&populate=watchlist_films.filmes&populate=watched&populate=rating_films',
+export async function userProfile_GET(token: string, signal?: AbortSignal) {
+  const populate = new URLSearchParams({
+    'populate[avatar]': 'true',
+    'populate[like_films][populate][filme]': 'true',
+    'populate[watchlist_films][populate][filmes][populate][card]': 'true',
+    'populate[watched][populate][filmes]': 'true',
+    'populate[rating_films][populate][filme]': 'true',
+  });
+  return makeGetRequest<UserProfile>(
+    `/users/me?${populate}`,
     token,
+    signal,
   );
 }
 

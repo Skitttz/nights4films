@@ -18,9 +18,7 @@ export const userListFilms_POST = async (token: string, body: any) => {
 export const userListFilms_GET = async (token: string) => {
   return makeGetRequest<any>('/users/me/?populate=watchlist_films', token).then(
     (response) => {
-      return response.watchlist_films.id !== null
-        ? response.watchlist_films.id
-        : null;
+      return response.watchlist_films?.id ?? null;
     },
   );
 };

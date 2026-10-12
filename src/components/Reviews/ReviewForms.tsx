@@ -1,11 +1,11 @@
 import { Checkbox, ConfigProvider } from 'antd';
 import React from 'react';
 import { toast } from 'react-toastify';
-import { useUserContext } from '../../hooks/useUser';
+import { useReviewCreate } from '../../hooks/query/useEngagement';
+import { translateErrorMessage } from '../Helper/Translate';
 import Button from '../Forms/Button';
 import {
   borderModal,
-  handleKeyDown,
   handleOutSideClick,
   styleExit,
 } from '../Helper/HandleModal';
@@ -25,57 +25,47 @@ const ReviewForms = ({
   dateFilmReview,
   photoFilmReview,
 }: ReviewFormsProps) => {
-  const { login, data, token, userCreateReview } = useUserContext();
+  const createReview = useReviewCreate(idFilmReview);
+  const submitting = React.useRef(false);
   const [reviewContent, setReviewContent] = React.useState('');
   const [hasSpoiler, setHasSpoiler] = React.useState(false);
   const [isActive, setIsActive] = React.useState(false);
   const timerTransition = 700;
 
-  const handleKey = (event: any) => {
-    handleKeyDown(event, setModal, setIsActive, timerTransition);
-  };
-
   const handleClick = (event: any) => {
+    if (submitting.current) return;
     handleOutSideClick(event, setModal, setIsActive, timerTransition);
   };
   React.useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !submitting.current) setModal(false);
+    };
     document.addEventListener('keydown', handleKey);
-
     return () => {
       document.removeEventListener('keydown', handleKey);
     };
-  }, []);
+  }, [setModal]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!token) {
-      toast.error('Faça login para criar uma review.');
-      return;
-    }
-    if (reviewContent.length === 0 || reviewContent.length >= 1000) {
+    if (submitting.current) return;
+    const content = reviewContent.trim();
+    if (content.length === 0 || content.length > 1000) {
       toast.error('Ops! Sua review está muito grande ou vazia.');
       return;
     }
+    submitting.current = true;
     try {
-      await userCreateReview(
-        token,
-        reviewContent,
-        idFilmReview,
-        data.id,
-        hasSpoiler,
-      );
+      await createReview.mutateAsync({ content, hasSpoiler });
       toast.success('Review criada com sucesso!');
       setIsActive(false);
       setModal(false);
-      window.dispatchEvent(
-        new CustomEvent('review:created', {
-          detail: { filmId: idFilmReview },
-        }),
-      );
       setReviewContent('');
       setHasSpoiler(false);
-    } catch {
-      toast.error('Erro ao criar review. Tente novamente.');
+    } catch (error) {
+      toast.error(translateErrorMessage(error));
+    } finally {
+      submitting.current = false;
     }
   }
 
@@ -83,7 +73,10 @@ const ReviewForms = ({
     <div>
       <div
         className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-80 left-0 top-0 w-screen h-screen "
-        onKeyDown={handleKeyDown as any}
+        onClick={handleClick}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Review de ${nameFilmReview}`}
       >
         <div
           className={
@@ -92,11 +85,11 @@ const ReviewForms = ({
               : `${borderModal} border-slate-900 bg-slate-900 animate-fadeIn`
           }
         >
-          <div
+          <button type="button" aria-label="Fechar review" disabled={createReview.isPending}
             className={`${styleExit}`}
             onClick={handleClick}
             style={{ cursor: 'pointer' }}
-          ></div>
+          />
           <section className="mx-auto grid grid-cols-[100px,1fr] cardMD:grid-cols-1 w-[50vh] cardMD:w-[35vh] font-gabarito">
             <div>
               <img
@@ -124,6 +117,9 @@ const ReviewForms = ({
                 <textarea
                   autoFocus={true}
                   required={true}
+                  maxLength={1000}
+                  disabled={createReview.isPending}
+                  aria-label="Texto da review"
                   name="reviewBody"
                   value={reviewContent}
                   onChange={(e) => setReviewContent(e.target.value)}
@@ -145,6 +141,8 @@ const ReviewForms = ({
                   }}
                 >
                   <Checkbox
+                    checked={hasSpoiler}
+                    disabled={createReview.isPending}
                     className="font-gabarito text-slate-200"
                     onChange={(e) => setHasSpoiler(e.target.checked)}
                   >
@@ -153,11 +151,12 @@ const ReviewForms = ({
                 </ConfigProvider>
 
                 <Button
+                  disabled={createReview.isPending}
                   customStyle={
                     'inline-block bg-purple-900 text-slate-300 hover:bg-purple-800 hover:text-slate-200 px-4 py-2 rounded-md'
                   }
                 >
-                  Salvar
+                  {createReview.isPending ? 'Salvando...' : 'Salvar'}
                 </Button>
               </div>
             </form>

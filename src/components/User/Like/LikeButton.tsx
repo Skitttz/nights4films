@@ -1,75 +1,9 @@
-import { HeartFilled, HeartOutlined, LoadingOutlined } from '@ant-design/icons';
-import React from 'react';
-import { FilmsIdFromLikeId_GET } from '../../../api/index';
+import { HeartFilled, HeartOutlined } from '@ant-design/icons';
 
-interface LikeButtonProps {
-  like: boolean;
-  likeId: string;
-  tokenUserLocal: string;
-  films: any;
-  userContainsLikeId: (token: string) => Promise<boolean>;
-  userLikeFilmUpdate: (token: string, idLike: any, idFilm: any[], idNewFilm: any) => Promise<void>;
-  userLikeFilmRemove: (token: string, idLike: any, idFilm: any[], idToRemove: any) => Promise<void>;
-  userLikeFilmCreateId: (token: string, idFilm: any, idUser: any) => Promise<void>;
-  data: any;
-  sizeIcons: number;
-  loading?: boolean;
+export default function LikeButton({ active, pending, onToggle }: { active: boolean; pending: boolean; onToggle: () => void }) {
+  return <button type="button" aria-label="Curtir filme" aria-pressed={active} disabled={pending} onClick={onToggle}
+    className="flex w-full flex-col items-center justify-center gap-1 py-5 disabled:opacity-50">
+    {active ? <HeartFilled style={{ color: '#a51f1f', fontSize: 21 }} /> : <HeartOutlined style={{ fontSize: 21 }} />}
+    <span className="text-slate-400">{active ? 'Liked' : 'Like'}</span>
+  </button>;
 }
-
-function LikeButton({
-  like,
-  likeId,
-  tokenUserLocal,
-  films,
-  userContainsLikeId,
-  userLikeFilmUpdate,
-  userLikeFilmRemove,
-  userLikeFilmCreateId,
-  data,
-  sizeIcons,
-  loading = false,
-}: LikeButtonProps) {
-  const handleLikeClick = async () => {
-    if (like) {
-      const likeIdFilms = await FilmsIdFromLikeId_GET(likeId, tokenUserLocal);
-      userLikeFilmRemove(tokenUserLocal, likeId, likeIdFilms, films.data[0]);
-    } else {
-      const containsLiked = await userContainsLikeId(tokenUserLocal);
-      if (containsLiked && likeId) {
-        const likeIdFilms = await FilmsIdFromLikeId_GET(likeId, tokenUserLocal);
-        userLikeFilmUpdate(tokenUserLocal, likeId, likeIdFilms, films.data[0]);
-      } else {
-        const { id: idUser } = data;
-        userLikeFilmCreateId(tokenUserLocal, films.data[0].id, idUser);
-      }
-    }
-  };
-
-  if (loading) {
-    return (
-      <div style={{ pointerEvents: 'none' }}>
-        <LoadingOutlined style={{ fontSize: `${sizeIcons}px` }} />
-      </div>
-    );
-  }
-
-  return (
-    <div onClick={handleLikeClick} className='flex flex-col gap-1 items-center justify-center py-5'>
-      {like ? (
-        <>
-          <HeartFilled
-            style={{ color: '#a51f1f', fontSize: `${sizeIcons}px` }}
-          />
-          <p className="text-slate-400">Liked</p>
-        </>
-      ) : (
-        <>
-          <HeartOutlined style={{ fontSize: `${sizeIcons}px` }} />
-          <p className="text-slate-400">Like</p>
-        </>
-      )}
-    </div>
-  );
-}
-
-export default LikeButton;

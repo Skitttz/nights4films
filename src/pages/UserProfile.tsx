@@ -1,15 +1,10 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import {
-  Filmes_GET,
-  FilmsIdFromWatchListId_GET,
-  showAvatar_GET,
-  uploadAvatar_POST,
-  userListFilms_GET,
-  userProfile_GET,
-} from '../api/index';
+import { Filmes_GET, uploadAvatar_POST } from '../api/index';
+import { useProfileQuery } from '../hooks/query/useAuth';
+import QueryFeedback from '../components/Helper/QueryFeedback';
 import noAvatar from '../assets/noAvatar.svg';
 import Button from '../components/Forms/Button';
 import CapitalizeLetter from '../components/Helper/CapitalizeLetter';
@@ -26,45 +21,24 @@ const UserProfile = () => {
   const selectedFile = files?.[0] ?? null;
   const navigate = useNavigate();
 
-  const { data: profileRes, isLoading: loadingProfile } = useQuery({
-    queryKey: ['profile', token],
-    queryFn: async () => userProfile_GET(token as string),
-    enabled: !!token,
-  });
-
-  const { data: watchListId } = useQuery({
-    queryKey: ['watchId', token],
-    queryFn: async () => userListFilms_GET(token as string),
-    enabled: !!token,
-  });
-
-  const { data: listRes, isLoading: loadingList } = useQuery({
-    queryKey: ['watchFilms', watchListId, token],
-    queryFn: async () =>
-      FilmsIdFromWatchListId_GET(watchListId as string, token as string),
-    enabled: !!token && !!watchListId,
-  });
-
-  const {
-    data: avatarUrl,
-    isLoading: loadingAvatar,
-    refetch: refetchAvatar,
-  } = useQuery({
-    queryKey: ['avatar', token],
-    queryFn: async () => {
-      const resp = await showAvatar_GET(token as string);
-      return resp?.avatar?.url ? `${resp.avatar.url}?t=${Date.now()}` : null;
-    },
-    enabled: !!token,
-  });
+  const client = useQueryClient();
+  const uploading = useRef(false);
+  const profileQuery = useProfileQuery();
+  const profileRes = profileQuery.data;
+  const loadingProfile = profileQuery.isPending;
+  const listRes = profileRes?.watchlist_films?.filmes ?? [];
+  const avatarUrl = profileRes?.avatar?.url;
+  const loadingAvatar = loadingProfile;
+  const loadingList = loadingProfile;
 
   const stats = {
     numFilme: profileRes?.watchlist_films?.filmes?.length ?? 0,
-    numLiked: profileRes?.like_films?.length ?? 0,
+    numLiked: new Set(profileRes?.like_films?.flatMap(list => list.filme?.map(film => film.id) ?? []) ?? []).size,
     numRated: profileRes?.rating_films?.length ?? 0,
   };
 
-  function formatDateHour(dataHora: string) {
+  function formatDateHour(dataHora?: string) {
+    if (!dataHora) return '—';
     const dataDate = new Date(dataHora);
     const dia = dataDate.getDate().toString().padStart(2, '0');
     const mes = (dataDate.getMonth() + 1).toString().padStart(2, '0');
@@ -74,22 +48,20 @@ const UserProfile = () => {
 
   const uploadImage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFile || !token || !data?.id) return;
+    if (!selectedFile || !token || !data?.id || uploading.current) return;
+    if (!selectedFile.type.startsWith('image/') || selectedFile.size > 5 * 1024 * 1024) { toast.error('Selecione uma imagem de até 5 MB.'); return; }
     const formData = new FormData();
     formData.append('ref', 'plugin::users-permissions.user');
-    formData.append('refId', data.id);
+    formData.append('refId', String(data.id));
     formData.append('field', 'avatar');
     formData.append('files', selectedFile);
     formData.append('source', 'users-permissions');
+    uploading.current = true;
     try {
       setIsUploadingAvatar(true);
       const response: any = await uploadAvatar_POST(formData, token);
-      const newUrl = response?.[0]?.url
-        ? `${response[0].url}?t=${Date.now()}`
-        : null;
-      if (newUrl) {
-        await refetchAvatar();
-      }
+      if (!response?.[0]?.url) throw new Error('Resposta inválida ao enviar avatar.');
+      await client.invalidateQueries({ queryKey: ['profile', data.id] });
       setFiles(null);
       setFileInputKey((k) => k + 1);
       toast.success('Avatar alterado com sucesso!', {
@@ -105,6 +77,7 @@ const UserProfile = () => {
     } catch (error) {
       toast.error('Ops! Não conseguimos atualizar seu avatar.');
     } finally {
+      uploading.current = false;
       setIsUploadingAvatar(false);
     }
   };
@@ -149,6 +122,8 @@ const UserProfile = () => {
     }
   };
 
+  if (profileQuery.isError && !profileRes) return <QueryFeedback error={profileQuery.error} onRetry={() => { void profileQuery.refetch(); }} />;
+
   if (!token || !data || loadingProfile) {
     return (
       <div className="min-h-screen bg-slate-950">
@@ -172,6 +147,7 @@ const UserProfile = () => {
   return (
     <div className="min-h-screen bg-slate-950">
       <Head title={' » Meu Perfil'} description="Pagina do Perfil" />
+      {profileQuery.isError && <QueryFeedback error={profileQuery.error} onRetry={() => { void profileQuery.refetch(); }} />}
       <div className="mx-auto w-full max-w-7xl lg:max-w-5xl px-4 tm:px-3 cardMD:px-4 pt-14 pb-20 animate-animeDown text-slate-200 font-roboto">
         <div className="rounded-2xl border border-slate-800 bg-slate-900/30 p-6 tm:p-4">
           <div className="flex items-start justify-between gap-4 tm:flex-col tm:items-stretch">
@@ -314,19 +290,20 @@ const UserProfile = () => {
                 </div>
               ) : (listRes || []).length !== 0 ? (
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(176px,auto))] gap-4 justify-center tm:overflow-x-auto tm:flex tm:shrink-0 tm:pb-6">
-                  {(listRes || []).map((film: any) => (
+                  {(listRes || []).map((film) => (
                     <Link
                       key={film.id}
-                      to={`/filmes/${film.attributes.slug}`}
+                      aria-label={film.title}
+                      to={`/filmes/${film.slug}`}
                       className="tm:w-full group w-[176px] rounded-xl border border-slate-800 bg-slate-900/40 p-3 hover:bg-slate-900/60 transition-colors"
                     >
                       <img
                         className="w-[160px] h-[240px] object-cover rounded-lg mx-auto transition-transform duration-200 group-hover:scale-[1.02] tm:w-full tm:min-w-[160px]"
-                        src={film.attributes.card.data.attributes.url}
-                        alt={film.attributes.title}
+                        src={film.card?.url ?? noAvatar}
+                        alt={film.title}
                       />
                       <p className="mt-3 text-sm font-semibold text-slate-200 group-hover:text-white transition-colors truncate">
-                        {film.attributes.title}
+                        {film.title}
                       </p>
                     </Link>
                   ))}

@@ -14,7 +14,7 @@ const ReadMore = ({
   textAlert,
   textUnderline,
   hasSpoiler,
-  reviewId,
+  reviewId: _reviewId,
   maxLength,
 }: ReadMoreProps) => {
   const [isExpanded, setIsExpanded] = React.useState(false);

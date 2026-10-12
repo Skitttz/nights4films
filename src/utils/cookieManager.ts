@@ -26,5 +26,6 @@ export const getCookie = (name: string): string | null => {
 };
 
 export const removeCookie = (name: string, path: string = '/') => {
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=${path}`;
+  const secure = typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=${path}; SameSite=Lax${secure}`;
 };
