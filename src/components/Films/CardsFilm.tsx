@@ -171,8 +171,7 @@ const CardsFilm = () => {
         className="grid grid-cols-1 desktop:grid-cols-[600px,_1fr] justify-center justify-items-center gap-x-4 
       cardMD:max-w-5xl xl:max-w-6xl lg:max-w-5xl cardMD:justify-center animate-fadeIn overflow-x-hidden"
       >
-        {isError && <div className="col-span-full"><QueryFeedback error={error} onRetry={() => { void refetch(); }} /></div>}
-        {isFetching && data && <p role="status" className="col-span-full text-slate-400 text-sm">Atualizando filmes...</p>}
+        {isError && !data && <div className="col-span-full"><QueryFeedback error={error} onRetry={() => { void refetch(); }} /></div>}
         <div
           className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1
       cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 cardMD:scroll-smooth

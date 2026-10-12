@@ -1,7 +1,7 @@
 import { makeRequest } from './ApiConfig';
 
-export const makeGetRequest = async <T = any>(url: string, token: string | null, signal?: AbortSignal): Promise<T> => {
-  return makeRequest('get', url, token, undefined, signal);
+export const makeGetRequest = async <T = any>(url: string, token: string | null, signal?: AbortSignal, timeout?: number): Promise<T> => {
+  return makeRequest('get', url, token, undefined, signal, timeout);
 };
 
 export const makeDeleteRequest = async <T = any>(url: string, token: string | null): Promise<T> => {
