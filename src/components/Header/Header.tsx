@@ -1,6 +1,5 @@
 import { UserOutlined } from '@ant-design/icons';
-import { Modal } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { FiMenu } from 'react-icons/fi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import imgLougout from '../../assets/i-logout.png';
@@ -8,6 +7,8 @@ import { useUserContext } from '../../hooks/useUser';
 import CapitalizeLetter from '../Helper/CapitalizeLetter';
 import styles from './Header.module.css';
 import HeaderSkeleton from './HeaderLoading';
+
+const Modal = lazy(() => import('antd/es/modal'));
 
 const Header = () => {
   const { pathname } = useLocation();
@@ -19,9 +20,8 @@ const Header = () => {
   const refNav = useRef<HTMLElement>(null);
   const navigate = useNavigate();
 
-  const isDesktop = window.innerWidth > 768;
   const isAuthRoute = pathname.startsWith('/login');
-  const isLoadingHeaderDesktop = loading && isDesktop && !isAuthRoute;
+  const isLoadingHeader = loading && !isAuthRoute;
 
   const handleOutsideClick = (event: MouseEvent) => {
     if (
@@ -41,7 +41,7 @@ const Header = () => {
       window.removeEventListener('click', listener);
     };
   }, [openMenuMB]);
-  if (isLoadingHeaderDesktop) {
+  if (isLoadingHeader) {
     return <HeaderSkeleton />;
   }
 
@@ -87,6 +87,7 @@ const Header = () => {
   return (
     <>
       {openModal && (
+        <Suspense fallback={null}>
         <Modal
           title="Deseja sair da sua conta?"
           open={openModal}
@@ -109,6 +110,7 @@ const Header = () => {
             Você será desconectado e voltará à tela de login.
           </p>
         </Modal>
+        </Suspense>
       )}
       <header className="fixed z-30 w-full top-0 bg-gray-950 shadow-md">
         <nav

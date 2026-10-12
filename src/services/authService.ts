@@ -13,8 +13,8 @@ export const login = async (username: string, password: string): Promise<AuthRes
   return data as AuthResponse;
 };
 
-export const getCurrentUser = async (token: string): Promise<User> => {
-  return userLogin_GET(token) as unknown as User;
+export const getCurrentUser = async (token: string, signal?: AbortSignal): Promise<User> => {
+  return userLogin_GET(token, signal) as unknown as User;
 };
 
 export const register = async (payload: RegisterPayload): Promise<AuthResponse> => {
@@ -30,6 +30,6 @@ export const resetPassword = async (payload: ResetPasswordPayload): Promise<void
   await userPasswordReset_POST(payload);
 };
 
-export const getProfile = async (token: string): Promise<any> => {
-  return userProfile_GET(token);
+export const getProfile = async (token: string, signal?: AbortSignal) => {
+  return userProfile_GET(token, signal);
 };

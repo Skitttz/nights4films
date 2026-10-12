@@ -1,99 +1,42 @@
-import { userLikeFilms_POST, userLikeFilms_PUT } from '../api/Like';
-import { userListFilms_POST, userListFilms_PUT } from '../api/Watchlist';
-import { userWatchedFilms_POST, userWatchedFilms_PUT } from '../api/Watch';
-import { userRateFilm_DELETE, userRateFilms_POST, userRateFilms_PUT } from '../api/Rate';
-import { userReview_POST } from '../api/Review';
-import {
-  LikeCreateInput,
-  LikeRemoveInput,
-  LikeUpdateInput,
-  ListCreateInput,
-  ListRemoveInput,
-  ListUpdateInput,
-  RateCreateInput,
-  RateRemoveInput,
-  RateUpdateInput,
-  ReviewCreateInput,
-  WatchedCreateInput,
-  WatchedRemoveInput,
-  WatchedUpdateInput,
-} from '../types/engagement';
+import { makePostRequest, makePutRequest, makeDeleteRequest } from '../api/Requests';
+import type { UserProfile } from '../types/auth';
+import type { Id } from '../types/engagement';
 
-export const likeCreate = ({ token, filmId, userId }: LikeCreateInput) => {
-  return userLikeFilms_POST(token, {
-    data: { hasLiked: true, filme: filmId, user: userId },
+export type EngagementAction = { type: 'like' | 'watchlist' | 'watched' } | { type: 'rate'; value: number };
+
+export async function updateFilmEngagement(token: string, userId: number, filmId: Id, profile: UserProfile, action: EngagementAction) {
+  if (action.type === 'rate') {
+    const rating = profile.rating_films?.find(item => String(item.filme?.id) === String(filmId));
+    if (action.value === 0) {
+      if (rating) await makeDeleteRequest(`/rating-films/${rating.id}`, token);
+      return;
+    }
+    if (!Number.isFinite(action.value) || action.value < 0.5 || action.value > 5 || action.value * 2 % 1 !== 0) throw new Error('Avaliação inválida.');
+    const data = { filme: filmId, ratingValue: action.value };
+    if (rating) return makePutRequest(`/rating-films/${rating.id}`, token, { data });
+    return makePostRequest('/rating-films', token, { data: { ...data, user: userId } });
+  }
+
+  const likes = profile.like_films ?? [];
+  const like = likes.find(item => item.filme?.some(film => String(film.id) === String(filmId))) ?? likes[0];
+  const config = action.type === 'like'
+    ? { endpoint: 'like-films', collection: like, films: like?.filme, relation: 'filme', flag: 'hasLiked' }
+    : action.type === 'watchlist'
+      ? { endpoint: 'watchlist-films', collection: profile.watchlist_films, films: profile.watchlist_films?.filmes, relation: 'filmes', flag: 'hasEntryList' }
+      : { endpoint: 'watcheds', collection: profile.watched, films: profile.watched?.filmes, relation: 'filmes', flag: 'hasWatched' };
+  const active = config.films?.some(film => String(film.id) === String(filmId)) ?? false;
+  if (config.collection) {
+    return makePutRequest(`/${config.endpoint}/${config.collection.id}`, token, {
+      data: { [config.relation]: { [active ? 'disconnect' : 'connect']: [filmId] } },
+    });
+  }
+  return makePostRequest(`/${config.endpoint}`, token, {
+    data: { [config.flag]: true, [config.relation]: [filmId], user: userId },
   });
-};
+}
 
-export const likeUpdate = ({ token, likeId, films, newFilm }: LikeUpdateInput) => {
-  return userLikeFilms_PUT(token, likeId, {
-    data: { filme: [...films, newFilm] },
-  });
-};
-
-export const likeRemove = ({ token, likeId, films, removeFilm }: LikeRemoveInput) => {
-  const updated = films.filter((f: any) => f.id !== removeFilm.id);
-  return userLikeFilms_PUT(token, likeId, {
-    data: { filme: updated },
-  });
-};
-
-export const listCreate = ({ token, filmId, userId }: ListCreateInput) => {
-  return userListFilms_POST(token, {
-    data: { hasEntryList: true, filmes: filmId, user: userId },
-  });
-};
-
-export const listUpdate = ({ token, listId, films, newFilm }: ListUpdateInput) => {
-  return userListFilms_PUT(token, listId, {
-    data: { filmes: [...films, newFilm] },
-  });
-};
-
-export const listRemove = ({ token, listId, films, removeFilm }: ListRemoveInput) => {
-  const updated = films.filter((f: any) => f.id !== removeFilm.id);
-  return userListFilms_PUT(token, listId, {
-    data: { filmes: updated },
-  });
-};
-
-export const watchedCreate = ({ token, filmId, userId }: WatchedCreateInput) => {
-  return userWatchedFilms_POST(token, {
-    data: { hasWatched: true, filmes: filmId, user: userId },
-  });
-};
-
-export const watchedUpdate = ({ token, watchedId, films, newFilm }: WatchedUpdateInput) => {
-  return userWatchedFilms_PUT(token, watchedId, {
-    data: { filmes: [...films, newFilm] },
-  });
-};
-
-export const watchedRemove = ({ token, watchedId, films, removeFilm }: WatchedRemoveInput) => {
-  const updated = films.filter((f: any) => f.id !== removeFilm.id);
-  return userWatchedFilms_PUT(token, watchedId, {
-    data: { filmes: updated },
-  });
-};
-
-export const rateCreate = ({ token, filmId, userId, value }: RateCreateInput) => {
-  return userRateFilms_POST(token, {
-    data: { user: userId, filme: filmId, ratingValue: value },
-  });
-};
-
-export const rateUpdate = ({ token, rateId, filmId, value }: RateUpdateInput) => {
-  return userRateFilms_PUT(token, rateId, {
-    data: { filme: filmId, ratingValue: value },
-  });
-};
-
-export const rateRemove = ({ token, rateId }: RateRemoveInput) => {
-  return userRateFilm_DELETE(token, rateId);
-};
-
-export const reviewCreate = ({ token, userId, filmId, content, hasSpoiler }: ReviewCreateInput) => {
-  return userReview_POST(token, {
-    data: { reviewContent: content, filme: filmId, user: userId, hasSpoiler },
-  });
-};
+export const reviewCreate = ({ token, userId, filmId, content, hasSpoiler }: {
+  token: string; userId: number; filmId: Id; content: string; hasSpoiler: boolean;
+}) => makePostRequest('/reviews', token, {
+  data: { reviewContent: content.trim(), filme: filmId, user: userId, hasSpoiler },
+});

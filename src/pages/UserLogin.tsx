@@ -5,6 +5,7 @@ import RegisterForm from '../components/User/RegisterForm';
 import ResetPasswordForm from '../components/User/ResetPasswordForm';
 import { useUserContext } from '../hooks/useUser';
 import NotFound404 from '../pages/NotFound404';
+import SessionFeedback from '../components/Helper/SessionFeedback';
 
 const LoginRoutes = () => (
   <Routes>
@@ -30,7 +31,7 @@ const Login = () => {
     );
   }
 
-  return <></>;
+  return <SessionFeedback />;
 };
 
 export default Login;

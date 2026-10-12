@@ -1,40 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchProfile, forgotPasswordRequest, loginAndStoreToken, registerUser, resetPasswordRequest } from '../../controllers/userController';
-import { RegisterPayload, ResetPasswordPayload } from '../../types/auth';
+import { useQuery } from '@tanstack/react-query';
+import { userProfile_GET } from '../../api/Auth';
+import { useUserContext } from '../useUser';
 
-export const useLoginMutation = () => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ username, password }: { username: string; password: string }) =>
-      loginAndStoreToken(username, password),
-    onSuccess: ({ token }) => {
-      qc.invalidateQueries({ queryKey: ['profile', token] });
-    },
-  });
-};
-
-export const useRegisterMutation = () => {
-  return useMutation({
-    mutationFn: (payload: RegisterPayload) => registerUser(payload),
-  });
-};
-
-export const useForgotPasswordMutation = () => {
-  return useMutation({
-    mutationFn: ({ email }: { email: string }) => forgotPasswordRequest(email),
-  });
-};
-
-export const useResetPasswordMutation = () => {
-  return useMutation({
-    mutationFn: (payload: ResetPasswordPayload) => resetPasswordRequest(payload),
-  });
-};
-
-export const useProfileQuery = (token: string | null) => {
+export const useProfileQuery = () => {
+  const { token, data, login } = useUserContext();
   return useQuery({
-    queryKey: ['profile', token],
-    queryFn: () => fetchProfile(token as string),
-    enabled: !!token,
+    queryKey: ['profile', data?.id],
+    queryFn: ({ signal }) => userProfile_GET(token!, signal),
+    enabled: login === true && !!token && !!data?.id,
   });
 };

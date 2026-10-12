@@ -1,147 +1,56 @@
 import { FrownFilled } from '@ant-design/icons';
-import React from 'react';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { allReviewsbyFilmId_GET } from '../../api/index';
+import { useUserContext } from '../../hooks/useUser';
 import noAvatar from '../../assets/noAvatar.svg';
 import CustomLoading from '../Helper/CustomLoading';
+import QueryFeedback from '../Helper/QueryFeedback';
 import ReadMore from '../Helper/ReadMore';
 import PaginationReview from './PaginationReview';
 
-interface ReviewFeedByFilmProps {
-  tokenUser: string;
-  FilmId: string | number;
-}
-
-const ReviewFeedByFilm = ({ tokenUser, FilmId }: ReviewFeedByFilmProps) => {
-  const [reviews, setReviews] = React.useState<any>([]);
-  const [data, setData] = React.useState(false);
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [loading, setLoading] = React.useState(true);
-  const limitItemPerPage = 6;
-
-  // Setar pagina atual -> nova
-  function handlePageChange(newPage: number) {
-    setCurrentPage(newPage);
-  }
-
-  const fetchReviews = React.useCallback(() => {
-    setLoading(true);
-    const startIndex = (currentPage - 1) * limitItemPerPage;
-    const rulePagination = `pagination[start]=${startIndex}&pagination[limit]=${limitItemPerPage}`;
-    allReviewsbyFilmId_GET(tokenUser, rulePagination, FilmId)
-      .then((data: any) => {
-        setReviews(data);
-        setData(true);
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  }, [currentPage, tokenUser, FilmId]);
-
-  React.useEffect(() => {
-    fetchReviews();
-  }, [fetchReviews]);
-
-  React.useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent<any>).detail;
-      if (detail && detail.filmId === FilmId) {
-        fetchReviews();
-      }
-    };
-    window.addEventListener('review:created', handler as EventListener);
-    return () => {
-      window.removeEventListener('review:created', handler as EventListener);
-    };
-  }, [FilmId, fetchReviews]);
-
-  return (
-    <>
-      {loading ? (
-        <div className="flex justify-center">
-          <CustomLoading />
-        </div>
-      ) : (
-        <div className="max-w-7xl lg:max-w-5xl mx-auto animate-fadeIn">
-          <div>
-            {reviews.data && reviews.data.length !== 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-1 gap-y-8 gap-x-8 justify-items-center">
-                {reviews?.data?.map(
-                  (review: any) =>
-                    review.attributes.user?.data && (
-                      <div
-                        className="border-b border-opacity-30 border-b-blue-950 p-5 grid grid-cols-[auto,1fr] grid-rows-[auto] w-full shadow-[rgba(17,_17,_26,_0.1)_0px_0px_1px]"
-                        key={review.id}
-                      >
-                        <div className="mr-4 ">
-                          {review.attributes.user.data?.id &&
-                            review.attributes.user.data.attributes.avatar.data !==
-                            null ? (
-                            <img
-                              className="w-[60px] h-[60px] rounded-full box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;"
-                              src={
-                                review.attributes.user.data?.attributes?.avatar
-                                  ?.data.attributes.url
-                              }
-                              alt="Avatar do autor"
-                            />
-                          ) : (
-                            <img
-                              className="w-[60px]  h-[60px] rounded-full box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;"
-                              src={noAvatar}
-                              alt="Avatar do autor"
-                            />
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-slate-400 mb-2">
-                            {`por `}
-                            <span className="font-bold text-slate-300">
-                              {review.attributes.user.data &&
-                                review.attributes.user.data.attributes.username}
-                            </span>
-                          </p>
-                          <p
-                            className={`text-slate-200 font-serif text-ellipsis overflow-hidden`}
-                          >
-                            <ReadMore
-                              key={review.id}
-                              reviewId={review.id}
-                              textAlert={'Esta review pode conter spoilers.'}
-                              textUnderline={' Eu posso lidar com a verdade.'}
-                              text={review.attributes.reviewContent}
-                              hasSpoiler={review.attributes.hasSpoiler}
-                              maxLength={300}
-                            />
-                          </p>
-                        </div>
-                      </div>
-                    ),
-                )}{' '}
-                <div className="col-span-full">
-                  {reviews.length !== 0 && (
-                    <PaginationReview
-                      totalItems={reviews.meta.pagination.total}
-                      currentPage={currentPage}
-                      onPageChange={handlePageChange}
-                      limitItemPage={6}
-                    />
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="flex justify-center py-24 animate-fadeIn">
-                <p className="text-slate-200 text-lg mx-auto sm:text-center">
-                  Até o momento, não criaram nenhuma review para este filme.{' '}
-                  <FrownFilled />
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </>
-  );
+type Review = {
+  id: number;
+  attributes: {
+    reviewContent: string; hasSpoiler: boolean;
+    user?: { data: { id: number; attributes: { username: string; avatar?: { data: { attributes: { url: string } } | null } } } | null };
+  };
 };
+type ReviewResponse = { data: Review[]; meta: { pagination: { total: number } } };
 
-export default ReviewFeedByFilm;
+export default function ReviewFeedByFilm({ tokenUser, FilmId }: { tokenUser: string; FilmId: string | number }) {
+  const { data: user } = useUserContext();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
+  const query = useQuery<ReviewResponse>({
+    queryKey: ['reviews', FilmId, user?.id, currentPage],
+    queryFn: ({ signal }) => allReviewsbyFilmId_GET(tokenUser, `pagination[start]=${(currentPage - 1) * pageSize}&pagination[limit]=${pageSize}`, FilmId, signal),
+    enabled: !!tokenUser && !!user,
+    placeholderData: (previous, previousQuery) => previousQuery?.queryKey[1] === FilmId && previousQuery.queryKey[2] === user?.id ? previous : undefined,
+  });
+  const total = query.data?.meta.pagination.total ?? 0;
+  useEffect(() => {
+    if (query.isSuccess && !query.isPlaceholderData) setCurrentPage(page => Math.min(page, Math.max(1, Math.ceil(total / pageSize))));
+  }, [query.isSuccess, query.isPlaceholderData, total]);
+
+  if (query.isPending) return <div role="status" aria-label="Carregando reviews" className="flex justify-center"><CustomLoading /></div>;
+  if (query.isError && !query.data) return <QueryFeedback error={query.error} onRetry={() => { void query.refetch(); }} />;
+  const reviews = query.data?.data ?? [];
+  return <div aria-busy={query.isFetching} className="max-w-7xl lg:max-w-5xl mx-auto animate-fadeIn">
+    {query.isError && <QueryFeedback error={query.error} onRetry={() => { void query.refetch(); }} />}
+    {query.isFetching && <p role="status" className="mb-4 text-center text-slate-400">Atualizando reviews...</p>}
+    {reviews.length ? <div className="grid grid-cols-2 sm:grid-cols-1 gap-8">
+      {reviews.map(review => {
+        const author = review.attributes.user?.data?.attributes;
+        return <article key={review.id} className="border-b border-blue-950 p-5 grid grid-cols-[auto,1fr] w-full">
+          <img className="mr-4 w-[60px] h-[60px] rounded-full object-cover" loading="lazy" src={author?.avatar?.data?.attributes.url ?? noAvatar} alt="Avatar do autor" />
+          <div><p className="text-slate-400 mb-2">por <span className="font-bold text-slate-300">{author?.username ?? 'Usuário indisponível'}</span></p>
+            <p className="text-slate-200 font-serif"><ReadMore textAlert="Esta review pode conter spoilers." textUnderline=" Eu posso lidar com a verdade."
+              text={review.attributes.reviewContent} hasSpoiler={review.attributes.hasSpoiler} maxLength={300} /></p>
+          </div>
+        </article>;
+      })}
+    </div> : <div className="py-16 text-center text-slate-200"><p>Até o momento, não criaram nenhuma review para este filme. <FrownFilled /></p></div>}
+    <PaginationReview totalItems={total} currentPage={currentPage} onPageChange={setCurrentPage} limitItemPage={pageSize} />
+  </div>;
+}

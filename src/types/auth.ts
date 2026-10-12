@@ -2,6 +2,25 @@ export type User = {
   id: number;
   username: string;
   email: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type ProfileFilm = {
+  id: number;
+  title: string;
+  slug: string;
+  card?: { url: string } | null;
+};
+
+export type FilmCollection = { id: number; filmes: ProfileFilm[] };
+
+export type UserProfile = User & {
+  avatar?: { url: string } | null;
+  like_films: { id: number; filme: ProfileFilm[] }[];
+  watchlist_films: FilmCollection | null;
+  watched: FilmCollection | null;
+  rating_films: { id: number; ratingValue: number | string; filme: ProfileFilm | null }[];
 };
 
 export type UserMe = {
