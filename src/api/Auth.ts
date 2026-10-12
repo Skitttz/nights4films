@@ -2,7 +2,8 @@ import { makeGetRequest, makePostWithoutTokenRequest } from './Requests';
 import type { UserProfile } from '../types/auth';
 
 export async function userLogin_GET(token: string, signal?: AbortSignal) {
-  return makeGetRequest('/users/me', token, signal);
+  // Allow the API to wake up before treating the session check as unavailable.
+  return makeGetRequest('/users/me', token, signal, 90_000);
 }
 
 export async function userProfile_GET(token: string, signal?: AbortSignal) {

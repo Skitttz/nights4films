@@ -14,14 +14,14 @@ const Header = () => {
   const { pathname } = useLocation();
 
   const [openModal, setOpenModal] = useState(false);
-  const { data, status, userLogout, retrySession } = useUserContext();
+  const { data, status, userLogout } = useUserContext();
   const [openMenuMB, setOpenMenuMB] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const refNav = useRef<HTMLElement>(null);
   const navigate = useNavigate();
 
   const isSessionError = status === 'error';
-  const hasResolvedSession = status === 'authenticated' || status === 'guest';
+  const canOpenMenu = status !== 'checking';
 
   const handleOutsideClick = (event: MouseEvent) => {
     if (
@@ -140,8 +140,8 @@ const Header = () => {
           <button
             type="button"
             aria-label="Abrir menu"
-            aria-expanded={openMenuMB && hasResolvedSession}
-            disabled={!hasResolvedSession}
+            aria-expanded={openMenuMB && canOpenMenu}
+            disabled={!canOpenMenu}
             onClick={handleToggleMenu}
             className="hidden cardMD:order-1 cardMD:block h-6 w-6 cursor-pointer text-[rgba(107,80,178,.9)] hover:text-[rgba(107,66,178,1)] cardMD:mr-3 transition-transform duration-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
@@ -165,7 +165,7 @@ const Header = () => {
               >
                 <div className={`text-purple-100 font-roboto font-light p-2 bg-purple-800 hover:bg-opacity-100 ${pathname === '/perfil' ? 'bg-opacity-100' : 'bg-opacity-60'} transition-all opacity-90 hover:opacity-100 rounded-lg`}>
                   <div className="flex items-center">
-                    <UserOutlined className="mr-1" />
+                    <UserOutlined aria-hidden="true" className="mr-1" />
                     <p className="font-bold">{'Meu Perfil '}</p>
                   </div>
                 </div>
@@ -186,6 +186,17 @@ const Header = () => {
                 </button>
               </div>
             </div>
+          ) : isSessionError ? (
+            <div className="hidden desktop:flex items-center gap-4">
+              <Link to="/perfil" className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-300 transition-colors hover:bg-slate-800 hover:text-slate-100">
+                <UserOutlined aria-hidden="true" />
+                <span>Minha conta</span>
+              </Link>
+              <button type="button" onClick={handleOpenModal} className="flex items-center gap-2 text-slate-300 transition-colors hover:text-slate-100">
+                <img className="w-6 invert" src={imgLougout} alt="" />
+                <span>Sair</span>
+              </button>
+            </div>
           ) : status === 'guest' ? (
             <Link
               className="hidden desktop:flex"
@@ -197,28 +208,21 @@ const Header = () => {
             </Link>
           ) : null}
         </nav>
-        {isSessionError && (
-          <div role="alert" className="flex h-12 items-center justify-center gap-3 border-t border-slate-800 px-4 text-sm text-slate-300 tm:h-[4.5rem] tm:flex-col tm:gap-1">
-            <p>Não foi possível verificar sua conta.</p>
-            <button type="button" aria-label="Tentar novamente a validação da sessão" onClick={retrySession}
-              className="shrink-0 rounded-md px-3 py-1 text-purple-200 transition-colors hover:bg-purple-900/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-400">
-              Tentar novamente
-            </button>
-          </div>
-        )}
-        {(openMenuMB || isClosing) && hasResolvedSession && (
+        {(openMenuMB || isClosing) && canOpenMenu && (
           <div
             className={`cardMD:block border-b border-b-purple-900 border-opacity-60 bg-gray-950 ${getAnimationClass()}`}
           >
             <div className="flex flex-col gap-4 px-4 py-4">
-              {data ? (
+              {data || isSessionError ? (
                 <>
-                  <div className="text-purple-100 font-roboto font-light p-2 transition-all opacity-90 hover:opacity-100 rounded-lg text-center">
-                    {'Olá, '}
-                    <span className="text-slate-200 font-bold">{`${CapitalizeLetter(
-                      data.username,
-                    )}`}</span>
-                  </div>
+                  {data && (
+                    <div className="text-purple-100 font-roboto font-light p-2 transition-all opacity-90 hover:opacity-100 rounded-lg text-center">
+                      {'Olá, '}
+                      <span className="text-slate-200 font-bold">{`${CapitalizeLetter(
+                        data.username,
+                      )}`}</span>
+                    </div>
+                  )}
                   <Link
                     to={'/perfil'}
                     className="tm:mr-0"
@@ -229,8 +233,8 @@ const Header = () => {
                     }}
                   >
                     <div className="text-purple-100 font-roboto font-light p-2 bg-purple-800 hover:bg-opacity-100 transition-all opacity-90 hover:opacity-100 rounded-lg flex items-center justify-center gap-2">
-                      <UserOutlined className="mr-1" />
-                      <p className="font-bold">{'Meu Perfil '}</p>
+                      <UserOutlined aria-hidden="true" className="mr-1" />
+                      <p className="font-bold">{data ? 'Meu Perfil' : 'Minha conta'}</p>
                     </div>
                   </Link>
                   <button
@@ -265,7 +269,7 @@ const Header = () => {
           </div>
         )}
       </header>
-      <div className={isSessionError ? 'pb-[5.5rem] tm:pb-[7rem]' : 'pb-[2.5rem]'} />
+      <div className="pb-[2.5rem]" />
     </>
   );
 };
