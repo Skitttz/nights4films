@@ -25,7 +25,7 @@ const Input = ({
   type,
   name,
   value,
-  setValue,
+  setValue: _setValue,
   onChange,
   error,
   onBlur,
