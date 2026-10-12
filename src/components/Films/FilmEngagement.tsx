@@ -21,9 +21,9 @@ export default function FilmEngagement({ filmId }: { filmId: Id }) {
   const run = async (action: EngagementAction) => {
     try { await update(action); } catch (error) { toast.error(translateErrorMessage(error)); }
   };
-  const className = 'relative flex w-full items-center justify-center rounded-lg border border-slate-500 border-opacity-40 text-slate-300 hover:border-opacity-100';
+  const className = 'relative flex min-w-0 w-full items-center justify-center rounded-lg border border-slate-500 border-opacity-40 text-slate-300 hover:border-opacity-100';
   return <div aria-busy={pending}>
-    <ul className="mt-12 grid grid-cols-[repeat(3,1fr),2fr] gap-3 tm:grid-cols-2">
+    <ul aria-label="Ações do filme" className="grid grid-cols-4 items-stretch gap-3 cardMD:grid-cols-2">
       <li className={className}><WatchButton active={contains(data.watched?.filmes)} pending={pending} onToggle={() => { void run({ type: 'watched' }); }} /></li>
       <li className={className}><LikeButton active={like} pending={pending} onToggle={() => { void run({ type: 'like' }); }} /></li>
       <li className={className}><WatchListButton active={contains(data.watchlist_films?.filmes)} pending={pending} onToggle={() => { void run({ type: 'watchlist' }); }} /></li>

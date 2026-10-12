@@ -1,0 +1,12 @@
+.stars:global(.ant-rate) {
+  display: inline-flex;
+  gap: clamp(5px, 1vw, 10px);
+  padding: 0;
+  font-size: clamp(16px, 4.6vw, 20px);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.stars:global(.ant-rate) :global(.ant-rate-star:not(:last-child)) {
+  margin-inline-end: 0;
+}

@@ -150,25 +150,22 @@ const CardsFilm = () => {
 
         </div>
       </div>
-      <div className="flex items-center ml-8 mb-4 mt-2 tm:pr-4">
-        <input
-          aria-label="Buscar filmes"
-          className="block transition-colors duration-300 border border-transparent hover:border-slate-500 w-[20rem] sm:w-[14rem] p-1 bg-gray-800 placeholder:text-sm placeholder:text-gray-500 text-slate-200 text-sm opacity-80  focus:ring-1 focus:ring-slate-500 tm:w-full indent-6 rounded-md focus-visible:outline-none"
-          style={{
-            backgroundImage: `url(${IconSearch})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: '8px 50%',
-            backgroundSize: '14px 14px',
-          }}
-          type="text"
-          name="searchFilmeInline"
-          placeholder="Digite o nome do filme"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            debouncedChange(e.target.value);
-          }}
-        />
+      <div className="ml-8 mb-4 mt-2 tm:pr-4">
+        <div className="relative w-[20rem] sm:w-[14rem] tm:w-full">
+          <input
+            aria-label="Buscar filmes"
+            className="block w-full transition-colors duration-300 border border-transparent hover:border-slate-500 pl-3 pr-9 py-2 bg-gray-800 placeholder:text-sm placeholder:text-gray-500 text-slate-200 text-sm opacity-80 focus:ring-1 focus:ring-slate-500 rounded-md focus-visible:outline-none"
+            type="text"
+            name="searchFilmeInline"
+            placeholder="Digite o nome do filme"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              debouncedChange(e.target.value);
+            }}
+          />
+          <img src={IconSearch} alt="" aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+        </div>
       </div>
       <div
         className="grid grid-cols-1 desktop:grid-cols-[600px,_1fr] justify-center justify-items-center gap-x-4 
