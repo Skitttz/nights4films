@@ -1,4 +1,3 @@
-import { LoadingOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 const HeaderSkeleton = () => {
@@ -22,10 +21,7 @@ const HeaderSkeleton = () => {
               </p>
             </Link>
           </div>
-          <div role="status" aria-label="Verificando sua conta" className="flex items-center gap-2 text-sm text-slate-400">
-            <LoadingOutlined spin aria-hidden="true" className="text-purple-300" />
-            <span className="cardMD:sr-only">Verificando sua conta...</span>
-          </div>
+          <div role="status" aria-label="Carregando conta" className="h-[35px] w-[240px] shrink-0 animate-pulse rounded-md bg-gray-900 motion-reduce:animate-none cardMD:h-8 cardMD:w-8" />
         </nav>
       </header>
       <div className="pb-[2.5rem]" />

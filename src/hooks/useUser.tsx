@@ -37,14 +37,21 @@ export const UserStorage = ({ children }: { children: ReactNode }) => {
   const client = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
+  const previousPathname = useRef(location.pathname);
   const session = useQuery({
     queryKey: ['session', token],
     queryFn: ({ signal }) => fetchCurrentUser(token!, signal),
     enabled: !!token,
     staleTime: Infinity,
+    retry: (count, cause) => count < 1 && cause instanceof ApiError && (
+      cause.code === 'ERR_NETWORK' || (cause.status !== undefined && cause.status >= 500)
+    ),
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
   const invalidSession = session.error instanceof ApiError && [401, 403].includes(session.error.status ?? 0);
-  const status: AuthStatus = !token || invalidSession ? 'guest' : session.data ? 'authenticated' : session.isError ? 'error' : 'checking';
+  const status: AuthStatus = !token || invalidSession ? 'guest' : session.data ? 'authenticated'
+    : session.isPaused ? 'error' : session.isFetching || session.isPending ? 'checking' : 'error';
   const login = status === 'authenticated' ? true : status === 'guest' ? false : null;
   const data = status === 'authenticated' ? session.data! : null;
   const clearError = useCallback(() => setError(null), []);
@@ -62,6 +69,14 @@ export const UserStorage = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (invalidSession) void userLogout();
   }, [invalidSession, userLogout]);
+
+  useEffect(() => {
+    const navigated = previousPathname.current !== location.pathname;
+    previousPathname.current = location.pathname;
+    if (navigated && token && !session.data && session.isError && !invalidSession) {
+      void session.refetch({ cancelRefetch: false });
+    }
+  }, [location.pathname, token, session.data, session.isError, invalidSession, session.refetch]);
 
   async function authenticate(request: () => Promise<{ token: string; user: User }>, propagateError: boolean) {
     if (actionPending.current) return;
@@ -116,7 +131,7 @@ export const UserStorage = ({ children }: { children: ReactNode }) => {
     loading: pending || status === 'checking',
     error: error ?? (status === 'error' ? translateErrorMessage(session.error) : null),
     clearError, userLogout,
-    retrySession: () => { void session.refetch(); },
+    retrySession: () => { void session.refetch({ cancelRefetch: false }); },
     userLogin: (username, password) => authenticate(() => loginAndStoreToken(username, password), false),
     userRegister: (email, username, password) => authenticate(() => registerAndStoreToken({ email, username, password }), true),
     userPasswordLost: email => passwordRequest(() => forgotPasswordRequest(email)),
