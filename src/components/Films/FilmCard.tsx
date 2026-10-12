@@ -26,11 +26,12 @@ const FilmCard = ({
   return (
     <div
       id={titleId}
+      data-film-id={id}
       className={
         'p-3 cardMD:pt-5 cardMD:pb-6 cardMD:w-[10.5rem] cardMD:ml-2 cardMD:flex-shrink-0'
       }
     >
-      <img
+      <button type="button" aria-label={`Selecionar ${title}`} aria-pressed={activeIndex}
         onClick={() => {
           onClick(id);
           setFilmData({
@@ -42,14 +43,9 @@ const FilmCard = ({
             ? 'active animate-scaleCard shadow-[0px_0px_8px_4px_rgba(130,166,237,0.1)] border'
             : ' '
           }`}
-        src={image}
-        alt={title}
-        style={{
-          width: `${(Number(width) - 60) * 0.9}px`,
-          height: `${(Number(height) - 100) * 0.9}px`,
-          cursor: 'pointer',
-        }}
-      />
+        style={{ width: Number(width), cursor: 'pointer' }}>
+        {image ? <img src={image} alt={title} loading="lazy" width={Number(width)} height={Number(height)} className="w-full rounded-2xl object-cover aspect-[2/3]" /> : <span className="flex items-center justify-center rounded-2xl bg-slate-800 text-slate-300 aspect-[2/3]">{title}</span>}
+      </button>
     </div>
   );
 };

@@ -36,7 +36,6 @@ const ModalTrailer = ({ setModal, EmbedId }: ModalTrailerProps) => {
       <div
         className="fixed z-50 inset-0 flex items-center justify-center bg-black bg-opacity-80 left-0 top-0 w-screen h-screen"
         onClick={handleClick}
-        onKeyDown={handleKeyDown as any}
         tabIndex={0}
       >
         <div
@@ -55,11 +54,11 @@ const ModalTrailer = ({ setModal, EmbedId }: ModalTrailerProps) => {
               <span className="font-gabarito">Films</span>
             </p>
           </div>
-          <div
+          <button type="button" aria-label="Fechar trailer"
             className={`${styleExit}`}
             onClick={handleClick}
             style={{ cursor: 'pointer' }}
-          ></div>
+          />
           {EmbedId && <EmbedVideo embedId={EmbedId} />}
         </div>
       </div>

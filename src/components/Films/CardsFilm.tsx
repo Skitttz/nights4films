@@ -10,6 +10,7 @@ import ContentFilms from './ContentFilms';
 import FilmCard from './FilmCard';
 import FilmCardLoading from './Loading/FilmCard';
 import PaginationFilms from './PaginationFilms';
+import QueryFeedback from '../Helper/QueryFeedback';
 
 const CardsFilm = () => {
   const { isMobile } = useWindowDimensions();
@@ -22,7 +23,7 @@ const CardsFilm = () => {
   const limitItemPerPage = 9;
   const [searchTerm, setSearchTerm] = useState('');
   const [query, setQuery] = useState('');
-  const debouncedChange = useDebounce((value: string) => setQuery(value), 300);
+  const debouncedChange = useDebounce((value: string) => { setQuery(value.trim()); setCurrentPage(1); }, 300);
   const refScroll = useRef<HTMLDivElement>(null);
   const contentFilmRef = useRef<HTMLDivElement>(null);
 
@@ -66,17 +67,12 @@ const CardsFilm = () => {
   //Controla a rolagem para o card ativo.
   useEffect(() => {
     if (isActive !== null && refScroll.current && typeof isActive === 'number') {
-      const cardWidth = 175; // Largura de cada card
-      const scrollX =
-        isActive * cardWidth -
-        refScroll.current.offsetWidth / 2 +
-        cardWidth / 2;
-
-      refScroll.current.scrollLeft = scrollX;
+      const card = Array.from(refScroll.current.children).find(element => element.getAttribute('data-film-id') === String(isActive)) as HTMLElement | undefined;
+      if (card) refScroll.current.scrollLeft = card.offsetLeft - refScroll.current.offsetLeft - (refScroll.current.offsetWidth - card.offsetWidth) / 2;
     }
   }, [isActive]);
 
-  const { data, isLoading, isFetching } = useFilms(
+  const { data, isLoading, isFetching, isError, error, refetch, isPlaceholderData } = useFilms(
     currentPage,
     query,
     limitItemPerPage,
@@ -85,6 +81,10 @@ const CardsFilm = () => {
   const totalItems = data?.totalItems ?? 0;
   const hasFilms = Boolean(films && films.data && films.data.length > 0);
   const totalPages = totalItems ? Math.ceil(totalItems / limitItemPerPage) : 0;
+
+  useEffect(() => {
+    if (data && !isPlaceholderData && !isError && currentPage > Math.max(1, totalPages)) setCurrentPage(Math.max(1, totalPages));
+  }, [data, isPlaceholderData, isError, currentPage, totalPages]);
 
 
   const swipeStartX = useRef<number | null>(null);
@@ -174,6 +174,8 @@ const CardsFilm = () => {
         className="grid grid-cols-1 desktop:grid-cols-[600px,_1fr] justify-center justify-items-center gap-x-4 
       cardMD:max-w-5xl xl:max-w-6xl lg:max-w-5xl cardMD:justify-center animate-fadeIn overflow-x-hidden"
       >
+        {isError && <div className="col-span-full"><QueryFeedback error={error} onRetry={() => { void refetch(); }} /></div>}
+        {isFetching && data && <p role="status" className="col-span-full text-slate-400 text-sm">Atualizando filmes...</p>}
         <div
           className="grid grid-cols-3 grid-rows-3 cardMD:grid-row-1 cardMD:row-start-1
       cardMD:flex lg:flex-nowrap cardMD:overflow-x-scroll cardMD:scrollbar-thin cardMD:scrollbar-track-slate-800 cardMD:scrollbar-thumb-blue-100 cardMD:scrollbar-track-rounded-full cardMD:scrollbar-thumb-rounded-full cardMD:scrollbar-w-1 cardMD:scroll-smooth
@@ -192,15 +194,15 @@ const CardsFilm = () => {
                 setFilmData={setFilmData as any}
                 isActive={isActive}
                 title={film.attributes.title}
-                image={`${film.attributes.card.data.attributes.url}`}
-                width={`${film.attributes.card.data.attributes.width}`}
-                height={`${film.attributes.card.data.attributes.height}`}
+                image={film.attributes.card?.data?.attributes.url}
+                width={160}
+                height={240}
                 onClick={handleClick}
               />
             ))
             : (
               <div className="flex content-center items-center text-yellow-50 text-center text-xl font-bold animate-fadeIn col-span-full row-span-full h-[8.5rem] mx-auto ml-8 tm:ml-0">
-                <p>Ops! Não encontramos nenhum filme correspondente.</p>
+                {!isError && <p>Ops! Não encontramos nenhum filme correspondente.</p>}
               </div>
             )}
         </div>

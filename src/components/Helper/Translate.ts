@@ -17,7 +17,8 @@ const errorTranslations: { [key: string]: string } = {
   '2 errors occurred': 'Preencha os Campos Obrigatórios',
 };
 
-export function translateErrorMessage(errorMessage: string) {
+export function translateErrorMessage(error: unknown): string {
+  const errorMessage = error instanceof Error ? error.message : typeof error === 'string' ? error : 'Ocorreu um erro. Tente novamente.';
   if (errorTranslations[errorMessage]) {
     return errorTranslations[errorMessage];
   } else {
